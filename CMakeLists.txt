@@ -8,6 +8,7 @@ set(CMAKE_C_STANDARD 99)
 
 option(ENABLE_WARNINGS "Enable project warnings" ON)
 option(ENABLE_SANITIZER "Enable address and undefined behavior sanitizer" OFF)
+option(ENABLE_TEST "Enable test " OFF)
 
 # Set up modules path and include necessary scripts from cmake_template
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -52,7 +53,10 @@ target_link_libraries(${PROJECT_NAME}
         tinyxml2 urdfdom_model urdfdom_world urdfdom_sensor
 )
 
-add_subdirectory(test)
+if (ENABLE_TEST)
+    add_subdirectory(test)
+endif ()
+
 
 
 
