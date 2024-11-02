@@ -99,6 +99,46 @@ cd build && ./convex -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value
 
   ​	**An useful replacement pair for ROS is “package:/” “/home/xxx/xxx_ws/src”. ** This will help this program to replace the original “package://yyy/mesh/zzz.stl” into “/home/xxx/xxx_ws/src/yyy/mesh/zzz.stl” to correctly find the mesh file without ROS. Meanwhile, the generated URDF will generate the mesh URL using the original format like “package:/yyy/mesh/zzz.obj”. So it can be directly valid for ROS.
 
+
+
+## Example
+
+We use [franka](https://github.com/justagist/franka_panda_description) to test.
+
+### Preprocess
+
+Warning: One should replace (in`robots/panda_arm.urdf`)
+
+```xml
+<collision>
+      <geometry>
+        <mesh filename="/meshes/collision/xxx.stl"/>
+      </geometry>
+</collision>
+```
+
+into
+
+```xml
+<collision>
+      <geometry>
+        <mesh filename="package://franka_panda_description/meshes/collision/xxx.stl"/>
+      </geometry>
+</collision>
+```
+
+### Spherized
+
+```shell
+cd build && ./sphereized -i /home/zyx/path_ws/src/franka_panda_description/robots/panda_arm.urdf -o /home/zyx/path_ws/src/franka_panda_description/robots/panda_arm_spherized.urdf -r "package:" "/home/zyx/path_ws/src" --single_sphere 0 --simplify 0
+```
+
+### Convex
+
+```shell
+cd build && ./convex -i /home/zyx/path_ws/src/franka_panda_description/robots/panda_arm.urdf -o /home/zyx/path_ws/src/franka_panda_description/robots/panda_arm_spherized.urdf -r "package:" "/home/zyx/path_ws/src"
+```
+
 # Citation
 
 If this lib helps your research, please cite us
