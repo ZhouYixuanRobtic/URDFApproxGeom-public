@@ -46,7 +46,7 @@
 #define SPHERIZEDURDFGENERATOR_SPHERETREEGRID_HPP
 
 #include "sphereTreeBase.h"
-#include "alg_factory/algorithm_factory.h"
+#include "irmv/bot_common/alg_factory/algorithm_factory.h"
 
 namespace SphereTreeMethod {
     constexpr char SphereTreeMethodGridName[] = "SphereTreeGridName";

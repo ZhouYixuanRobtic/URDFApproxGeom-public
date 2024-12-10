@@ -25,11 +25,11 @@ endif()
 
 # Link dependent libraries to STG
 set(LIBS_TO_LINK
-        API
+        ${API_LIBS_OUT}
         Base
-        BBox
+        ${BBox_LIBS_OUT}
         Exceptions
-        Geometry
+        ${Geometry_LIBS_OUT}
         Matrix
         MedialAxis
         MinMax
@@ -38,6 +38,7 @@ set(LIBS_TO_LINK
         Surface
         Export
 )
+set(LIBS_TO_LINK_OUT STG ${LIBS_TO_LINK} PARENT_SCOPE)
 target_link_libraries(STG PUBLIC ${LIBS_TO_LINK})
 
 

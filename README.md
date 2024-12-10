@@ -41,6 +41,7 @@ This package relies on binary-distributed libraries:
 - [urdfdom](https://github.com/ros/urdfdom)
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
 - [tinyxml2](https://github.com/leethomason/tinyxml2)
+- gmp
 
 Fortunately, they can be installed through simple `apt-get` process.  
 

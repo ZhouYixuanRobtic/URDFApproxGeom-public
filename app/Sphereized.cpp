@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    std::string configPath = CONFIG_PATH;
+    std::string configPath = SpherizedURDFGenerator_CONFIG_PATH;
     std::string inputPath;
     std::string outputPath;
     std::vector<std::pair<std::string, std::string>> replacements;

@@ -7,3 +7,5 @@ set_target_properties(${BOT_LIB_NAME} PROPERTIES VERSION "${${PROJECT_NAME}_VERS
 add_subdirectory(SFWhite)
 target_link_libraries(${BOT_LIB_NAME} SFWhite)
 set_target_properties(${BOT_LIB_NAME} PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_SO_VERSION})
+
+SET(API_LIBS_OUT SFWhite ${BOT_LIB_NAME} PARENT_SCOPE)

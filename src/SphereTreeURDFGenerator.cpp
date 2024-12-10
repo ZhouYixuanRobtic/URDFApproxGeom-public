@@ -54,7 +54,7 @@
 #include <vector>
 #include <string>
 #include <igl/decimate.h>
-#include "log/log.h"
+#include "irmv/bot_common/log/log.h"
 
 SphereTreeURDFGenerator::SphereTreeURDFGenerator(const std::string &st_config_path, bool single_sphere, bool simplify) {
     YAML::Node doc = YAML::LoadFile(st_config_path);

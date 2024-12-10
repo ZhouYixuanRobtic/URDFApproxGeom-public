@@ -62,15 +62,15 @@ protected:
 public:
 
 protected:
-    std::string resourcePath = RESOURCE_PATH;
-    std::string configPath = CONFIG_PATH;
+    std::string resourcePath = SpherizedURDFGenerator_RESOURCE_PATH;
+    std::string configPath = SpherizedURDFGenerator_CONFIG_PATH;
     std::shared_ptr<ConvexHullCollisionURDFGenerator> convex_generator;
     std::shared_ptr<SphereTreeURDFGenerator> spherized_generator;
 };
 
 TEST_F(URDFGeneratorTest, CVXTest) {
-    auto ret = convex_generator->run("/home/zyx/path_ws/src/franka_panda_description/robots/panda_arm.urdf",
-                          "/home/zyx/path_ws/src/franka_panda_description/robots/panda_arm_cvx.urdf",{
+    auto ret = convex_generator->run("/home/zyx/path_ws/src/ningde/simulation/rm_dcr_description/urdf/catl_robot11.urdf",
+                          "/home/zyx/path_ws/src/ningde/simulation/rm_dcr_description/urdf/catl_convex_hull.urdf",{
                                              {"package:/", "/home/zyx/path_ws/src/ningde/simulation"}
     });
 

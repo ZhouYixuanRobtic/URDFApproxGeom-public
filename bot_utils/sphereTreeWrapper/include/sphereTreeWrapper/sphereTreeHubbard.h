@@ -47,7 +47,7 @@
 
 
 #include "sphereTreeBase.h"
-#include "alg_factory/algorithm_factory.h"
+#include "irmv/bot_common/alg_factory/algorithm_factory.h"
 
 namespace SphereTreeMethod {
     constexpr char SphereTreeMethodHubbardName[] = "SphereTreeHubbardName";

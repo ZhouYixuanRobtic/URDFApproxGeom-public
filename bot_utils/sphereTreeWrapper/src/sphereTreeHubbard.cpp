@@ -44,7 +44,7 @@
 
 #include "sphereTreeWrapper/sphereTreeHubbard.h"
 #include "yaml-cpp/yaml.h"
-#include "log/log.h"
+#include "irmv/bot_common/log/log.h"
 #include "Surface/Surface.h"
 #include "Surface/OBJLoader.h"
 #include "MedialAxis/Voronoi3D.h"

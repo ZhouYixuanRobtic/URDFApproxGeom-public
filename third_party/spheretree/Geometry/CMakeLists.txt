@@ -8,3 +8,4 @@ set_target_properties(${BOT_LIB_NAME} PROPERTIES VERSION "${${PROJECT_NAME}_VERS
 
 target_link_libraries(${BOT_LIB_NAME} pcube Matrix)
 set_target_properties(${BOT_LIB_NAME} PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_SO_VERSION})
+SET(Geometry_LIBS_OUT pcube ${BOT_LIB_NAME} PARENT_SCOPE)

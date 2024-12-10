@@ -45,7 +45,7 @@
 #ifndef SPHERIZEDURDFGENERATOR_SPHERETREEBASE_H
 #define SPHERIZEDURDFGENERATOR_SPHERETREEBASE_H
 
-#include "state/error_code.h"
+#include "irmv/bot_common/state/error_code.h"
 #include <memory>
 #include <SphereTree/SphereTree.h>
 #include <Eigen/Dense>
