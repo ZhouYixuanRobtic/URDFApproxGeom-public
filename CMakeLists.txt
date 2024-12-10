@@ -87,7 +87,7 @@ set(THIS_PACKAGE_INCLUDE_DIRS
         include
         third_party/header_only
         third_party/ManifoldPlus/include
-        third_party/spheretree
+        third_party/sphere_tree/src
         bot_utils/sphereTreeWrapper/include
 )
 
@@ -117,7 +117,7 @@ include_directories(
 )
 
 add_subdirectory(third_party/ManifoldPlus)
-add_subdirectory(third_party/spheretree)
+add_subdirectory(third_party/sphere_tree)
 add_subdirectory(bot_utils)
 
 # project library area
