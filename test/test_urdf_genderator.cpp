@@ -53,7 +53,7 @@ class URDFGeneratorTest : public testing::Test {
 protected:
     void SetUp() override {
         convex_generator = std::make_shared<ConvexHullCollisionURDFGenerator>();
-        spherized_generator = std::make_shared<SphereTreeURDFGenerator>(configPath + "/sphereTree/sphereTreeConfig.yml", false, false);
+        spherized_generator = std::make_shared<SphereTreeURDFGenerator>(configPath + "/sphereTree/sphereTreeConfig.yml", false, true);
     }
 
     void TearDown() override {

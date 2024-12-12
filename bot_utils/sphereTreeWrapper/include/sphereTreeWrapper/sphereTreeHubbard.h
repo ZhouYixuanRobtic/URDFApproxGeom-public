@@ -60,7 +60,7 @@ namespace SphereTreeMethod {
 
         static SphereTreeUniquePtr create(const std::string &config_path);
 
-        bot_common::ErrorInfo constructTree(const std::string &file, MySphereTree& tree) override;
+        bot_common::ErrorInfo constructTree(Surface &sur, MySphereTree& tree) override;
 
     protected:
         int branch = 8;             ///<  branching factor of the sphere-tree

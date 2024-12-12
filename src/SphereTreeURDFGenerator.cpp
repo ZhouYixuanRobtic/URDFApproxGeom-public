@@ -55,6 +55,8 @@
 #include <string>
 #include <igl/decimate.h>
 #include "irmv/bot_common/log/log.h"
+#include "ManifoldPlus/Manifold.h"
+
 
 SphereTreeURDFGenerator::SphereTreeURDFGenerator(const std::string &st_config_path, bool single_sphere, bool simplify) {
     YAML::Node doc = YAML::LoadFile(st_config_path);
@@ -75,9 +77,12 @@ SphereTreeURDFGenerator::SphereTreeURDFGenerator(const std::string &st_config_pa
     }
     doSimplify = simplify;
     singleSphere = single_sphere;
+    m_manifold = std::make_unique<Manifold>();
 }
 
-SphereTreeURDFGenerator::~SphereTreeURDFGenerator(){
+SphereTreeURDFGenerator::~SphereTreeURDFGenerator() {
+    m_manifold.reset();
+    m_manifold = nullptr;
     m_method.reset();
     m_method = nullptr;
 }
@@ -86,53 +91,66 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                                    const std::vector<std::pair<std::string, std::string>> &replace_pairs) {
 
     auto ret = loadURDF(urdf_path, m_model);
-    if(!ret.IsOK()){
-        PLOGE<<ret.error_msg();
+    if (!ret.IsOK()) {
+        PLOGE << ret.error_msg();
         return ret;
     }
+    std::cout << "Got " << m_model->links_.size() << " links to process" << std::endl;
+    int link_count = 0;
     for (auto &link_pair: m_model->links_) {
-        if(link_pair.second->collision_array.size() > 1){
+        if (link_pair.second->collision_array.size() > 1) {
             return {bot_common::ErrorCode::Error, "We only accept one collision mesh"};
-        }else{
-            auto& collision = link_pair.second->collision;
-            if(collision != nullptr){
+        } else {
+            auto &collision = link_pair.second->collision;
+            if (collision != nullptr) {
                 switch (collision->geometry->type) {
                     case urdf::Geometry::MESH: {
                         auto *mesh = dynamic_cast<urdf::Mesh *>(collision->geometry.get());
                         std::string filename_raw = mesh->filename;
-                        for(const auto& replace_pair : replace_pairs){
+                        for (const auto &replace_pair: replace_pairs) {
                             replaceWith(filename_raw, replace_pair.first, replace_pair.second);
                         }
                         std::filesystem::path filename = filename_raw;
                         Eigen::MatrixXd V;
+                        MatrixD OUT_V;
                         Eigen::MatrixXi F, N;
+                        MatrixI OUT_F;
                         bool alreadyOBJ = false;
                         ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
                         if (!ret.IsOK()) {
                             PLOGE << ret.error_msg();
                             return ret;
                         } else {
+                            //do manifold watertight process
+                            std::cout << "-------------------Start Processing Watertight Manifold----------------"
+                                      << std::endl;
+                            m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
+                            std::cout << "Got " << OUT_F.rows() << " faces after watertight manifold processing"
+                                      << std::endl;
+                            std::cout << "-------------------End Processing Watertight Manifold----------------"
+                                      << std::endl;
                             Eigen::Vector3d centroid;
-                            if(doSimplify){
-                                Eigen::MatrixXd CH_V;
-                                Eigen::MatrixXi CH_F;
+                            if (doSimplify) {
+                                std::cout << "-------------------Start Simplify----------------" << std::endl;
                                 Eigen::VectorXi J;
-                                igl::decimate(V, F, 0.3 * F.rows(), CH_V, CH_F, J);
-                                ret = saveCollisionGeometry(filename, CH_V, CH_F);
-                                centroid = CH_V.colwise().mean();
-                            }else if(!alreadyOBJ){
-                                ret = saveCollisionGeometry(filename, V, F);
-                                centroid = V.colwise().mean();
+                                igl::decimate(OUT_V, OUT_F, static_cast<size_t>(0.01 * (double) OUT_F.rows()), V, F, J);
+                                std::cout << "Simplify from " << OUT_F.rows() << " to " << F.rows() << std::endl;
+                                std::cout << "-------------------End Simplify----------------" << std::endl;
+                            } else {
+                                V = OUT_V;
+                                F = OUT_F;
                             }
-
+                            centroid = V.colwise().mean();
                             if (!ret.IsOK()) {
                                 PLOGE << ret.error_msg();
                                 return ret;
-                            }else{
+                            } else {
                                 SphereTreeMethod::MySphereTree tree;
                                 //todo: handle construct errors;
-                                m_method->constructTree(filename.string(), tree);
-                                if(singleSphere){
+                                std::cout << "-------------------Start Sphere Tree Approximation for " << link_count++
+                                          << "-th link ----------------" << std::endl;
+                                m_method->constructTree(V, F, tree);
+                                if (singleSphere) {
                                     auto sphere = std::make_shared<urdf::Sphere>();
                                     sphere->radius = tree.biggest_sphere.R();
                                     collision->origin.position.x = centroid.x() + tree.biggest_sphere.X();
@@ -140,10 +158,10 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                     collision->origin.position.z = centroid.z() + tree.biggest_sphere.Z();
                                     collision->origin.rotation.clear();
                                     collision->geometry = sphere;
-                                }else{
+                                } else {
                                     link_pair.second->collision_array.clear();
-                                    for(const SphereTreeMethod::Sphere& sub_sphere : tree.sub_spheres){
-                                        auto sphere_collision  = std::make_shared<urdf::Collision>();
+                                    for (const SphereTreeMethod::Sphere &sub_sphere: tree.sub_spheres) {
+                                        auto sphere_collision = std::make_shared<urdf::Collision>();
                                         sphere_collision->origin.position.x = centroid.x() + sub_sphere.X();
                                         sphere_collision->origin.position.y = centroid.y() + sub_sphere.Y();
                                         sphere_collision->origin.position.z = centroid.z() + sub_sphere.Z();
@@ -155,6 +173,8 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                     }
                                     link_pair.second->collision = link_pair.second->collision_array[0];
                                 }
+                                std::cout << "-------------------End Sphere Tree Approximation----------------"
+                                          << std::endl;
                             }
                         }
                         break;

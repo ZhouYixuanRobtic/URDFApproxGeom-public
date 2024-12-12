@@ -49,6 +49,7 @@
 #include <memory>
 #include <SphereTree/SphereTree.h>
 #include <Eigen/Dense>
+#include "Surface/Surface.h"
 
 namespace SphereTreeMethod {
 
@@ -114,12 +115,18 @@ namespace SphereTreeMethod {
         virtual ~SphereTreeMethodBase() = default;
 
     public:
-        virtual bot_common::ErrorInfo constructTree(const std::string &file, MySphereTree &tree) = 0;
+        virtual bot_common::ErrorInfo constructTree(const std::string &file, MySphereTree &tree);
+
+        virtual bot_common::ErrorInfo constructTree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, MySphereTree &tree);
+
+        virtual bot_common::ErrorInfo constructTree(Surface &sur, MySphereTree &tree) = 0;
 
         const std::string &getMethodName();
 
     protected:
         std::string m_method_name;
+
+        static void loadOBJFromEigen(Surface *sur, const Eigen::MatrixXd & V, const Eigen::MatrixXi& F, float boxSize = -1);
     };
 
     typedef std::shared_ptr<SphereTreeMethodBase> SphereTreePtr;
