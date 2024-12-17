@@ -13,7 +13,7 @@ Notice: the following steps are adopted to generate a spherized version
 2. Simplify (Optional; using `igl:decimate` to down-sample surfaces into 30%)
 3. Spherized Version Generation(Several hyper-parameters can be tuned. See `config/sphereTree/sphereTreeConfig.yml`)
 
-​				<img src="./assets/origin.png" style="zoom:50%;" /> <img src="./assets/spherized.png" style="zoom:50%;" />
+​				<img src="./assets/origin2.jpg" style="zoom:45%;" /> <img src="./assets/spherized.jpg" style="zoom:40%;" />
 
 ## Convex
 
@@ -21,7 +21,7 @@ Specifically, the term `Convex` refers to convex hull approximated collision.
 
 Notice: `cgal::convex_hull()` are used.
 
-​				<img src="./assets/origin2.png" style="zoom:50%;" /><img src="./assets/convex.png" style="zoom:50%;" />
+​				<img src="./assets/origin.png" style="zoom:50%;" /><img src="./assets/convex.png" style="zoom:50%;" />
 
 ## URDF
 

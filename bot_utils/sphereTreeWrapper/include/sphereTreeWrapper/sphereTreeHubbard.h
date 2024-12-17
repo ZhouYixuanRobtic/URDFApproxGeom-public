@@ -63,7 +63,6 @@ namespace SphereTreeMethod {
         bot_common::ErrorInfo constructTree(Surface &sur, MySphereTree& tree) override;
 
     protected:
-        int branch = 8;             ///<  branching factor of the sphere-tree
         int depth = 3;              ///<  depth of the sphere-tree
         int numSamples = 500;       //  number of samples to put on surface for static medial
         int minSamples = 1;         //  minimum number of points per triangle for static medial

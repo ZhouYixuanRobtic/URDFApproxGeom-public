@@ -160,4 +160,8 @@ namespace SphereTreeMethod {
         loadOBJFromEigen(&sur, V, F);
         return constructTree(sur, tree);
     }
+
+    void SphereTreeMethodBase::setBranch(int branch) {
+        this->branch = branch;
+    }
 }

@@ -123,10 +123,15 @@ namespace SphereTreeMethod {
 
         const std::string &getMethodName();
 
+        void setBranch(int branch);
     protected:
         std::string m_method_name;
 
         static void loadOBJFromEigen(Surface *sur, const Eigen::MatrixXd & V, const Eigen::MatrixXi& F, float boxSize = -1);
+
+        int branch = 8;             ///<  branching factor of the sphere-tree
+
+
     };
 
     typedef std::shared_ptr<SphereTreeMethodBase> SphereTreePtr;

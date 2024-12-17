@@ -62,8 +62,9 @@ public:
 protected:
     bool doSimplify = false;
     bool singleSphere = false;
-    SphereTreeMethod::SphereTreeUniquePtr m_method;
-    std::unique_ptr<Manifold> m_manifold;
+    double simplify_ratio = 0.01;
+    SphereTreeMethod::STMethodType type_;
+    std::string config_path_;
 public:
     bot_common::ErrorInfo run(const std::string &urdf_path, const std::string &output_path,
                               const std::vector<std::pair<std::string, std::string>> &replace_pairs) override;
