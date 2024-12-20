@@ -361,12 +361,9 @@ URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfac
         // Add dynamics element if applicable
         if (joint->dynamics) {
             tinyxml2::XMLElement *dynamics_elem = doc.NewElement("dynamics");
-            if (joint->dynamics->damping != 0) {
-                dynamics_elem->SetAttribute("damping", std::to_string(joint->dynamics->damping).c_str());
-            }
-            if (joint->dynamics->friction != 0) {
-                dynamics_elem->SetAttribute("friction", std::to_string(joint->dynamics->friction).c_str());
-            }
+            dynamics_elem->SetAttribute("damping", std::to_string(joint->dynamics->damping).c_str());
+            dynamics_elem->SetAttribute("friction", std::to_string(joint->dynamics->friction).c_str());
+
             joint_elem->InsertEndChild(dynamics_elem);
         }
 

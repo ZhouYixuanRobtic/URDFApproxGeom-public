@@ -12,7 +12,7 @@ Grid:
 
 Medial:
   TesterLevers: 2  # Controls the number of points to use to represent a sphere when evaluating fit. Use -1 for CONVEX objects, 1 will generate 42 points, and 2 will generate 168 points.
-  Branch: 4  # Branching factor of the sphere-tree.
+  Branch: 8  # Branching factor of the sphere-tree.
   Depth: 1  # Depth of the sphere-tree.
   NumCoverPts: 20000  # Number of sample points to cover the object with.
   MinCoverPts: 5  # Minimum number of sample points per triangle.

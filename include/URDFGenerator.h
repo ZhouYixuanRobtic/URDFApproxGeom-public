@@ -59,6 +59,7 @@ public:
     virtual ~URDFGenerator() = default;
 protected:
     urdf::ModelInterfaceSharedPtr m_model;
+    urdf::ModelInterfaceSharedPtr m_biggest_model;
 public:
     virtual bot_common::ErrorInfo run(const std::string &urdf_path, const std::string &output_path,
                                       const std::vector<std::pair<std::string, std::string>>& replace_pairs) = 0;

@@ -55,13 +55,12 @@
 
 class SphereTreeURDFGenerator : public URDFGenerator {
 public:
-    SphereTreeURDFGenerator(const std::string& st_config_path, bool single_sphere = false, bool simplify = true);
+    SphereTreeURDFGenerator(const std::string& st_config_path, bool simplify = true);
 
     ~SphereTreeURDFGenerator() override;
 
 protected:
     bool doSimplify = false;
-    bool singleSphere = false;
     double simplify_ratio = 0.01;
     SphereTreeMethod::STMethodType type_;
     std::string config_path_;
