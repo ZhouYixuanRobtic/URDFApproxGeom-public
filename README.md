@@ -84,6 +84,7 @@ One can simply remove it with `sudo dpkg -r irmv_core`.
 # Compile
 
 ```shell
+git submodule update --init --recursive
 cmake -B build . -DCMAKE_BUILD_TYPE=Release
 cmake --build build 
 ```
