@@ -59,12 +59,11 @@
 #include <future>
 #include <igl/volume.h>
 
-SphereTreeURDFGenerator::SphereTreeURDFGenerator(const std::string &st_config_path, bool single_sphere, bool simplify) {
+SphereTreeURDFGenerator::SphereTreeURDFGenerator(const std::string &st_config_path, bool simplify) {
     YAML::Node doc = YAML::LoadFile(st_config_path);
     config_path_ = st_config_path;
     type_ = static_cast<SphereTreeMethod::STMethodType>(doc["Method"].as<int>());
     doSimplify = simplify;
-    singleSphere = single_sphere;
     simplify_ratio = doc["SimplifyRatio"].as<double>();
     simplify_ratio = std::max(0.001, std::min(1., simplify_ratio)); //clamp to [0.001, 1]
 }
@@ -82,7 +81,8 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
         return ret;
     }
     std::cout << "Got " << m_model->links_.size() << " links to process" << std::endl;
-
+    //do deep copy
+    loadURDF(urdf_path, m_biggest_model);
 
 // Inside SphereTreeURDFGenerator::run
     std::vector<std::future<bot_common::ErrorInfo>> futures;
@@ -171,29 +171,37 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                     }
 
                                     m_method->constructTree(V, F, tree);
-                                    if (singleSphere) {
-                                        auto sphere = std::make_shared<urdf::Sphere>();
-                                        sphere->radius = tree.biggest_sphere.R();
-                                        collision->origin.position.x = centroid.x() + tree.biggest_sphere.X();
-                                        collision->origin.position.y = centroid.y() + tree.biggest_sphere.Y();
-                                        collision->origin.position.z = centroid.z() + tree.biggest_sphere.Z();
-                                        collision->origin.rotation.clear();
-                                        collision->geometry = sphere;
-                                    } else {
-                                        link_pair.second->collision_array.clear();
-                                        for (const SphereTreeMethod::Sphere &sub_sphere: tree.sub_spheres) {
-                                            auto sphere_collision = std::make_shared<urdf::Collision>();
-                                            sphere_collision->origin.position.x = centroid.x() + sub_sphere.X();
-                                            sphere_collision->origin.position.y = centroid.y() + sub_sphere.Y();
-                                            sphere_collision->origin.position.z = centroid.z() + sub_sphere.Z();
-                                            sphere_collision->origin.rotation.clear();
-                                            auto sphere = std::make_shared<urdf::Sphere>();
-                                            sphere->radius = sub_sphere.R();
-                                            sphere_collision->geometry = sphere;
+
+                                    //do single sphere approximation
+                                    auto sphere = std::make_shared<urdf::Sphere>();
+                                    sphere->radius = tree.biggest_sphere.R();
+                                    //find the corresponding collision in biggest model
+                                    int i = std::find(link_pair.second->collision_array.begin(),
+                                                      link_pair.second->collision_array.end(), collision) -
+                                            link_pair.second->collision_array.begin();
+                                    auto biggest_collision = m_biggest_model->links_[link_pair.first]->collision_array[i];
+                                    biggest_collision->origin.position.x = centroid.x() + tree.biggest_sphere.X();
+                                    biggest_collision->origin.position.y = centroid.y() + tree.biggest_sphere.Y();
+                                    biggest_collision->origin.position.z = centroid.z() + tree.biggest_sphere.Z();
+                                    biggest_collision->origin.rotation.clear();
+                                    biggest_collision->geometry = sphere;
+
+                                    // do spheres approximation
+                                    link_pair.second->collision_array.clear();
+                                    for (const SphereTreeMethod::Sphere &sub_sphere: tree.sub_spheres) {
+                                        auto sphere_collision = std::make_shared<urdf::Collision>();
+                                        sphere_collision->origin.position.x = centroid.x() + sub_sphere.X();
+                                        sphere_collision->origin.position.y = centroid.y() + sub_sphere.Y();
+                                        sphere_collision->origin.position.z = centroid.z() + sub_sphere.Z();
+                                        sphere_collision->origin.rotation.clear();
+                                        sphere = std::make_shared<urdf::Sphere>();
+                                        sphere->radius = std::abs(sub_sphere.R());
+                                        sphere_collision->geometry = sphere;
+                                        if (sphere->radius > 0.005){
                                             link_pair.second->collision_array.emplace_back(sphere_collision);
                                         }
-                                        link_pair.second->collision = link_pair.second->collision_array[0];
                                     }
+                                    link_pair.second->collision = link_pair.second->collision_array[0];
                                     std::cout << "-------------------End Sphere Tree Approximation----------------"
                                               << std::endl;
                                 }
@@ -215,6 +223,9 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
             return fut_ret;
         }
     }
-
+    //change xxx.urdf to xxx_spherized.urdf
+    std::string biggest_output_path = output_path;
+    replaceWith(biggest_output_path, ".urdf", "_1.urdf");
+    writeURDF(biggest_output_path, m_biggest_model);
     return writeURDF(output_path, m_model);
 }
