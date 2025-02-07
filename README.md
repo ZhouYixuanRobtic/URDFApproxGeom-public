@@ -13,7 +13,7 @@ Notice: the following steps are adopted to generate a spherized version
 2. Simplify (Optional; using `igl:decimate` to down-sample surfaces into 30%)
 3. Spherized Version Generation(Several hyper-parameters can be tuned. See `config/sphereTree/sphereTreeConfig.yml`)
 
-​				<img src="./assets/origin2.jpg" style="zoom:45%;" /> <img src="./assets/spherized.jpg" style="zoom:40%;" />
+​				<img src="./assets/origin2.png" style="zoom:70%;" /> <img src="./assets/spherized.png" style="zoom:70%;" />
 
 ## Convex
 
@@ -49,15 +49,37 @@ Fortunately, they can be installed through simple `apt-get` process.
 sudo apt-get install libcgal-dev liburdfdom-dev libyaml-cpp-dev libtinyxml2-dev libgmp-dev
 ```
 
-The distribution also contains the following sources from other people (some are introduced in a header-only manner):
+The distribution also contains the following sources from other people (all are introduced in a header-only manner):
 
 - [libigl](https://github.com/libigl/libigl)
-- [plog](https://github.com/SergiusTheBest/plog)
 - [sphere_tree](https://github.com/mlund/spheretree)
 - [ManifoldPlus](https://github.com/hjwdzh/ManifoldPlus)
 - [cmake-template](https://github.com/cpp-best-practices/cmake_template/tree/main)
 
 This work is built on the basis of those fantastic works. We thank all the aforementioned open-source project for the help of the implementations.
+
+This work also relies on self-maintained pkg `irmv_core`, users could obtain the newest version from the **release** page in this repo.
+One can install it with simply
+
+```shell
+cd ~ && git clone https://github.com/PREDICT-EPFL/piqp.git
+cd piqp
+mkdir build && cd build
+cmake .. -DCMAKE_CXX_FLAGS="-march=native" -DBUILD_TESTS=OFF -DBUILD_BENCHMARKS=OFF
+make -j8
+sudo make install
+cd ~ && rm -rf piqp
+
+cd ~ && git clone https://github.com/SergiusTheBest/plog.git
+cd plog && mkdir build
+cd build && cmake ..
+make && sudo make install
+cd ~ && sudo rm -rf ./plog
+
+sudo dpkg -i install irmv_core-xxx--Linux-Release-GNU-9.4.0.deb
+```
+
+One can simply remove it with `sudo dpkg -r irmv_core`.
 
 # Compile
 

@@ -141,7 +141,11 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                     V = OUT_V;
                                     F = OUT_F;
                                 }
-                                centroid = V.colwise().mean();
+
+                                for(unsigned i=0; i<3;++i){
+                                    centroid(i) = (V.col(i).maxCoeff() + V.col(i).minCoeff()) * 0.5;
+                                }
+
                                 if (!ret.IsOK()) {
                                     PLOGE << ret.error_msg();
                                     return ret;
