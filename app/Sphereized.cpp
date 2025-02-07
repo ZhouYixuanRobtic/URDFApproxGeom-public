@@ -49,8 +49,8 @@
 #include <vector>
 
 int main(int argc, char *argv[]) {
-    if (argc < 5) {
-        std::cerr << "Usage: " << argv[0] << " -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [--single_sphere <0|1>] [--simplify <0|1>]" << std::endl;
+    if (argc < 4) {
+        std::cerr << "Usage: " << argv[0] << " -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [--simplify <0|1>]" << std::endl;
         return 1;
     }
 
@@ -58,8 +58,7 @@ int main(int argc, char *argv[]) {
     std::string inputPath;
     std::string outputPath;
     std::vector<std::pair<std::string, std::string>> replacements;
-    bool single_sphere = false;
-    bool simplify = false;
+    bool simplify = true;
 
     // Parse command-line arguments
     for (int i = 1; i < argc; ++i) {
@@ -73,9 +72,7 @@ int main(int argc, char *argv[]) {
             std::string key = argv[++i];
             std::string value = argv[++i];
             replacements.emplace_back(key, value);
-        } else if (arg == "--single_sphere" && i + 1 < argc) {
-            single_sphere = std::stoi(argv[++i]);
-        } else if (arg == "--simplify" && i + 1 < argc) {
+        }else if (arg == "--simplify" && i + 1 < argc) {
             simplify = std::stoi(argv[++i]);
         } else {
             std::cerr << "Unknown argument: " << arg << std::endl;
@@ -91,7 +88,7 @@ int main(int argc, char *argv[]) {
 
     // Create the SphereTreeURDFGenerator instance
     auto spherized_generator = std::make_shared<SphereTreeURDFGenerator>(
-            configPath + "/sphereTree/sphereTreeConfig.yml", single_sphere, simplify);
+            configPath + "/sphereTree/sphereTreeConfig.yml", simplify);
 
     // Run the generator with the input, output, and replacement pairs
     auto ret = spherized_generator->run(inputPath, outputPath, replacements);

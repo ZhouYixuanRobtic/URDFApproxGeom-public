@@ -93,7 +93,7 @@ cmake --build build
 ## Spherized
 
 ```shell
-cd build && ./spherized -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [--single_sphere <0|1>] [--simplify <0|1>]
+cd build && ./spherized -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [--simplify <0|1>]
 ```
 
 - `-i <input_urdf_path>`: Specifies the path to the input URDF file.
@@ -104,14 +104,12 @@ cd build && ./spherized -i <input_urdf_path> -o <output_urdf_path> [-r <key> <va
 
   ​	**An useful replacement pair for ROS is “package:/” “/home/xxx/xxx_ws/src”. ** This will help this program to replace the original “package://yyy/mesh/zzz.stl” into “/home/xxx/xxx_ws/src/yyy/mesh/zzz.stl” to correctly find the mesh file without ROS. Meanwhile, the generated URDF will generate the mesh URL using the original format like “package:/yyy/mesh/zzz.obj”. So it can be directly valid for ROS
 
-- `--single_sphere <0|1>`: Indicates whether to generate a single sphere approximation of the URDF. Use `1` to enable and `0` to disable.
-
 - `--simplify <0|1>`: Indicates whether to simplify the URDF generation process. Use `1` to enable and `0` to disable.
 
 ## Convex
 
 ```shell
-cd build && ./convex -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [--single_sphere <0|1>] [--simplify <0|1>]
+cd build && ./convex -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...]
 ```
 
 - `-i <input_urdf_path>`: Specifies the path to the input URDF file.
@@ -122,7 +120,9 @@ cd build && ./convex -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value
 
   ​	**An useful replacement pair for ROS is “package:/” “/home/xxx/xxx_ws/src”. ** This will help this program to replace the original “package://yyy/mesh/zzz.stl” into “/home/xxx/xxx_ws/src/yyy/mesh/zzz.stl” to correctly find the mesh file without ROS. Meanwhile, the generated URDF will generate the mesh URL using the original format like “package:/yyy/mesh/zzz.obj”. So it can be directly valid for ROS.
 
+## Parameters Tuning
 
+​	See config files in `config/sphereTree/sphereTreeConfig.yml`
 
 ## Example
 
@@ -153,7 +153,7 @@ into
 ### Spherized
 
 ```shell
-cd build && ./sphereized -i /home/zyx/path_ws/src/franka_panda_description/robots/panda_arm.urdf -o /home/zyx/path_ws/src/franka_panda_description/robots/panda_arm_spherized.urdf -r "package:" "/home/zyx/path_ws/src" --single_sphere 0 --simplify 0
+cd build && ./sphereized -i /home/zyx/path_ws/src/franka_panda_description/robots/panda_arm.urdf -o /home/zyx/path_ws/src/franka_panda_description/robots/panda_arm_spherized.urdf -r "package:" "/home/zyx/path_ws/src" --simplify 1
 ```
 
 ### Convex
