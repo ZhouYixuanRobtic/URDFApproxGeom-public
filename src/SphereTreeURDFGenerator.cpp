@@ -136,7 +136,6 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                 T.leftCols(3) = OUT_F;
                                 T.col(3).setZero();
                                 igl::volume(OUT_V, T, vol);
-                                double total_volume = vol.sum();
                                 Eigen::Vector3d centroid;
                                 if (doSimplify) {
                                     std::cout << "-------------------Start Simplify----------------" << std::endl;
@@ -206,7 +205,6 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                     link_pair.second->collision_array.clear();
                                     link_json["SubSpheres"] = nlohmann::json();
                                     auto& spheres_json = link_json["SubSpheres"];
-                                    int counter = 0;
                                     for (const SphereTreeMethod::Sphere &sub_sphere: tree.sub_spheres) {
                                         auto sphere_collision = std::make_shared<urdf::Collision>();
                                         sphere_collision->origin.position.x = centroid.x() + sub_sphere.X();

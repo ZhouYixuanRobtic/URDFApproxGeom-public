@@ -432,7 +432,7 @@ URDFGenerator::loadedIntoIGL(const std::filesystem::path &filename, Eigen::Matri
     }
 
     return {bot_common::ErrorCode::Error,
-            std::string {"We only support OBJ/STL type but the given file type is "} + SUFFIX};
+            std::string {"We only support OBJ/STL type but the given file type is "} + SUFFIX  + filename.string()};
 
 }
 
