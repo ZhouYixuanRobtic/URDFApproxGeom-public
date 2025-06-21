@@ -69,18 +69,18 @@ protected:
 };
 
 TEST_F(URDFGeneratorTest, CVXTest) {
-    auto ret = convex_generator->run("/home/irmv/project/dual_description/urdf/robot.urdf",
-                          "/home/irmv/project/dual_description/urdf/robot_convex.urdf",{
-                                             {"package://dual_description/", "/home/irmv/project/dual_description/"}
+    auto ret = convex_generator->run("/home/irmv/project/Dual-Description/urdf/robot.urdf",
+                          "/home/irmv/project/Dual-Description/urdf/robot_convex.urdf",{
+                                             {"package://dual_description/", "/home/irmv/project/Dual-Description/"}
     });
 
     std::cout<<ret.error_msg()<<std::endl;
 }
 
 TEST_F(URDFGeneratorTest, STTest) {
-    auto ret = spherized_generator->run("/home/irmv/project/dual_description/urdf/robot.urdf",
-                          "/home/irmv/project/dual_description/urdf/robot_spherized.urdf",{
-                                             {"package://dual_description/", "/home/irmv/project/dual_description/"}
+    auto ret = spherized_generator->run("/home/irmv/project/Dual-Description/urdf/robot_convex.urdf",
+                          "/home/irmv/project/Dual-Description/urdf/robot_spherized.urdf",{
+                                             {"package://dual_description/", "/home/irmv/project/Dual-Description/"}
                                      });
 
     std::cout<<ret.error_msg()<<std::endl;

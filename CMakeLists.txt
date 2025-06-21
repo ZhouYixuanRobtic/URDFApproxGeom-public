@@ -50,7 +50,7 @@ include(Utilities)
 
 # find IRMV packages (NO IRMV DEPENDS)
 set(THIS_PACKAGE_IRMV_DEPENDS
-        "irmv_core 0.3"
+        "irmv_core 0.4"
 )
 prepare_irmv_dependencies("${THIS_PACKAGE_IRMV_DEPENDS}" IRMV_PACKAGE_DEPENDS)
 
@@ -113,7 +113,7 @@ include_directories(
         ${THIS_PACKAGE_INCLUDE_DIRS}
         # irmv package include directories
         ${irmv_core_INCLUDE_DIRS}
-
+        /usr/include/irmv/third_party/
 )
 
 add_subdirectory(third_party/ManifoldPlus)

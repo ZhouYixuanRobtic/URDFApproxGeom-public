@@ -182,18 +182,25 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                     }
 
                                     m_method->constructTree(V, F, tree);
-
+                                    //convert original rpy into rotation matrix in case of non-zero rpy
+                                    Eigen::Matrix3d original_rotation = Eigen::Quaterniond(collision->origin.rotation.w,
+                                                                                           collision->origin.rotation.x,
+                                                                                           collision->origin.rotation.y,
+                                                                                           collision->origin.rotation.z).toRotationMatrix();
+                                    Eigen::Vector3d origin_trans(collision->origin.position.x, collision->origin.position.y, collision->origin.position.z);
                                     //do single sphere approximation
                                     auto sphere = std::make_shared<urdf::Sphere>();
                                     sphere->radius = tree.biggest_sphere.R();
                                     //find the corresponding collision in biggest model
-                                    int i = std::find(link_pair.second->collision_array.begin(),
+                                    long i = std::find(link_pair.second->collision_array.begin(),
                                                       link_pair.second->collision_array.end(), collision) -
                                             link_pair.second->collision_array.begin();
+
                                     auto biggest_collision = m_biggest_model->links_[link_pair.first]->collision_array[i];
-                                    biggest_collision->origin.position.x = centroid.x() + tree.biggest_sphere.X();
-                                    biggest_collision->origin.position.y = centroid.y() + tree.biggest_sphere.Y();
-                                    biggest_collision->origin.position.z = centroid.z() + tree.biggest_sphere.Z();
+                                    Eigen::Vector3d rotated_vec = original_rotation * (centroid + tree.biggest_sphere.getData().head(3));
+                                    biggest_collision->origin.position.x =  origin_trans.x() + rotated_vec.x();
+                                    biggest_collision->origin.position.y =  origin_trans.y() + rotated_vec.y();
+                                    biggest_collision->origin.position.z =  origin_trans.z() + rotated_vec.z();
                                     biggest_collision->origin.rotation.clear();
                                     biggest_collision->geometry = sphere;
                                     link_json["BiggestSphere"] = std::vector<double>{biggest_collision->origin.position.x,
@@ -207,9 +214,10 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                     auto& spheres_json = link_json["SubSpheres"];
                                     for (const SphereTreeMethod::Sphere &sub_sphere: tree.sub_spheres) {
                                         auto sphere_collision = std::make_shared<urdf::Collision>();
-                                        sphere_collision->origin.position.x = centroid.x() + sub_sphere.X();
-                                        sphere_collision->origin.position.y = centroid.y() + sub_sphere.Y();
-                                        sphere_collision->origin.position.z = centroid.z() + sub_sphere.Z();
+                                        rotated_vec = original_rotation * (centroid + sub_sphere.getData().head(3));
+                                        sphere_collision->origin.position.x =  origin_trans.x() + rotated_vec.x();
+                                        sphere_collision->origin.position.y =  origin_trans.y() + rotated_vec.y();
+                                        sphere_collision->origin.position.z =  origin_trans.z() + rotated_vec.z();
                                         sphere_collision->origin.rotation.clear();
                                         sphere = std::make_shared<urdf::Sphere>();
                                         sphere->radius = std::abs(sub_sphere.R());
