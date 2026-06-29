@@ -17,8 +17,11 @@
  */
 
 #include <cmath>
+#include <fstream>
 #include <gtest/gtest.h>
 #include "CapsuleFitter.h"
+#include "CapsuleURDFGenerator.h"
+#include "irmv/third_party/json.hpp"
 
 using namespace urdf_approx_geom;
 
@@ -72,6 +75,31 @@ TEST(CapsuleFit, SphereShellIsCovered) {
     for (int i = 0; i < V.rows(); ++i)
         EXPECT_LE(pointToSegmentDistance(V.row(i).transpose(), c.p0, c.p1),
                   c.radius + 1e-9);
+}
+
+// End-to-end: run CapsuleURDFGenerator on FR3 and verify the JSON sidecar
+// carries valid per-link capsule params (p0, p1, radius > 0) in link frame.
+TEST(CapsuleRun, FR3EmitsJsonSidecar) {
+    CapsuleURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) +
+                           "/capsule/capsuleConfig.yml");
+    auto ret = g.run("/workspace/resources/fr3/urdf/fr3.urdf",
+                     "/workspace/resources/fr3/urdf/fr3_capsuleized.urdf", {});
+    ASSERT_TRUE(ret.isOk()) << ret.message();
+
+    std::ifstream f("/workspace/resources/fr3/urdf/fr3_capsuleized.json");
+    ASSERT_TRUE(f.good()) << "JSON sidecar not written";
+    nlohmann::json j;
+    f >> j;
+    ASSERT_FALSE(j.empty()) << "no links in JSON";
+    for (auto& [link, body] : j.items()) {
+        ASSERT_TRUE(body.contains("capsules")) << link << " missing capsules";
+        ASSERT_FALSE(body["capsules"].empty()) << link << " has no capsules";
+        for (auto& cp : body["capsules"]) {
+            EXPECT_EQ(cp["p0"].size(), 3u);
+            EXPECT_EQ(cp["p1"].size(), 3u);
+            EXPECT_GT(cp["radius"].get<double>(), 0.0);
+        }
+    }
 }
 
 int main(int argc, char** argv) {

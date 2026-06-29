@@ -129,6 +129,7 @@ add_library(${PROJECT_NAME}
         src/SphereTreeURDFGenerator.cpp
         src/ConvexHullCollisionURDFGenerator.cpp
         src/CapsuleFitter.cpp
+        src/CapsuleURDFGenerator.cpp
         src/URDFGenerator.cpp
 )
 # link irmv package and/or other packages

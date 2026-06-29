@@ -1,0 +1,3 @@
+# Covering-capsule fit knobs.
+MaxCapsulesPerLink: 2     # adaptive split ceiling per link (1 = strict single capsule/link).
+SplitVolumeRatio: 5.0     # if capsule-volume / mesh-convex-hull-volume > this, split along axis.
