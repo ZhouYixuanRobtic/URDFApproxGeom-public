@@ -1,0 +1,16 @@
+[project]
+name = "urdf-approx-geom"
+version = "1.4"
+description = "URDF collision-geometry approximator (sphere-tree / convex / capsule) — Python bindings + CLI"
+requires-python = ">=3.10"
+authors = [{ name = "YX.E.Z", email = "yixuanzhou@sjtu.edu.cn" }]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+# The `urdf_approx_geom` extension is built by CMake, not pip:
+#   cmake -B build -DCOMPILE_URDFApproxGeom_PYBINDING=ON && cmake --build build --target urdf_approx_geom
+# It lands in build/python/ and is auto-added to sys.path by conftest.py.
+[tool.urdf-approx-geom]
+extension_build_path = "build/python"
