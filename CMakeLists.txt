@@ -145,8 +145,10 @@ endif ()
 
 #add_subdirectory(benchmark)
 
-#add interface for outside user and python user
-#add_subdirectory(interface)
+# Python bindings (pybind11); enabled with -DCOMPILE_${PROJECT_NAME}_PYBINDING=ON
+if (COMPILE_${PROJECT_NAME}_PYBINDING)
+    add_subdirectory(interface)
+endif ()
 
 # debug for address and undefined behavior sanitizer
 if (ENABLE_SANITIZER AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
