@@ -63,8 +63,8 @@ protected:
 public:
 
 protected:
-    std::string resourcePath = SpherizedURDFGenerator_RESOURCE_PATH;
-    std::string configPath = SpherizedURDFGenerator_CONFIG_PATH;
+    std::string resourcePath = URDFApproxGeom_RESOURCE_PATH;
+    std::string configPath = URDFApproxGeom_CONFIG_PATH;
     std::shared_ptr<ConvexHullCollisionURDFGenerator> convex_generator;
     std::shared_ptr<SphereTreeURDFGenerator> spherized_generator;
 };

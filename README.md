@@ -1,5 +1,5 @@
-# SpherizedURDFGenerator
-An automatic C++ only tool for generating spherized / convex version of collision geometry and write URDF automatically. 
+# URDFApproxGeom
+An automatic C++ tool for generating three collision-geometry representations — **sphere-tree** / **convex hull** / **capsule** — from a mesh-based URDF, with URDF + JSON output and Python bindings.
 
 # Introduction
 

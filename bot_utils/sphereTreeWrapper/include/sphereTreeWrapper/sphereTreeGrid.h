@@ -42,8 +42,8 @@
 
  */
 
-#ifndef SPHERIZEDURDFGENERATOR_SPHERETREEGRID_HPP
-#define SPHERIZEDURDFGENERATOR_SPHERETREEGRID_HPP
+#ifndef URDFAPPROXGEOM_SPHERETREEGRID_HPP
+#define URDFAPPROXGEOM_SPHERETREEGRID_HPP
 
 #include "sphereTreeBase.h"
 #include "irmv/bot_common/alg_factory/algorithm_factory.h"
@@ -75,4 +75,4 @@ namespace SphereTreeMethod {
                                           const std::string&);
 }
 
-#endif //SPHERIZEDURDFGENERATOR_SPHERETREEGRID_HPP
+#endif //URDFAPPROXGEOM_SPHERETREEGRID_HPP

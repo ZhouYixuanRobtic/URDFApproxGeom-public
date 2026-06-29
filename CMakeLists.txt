@@ -13,11 +13,11 @@ set(PROJECT_SO_VERSION 1)
 # Set the author and email
 set(AUTHOR "YX.E.Z")
 set(AUTHOR_EMAIL "yixuanzhou@sjtu.edu.cn")
-set(PACKAGE_DESCRIPTION "IRMV Spherized URDF Generator")
+set(PACKAGE_DESCRIPTION "IRMV URDF Approximated Collision-Geometry Generator")
 
 # Set the project name and language
 project(
-        SpherizedURDFGenerator
+        URDFApproxGeom
         VERSION ${PROJECT_VERSION}
         DESCRIPTION ${PACKAGE_DESCRIPTION}
         LANGUAGES CXX C)
@@ -137,6 +137,7 @@ add_subdirectory(app)
 
 # add test
 if (ENABLE_TEST)
+    enable_testing()
     add_subdirectory(test)
 endif ()
 

@@ -51,7 +51,7 @@
 
 int main(int argc, char *argv[]) {
     // Initialize logger
-    irmv_core::logging::SingletonLogger::getInstance().initialize("SpherizedURDFGenerator");
+    irmv_core::logging::SingletonLogger::getInstance().initialize("URDFApproxGeom");
     if (argc < 3) {
         IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...]", argv[0]);
         return 1;

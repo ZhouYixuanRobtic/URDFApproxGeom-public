@@ -106,7 +106,7 @@ public:
     }
 
 protected:
-    std::string resourcePath =  SpherizedURDFGenerator_RESOURCE_PATH;
+    std::string resourcePath =  URDFApproxGeom_RESOURCE_PATH;
 };
 
 

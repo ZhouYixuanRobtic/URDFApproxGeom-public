@@ -42,8 +42,8 @@
 
  */
 
-#ifndef SPHERIZEDURDFGENERATOR_SPHERETREEBASE_H
-#define SPHERIZEDURDFGENERATOR_SPHERETREEBASE_H
+#ifndef URDFAPPROXGEOM_SPHERETREEBASE_H
+#define URDFAPPROXGEOM_SPHERETREEBASE_H
 
 #include "irmv/bot_common/state/error_code.h"
 #include <memory>
@@ -138,4 +138,4 @@ namespace SphereTreeMethod {
     typedef std::unique_ptr<SphereTreeMethodBase> SphereTreeUniquePtr;
 }
 
-#endif //SPHERIZEDURDFGENERATOR_SPHERETREEBASE_H
+#endif //URDFAPPROXGEOM_SPHERETREEBASE_H

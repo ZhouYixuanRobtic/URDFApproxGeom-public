@@ -42,8 +42,8 @@
 
  */
 
-#ifndef SPHERIZEDURDFGENERATOR_SPHERETREEOCTREE_H
-#define SPHERIZEDURDFGENERATOR_SPHERETREEOCTREE_H
+#ifndef URDFAPPROXGEOM_SPHERETREEOCTREE_H
+#define URDFAPPROXGEOM_SPHERETREEOCTREE_H
 
 
 #include "sphereTreeBase.h"
@@ -73,4 +73,4 @@ namespace SphereTreeMethod {
                                           const std::string&);
 }
 
-#endif //SPHERIZEDURDFGENERATOR_SPHERETREEOCTREE_H
+#endif //URDFAPPROXGEOM_SPHERETREEOCTREE_H

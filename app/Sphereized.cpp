@@ -51,13 +51,13 @@
 
 int main(int argc, char *argv[]) {
     // Initialize logger
-    irmv_core::logging::SingletonLogger::getInstance().initialize("SpherizedURDFGenerator");
+    irmv_core::logging::SingletonLogger::getInstance().initialize("URDFApproxGeom");
     if (argc < 4) {
         IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [--simplify <0|1>]", argv[0]);
         return 1;
     }
 
-    std::string configPath = SpherizedURDFGenerator_CONFIG_PATH;
+    std::string configPath = URDFApproxGeom_CONFIG_PATH;
     std::string inputPath;
     std::string outputPath;
     std::vector<std::pair<std::string, std::string>> replacements;
