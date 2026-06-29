@@ -17,6 +17,9 @@ target_link_libraries(test_spheretree PRIVATE GTest::GTest GTest::Main pthread $
 add_executable(test_urdf_genderator test_urdf_genderator.cpp)
 target_link_libraries(test_urdf_genderator PRIVATE GTest::GTest GTest::Main pthread ${PROJECT_NAME} ${Boost_LIBRARIES} sphereTreeWrapper ${irmv_core_LIBRARIES})
 
+add_executable(test_capsule test_capsule.cpp)
+target_link_libraries(test_capsule PRIVATE GTest::GTest GTest::Main pthread ${PROJECT_NAME} ${irmv_core_LIBRARIES})
+
 
 include(GoogleTest)
-gtest_discover_tests(test_manifoldplus test_simplify test_spheretree test_urdf_genderator )
+gtest_discover_tests(test_manifoldplus test_simplify test_spheretree test_urdf_genderator test_capsule)
