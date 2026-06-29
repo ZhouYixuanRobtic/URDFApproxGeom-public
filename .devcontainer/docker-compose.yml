@@ -1,0 +1,32 @@
+services:
+  spherized-dev:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: spherized-development
+    volumes:
+      # Bind-mount the repo for incremental builds / hot edit.
+      - ../:/workspace:cached
+      # Persist VS Code server extensions across rebuilds.
+      - vscode-extensions:/home/irmv/.vscode-server/extensions
+    environment:
+      - CC=gcc
+      - CXX=g++
+      - CMAKE_BUILD_TYPE=Debug
+      - DEBIAN_FRONTEND=noninteractive
+      # Python mirror for mainland China.
+      - PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple/
+      - PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn
+    user: irmv
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    # DNS tuned for mainland China.
+    dns:
+      - 114.114.114.114
+      - 223.5.5.5
+    restart: unless-stopped
+
+volumes:
+  vscode-extensions:
+    driver: local
