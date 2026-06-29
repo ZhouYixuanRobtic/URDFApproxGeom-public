@@ -159,7 +159,7 @@ include(PackageProject)
 myproject_package_project(
         NAME ${PROJECT_NAME}
         VERSION ${PROJECT_VERSION}
-        TARGETS ${THIS_PACKAGE_TARGETS} ${PROJECT_NAME} convex spherized
+        TARGETS ${THIS_PACKAGE_TARGETS} ${PROJECT_NAME} convex spherized capsuleized
         PUBLIC_INCLUDES ${THIS_PACKAGE_INCLUDE_DIRS}
         PUBLIC_DEPENDENCIES ${THIS_PACKAGE_IRMV_DEPENDS} ${THIS_PACKAGE_DEPENDS}
 )

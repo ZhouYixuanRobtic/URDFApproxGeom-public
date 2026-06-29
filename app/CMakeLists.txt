@@ -3,3 +3,6 @@ target_link_libraries(spherized ${PROJECT_NAME} pthread)
 
 add_executable(convex Convex.cpp)
 target_link_libraries(convex ${PROJECT_NAME} pthread)
+
+add_executable(capsuleized Capsuleized.cpp)
+target_link_libraries(capsuleized ${PROJECT_NAME} pthread)
