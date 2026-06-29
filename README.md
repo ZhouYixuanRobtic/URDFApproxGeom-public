@@ -23,6 +23,12 @@ Notice: `cgal::convex_hull()` are used.
 
 ​				<img src="./assets/origin.png" style="zoom:50%;" /><img src="./assets/convex.png" style="zoom:50%;" />
 
+## Capsule
+
+`Capsule` refers to a covering-capsule approximation: one (or a few) capsule primitive(s) per link whose segment follows the mesh's principal axis (PCA) and whose radius is the maximum point-to-segment distance — a conservative (outer) fit, smooth and chart-efficient for collision atlas work.
+
+Because `urdfdom` has no `<capsule>` element, the capsule representation is emitted as a **JSON sidecar** (`<out>.json`): per link, `{ "capsules": [ { "p0": [x,y,z], "p1": [x,y,z], "radius": r }, ... ] }` in link frame. The URDF `<collision>` elements are left as the original meshes. Knobs: `config/capsule/capsuleConfig.yml`.
+
 ## URDF
 
 We only accept `stl` & `obj` file for raw collision meshes; All generated meshes are stored in `obj` file. 
@@ -117,9 +123,45 @@ cd build && ./convex -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value
 
   ​	**An useful replacement pair for ROS is “package:/” “/home/xxx/xxx_ws/src”. ** This will help this program to replace the original “package://yyy/mesh/zzz.stl” into “/home/xxx/xxx_ws/src/yyy/mesh/zzz.stl” to correctly find the mesh file without ROS. Meanwhile, the generated URDF will generate the mesh URL using the original format like “package:/yyy/mesh/zzz.obj”. So it can be directly valid for ROS.
 
+## Capsule
+
+```shell
+cd build && ./capsuleized -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [-c <capsule_config.yml>]
+```
+
+- `-i <input_urdf_path>` / `-o <output_urdf_path>`: input mesh URDF / output URDF (collision left as the original mesh).
+- `-c <capsule_config.yml>`: optional config (defaults to `config/capsule/capsuleConfig.yml`).
+- `-r <key> <value>`: mesh filename replacement pairs (same semantics as `convex`/`spherized`).
+
+The capsule parameters are written to **`<output>.json`** (one entry per link, in link frame).
+
+## Python Bindings
+
+A pybind11 module `urdf_approx_geom` exposes all three modes and an ergonomic `generate()` wrapper + CLI:
+
+```shell
+cmake -B build -DCOMPILE_URDFApproxGeom_PYBINDING=ON
+cmake --build build --target urdf_approx_geom
+```
+
+```python
+from urdf_approx_geom_cli import generate
+generate("capsule",  "fr3.urdf", "fr3_capsuleized.urdf")   # -> fr3_capsuleized.json
+generate("convex",   "fr3.urdf", "fr3_convex.urdf")
+generate("spherized","fr3.urdf", "fr3_spherized.urdf", simplify=True)
+```
+
+```shell
+# CLI (from the repo root, extension auto-discovered from build/python)
+python -m urdf_approx_geom_cli --mode capsule -i fr3.urdf -o fr3_capsuleized.urdf
+```
+
+Tests: `cd python && pytest` (3 tests, extension auto-discovered via `conftest.py`).
+
 ## Parameters Tuning
 
-​	See config files in `config/sphereTree/sphereTreeConfig.yml`
+- Sphere-tree: `config/sphereTree/sphereTreeConfig.yml`
+- Capsule: `config/capsule/capsuleConfig.yml` (`MaxCapsulesPerLink`, `SplitVolumeRatio`)
 
 ## Example
 

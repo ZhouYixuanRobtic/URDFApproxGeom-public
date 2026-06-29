@@ -19,6 +19,9 @@ RUN apt-get update \
         libgmp-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Python test runner for the urdf_approx_geom bindings (pybind11 already in base).
+RUN pip3 install --no-cache-dir pytest
+
 USER irmv
 WORKDIR /workspace
 
