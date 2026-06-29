@@ -46,19 +46,19 @@
 #include <urdf_parser/urdf_parser.h>
 #include <tinyxml2.h>
 #include "URDFGenerator.h"
-#include "irmv/bot_common/log/log.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 #include <fstream>
 #include <igl/readSTL.h>
 #include <igl/readOBJ.h>
 #include <igl/writeOBJ.h>
 #include <set>
 
-bot_common::ErrorInfo
+irmv_core::bot_common::ErrorInfo
 URDFGenerator::loadURDF(const std::string &urdf_path, urdf::ModelInterfaceSharedPtr &robot_model) {
     std::ifstream urdf_file(urdf_path);
     if (!urdf_file.is_open()) {
-        PLOGE << "Could not open URDF file: " << urdf_path;
-        return {bot_common::ErrorCode::Error, "Not valid urdf path"};
+        IRMV_ERROR("Could not open URDF file: {}", urdf_path);
+        return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "Not valid urdf path"};
     }
 
     std::string urdf_xml((std::istreambuf_iterator<char>(urdf_file)),
@@ -67,10 +67,10 @@ URDFGenerator::loadURDF(const std::string &urdf_path, urdf::ModelInterfaceShared
 
     robot_model = urdf::parseURDF(urdf_xml);
     if (!robot_model) {
-        PLOGE << "Error: Failed to parse URDF file " << urdf_path;
-        return {bot_common::ErrorCode::Error, "Not valid urdf file content"};
+        IRMV_ERROR("Error: Failed to parse URDF file {}", urdf_path);
+        return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "Not valid urdf file content"};
     }
-    return bot_common::ErrorInfo::OK();
+    return irmv_core::bot_common::ErrorInfo::ok();
 }
 
 // Function to create an origin element
@@ -228,7 +228,7 @@ void handleVisualOrCollision(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *l
 }
 
 
-bot_common::ErrorInfo
+irmv_core::bot_common::ErrorInfo
 URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfaceSharedPtr &robot_model) {
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLDeclaration *decl = doc.NewDeclaration("xml version=\"1.0\" encoding=\"utf-8\"");
@@ -373,10 +373,10 @@ URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfac
 
     // Save the file
     if (doc.SaveFile(file_path.c_str()) != tinyxml2::XML_SUCCESS) {
-        PLOGE << "Error: Could not write to URDF file: " << file_path;
-        return {bot_common::ErrorCode::Error, "Not valid urdf file path"};
+        IRMV_ERROR("Error: Could not write to URDF file: {}", file_path);
+        return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "Not valid urdf file path"};
     }
-    return bot_common::ErrorInfo::OK();
+    return irmv_core::bot_common::ErrorInfo::ok();
 }
 
 std::string URDFGenerator::toLowerCase(const std::string &str) {
@@ -387,7 +387,7 @@ std::string URDFGenerator::toLowerCase(const std::string &str) {
     return result;
 }
 
-bot_common::ErrorInfo
+irmv_core::bot_common::ErrorInfo
 URDFGenerator::loadedIntoIGL(const std::filesystem::path &filename, Eigen::MatrixXd &V, Eigen::MatrixXi &F,
                              Eigen::MatrixXi &N, bool &alreadyOBJ) {
     const std::string SUFFIX = toLowerCase(filename.extension().string());
@@ -424,19 +424,19 @@ URDFGenerator::loadedIntoIGL(const std::filesystem::path &filename, Eigen::Matri
     auto iter = methods.find(SUFFIX);
     if (iter != methods.end()) {
         if (iter->second(filename, V, F, N, alreadyOBJ)) {
-            return bot_common::ErrorInfo::OK();
+            return irmv_core::bot_common::ErrorInfo::ok();
         } else {
-            return {bot_common::ErrorCode::Error,
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
                     filename.string() + " can not be loaded into igl-type"};
         }
     }
 
-    return {bot_common::ErrorCode::Error,
+    return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
             std::string {"We only support OBJ/STL type but the given file type is "} + SUFFIX  + filename.string()};
 
 }
 
-bot_common::ErrorInfo
+irmv_core::bot_common::ErrorInfo
 URDFGenerator::saveCollisionGeometry(std::filesystem::path &filename, const Eigen::MatrixXd &V,
                                      const Eigen::MatrixXi &F) {
     std::filesystem::path dir = filename.parent_path();
@@ -444,8 +444,8 @@ URDFGenerator::saveCollisionGeometry(std::filesystem::path &filename, const Eige
 
     if (!std::filesystem::exists(collisionDir)) {
         if (!std::filesystem::create_directory(collisionDir)) {
-            PLOGE << "cannot create directory " << collisionDir;
-            return {bot_common::ErrorCode::Error,
+            IRMV_ERROR("cannot create directory {}", collisionDir.string());
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
                     std::string {"Cannot create directory "} + collisionDir.string()};
         }
     }
@@ -455,9 +455,9 @@ URDFGenerator::saveCollisionGeometry(std::filesystem::path &filename, const Eige
     bool write_ret = igl::writeOBJ(filename.string(), V, F);
 
     if (write_ret) {
-        return bot_common::ErrorInfo::OK();
+        return irmv_core::bot_common::ErrorInfo::ok();
     }
-    return {bot_common::ErrorCode::Error,
+    return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
             std::string {"cannot save "} + filename.string()};
 }
 

@@ -61,20 +61,20 @@ protected:
     urdf::ModelInterfaceSharedPtr m_model;
     urdf::ModelInterfaceSharedPtr m_biggest_model;
 public:
-    virtual bot_common::ErrorInfo run(const std::string &urdf_path, const std::string &output_path,
+    virtual irmv_core::bot_common::ErrorInfo run(const std::string &urdf_path, const std::string &output_path,
                                       const std::vector<std::pair<std::string, std::string>>& replace_pairs) = 0;
 
 protected:
-    bot_common::ErrorInfo loadURDF(const std::string &urdf_path, urdf::ModelInterfaceSharedPtr& robot_model);
+    irmv_core::bot_common::ErrorInfo loadURDF(const std::string &urdf_path, urdf::ModelInterfaceSharedPtr& robot_model);
 
-    bot_common::ErrorInfo writeURDF(const std::string& output_path, const urdf::ModelInterfaceSharedPtr& robot_mode);
+    irmv_core::bot_common::ErrorInfo writeURDF(const std::string& output_path, const urdf::ModelInterfaceSharedPtr& robot_mode);
 
     std::string toLowerCase(const std::string &str);
 
-    bot_common::ErrorInfo loadedIntoIGL( const std::filesystem::path &file_path, Eigen::MatrixXd &V, Eigen::MatrixXi &F,
+    irmv_core::bot_common::ErrorInfo loadedIntoIGL( const std::filesystem::path &file_path, Eigen::MatrixXd &V, Eigen::MatrixXi &F,
                                          Eigen::MatrixXi &N, bool& alreadyOBJ);
 
-    bot_common::ErrorInfo saveCollisionGeometry(std::filesystem::path& filename, const Eigen::MatrixXd & V,
+    irmv_core::bot_common::ErrorInfo saveCollisionGeometry(std::filesystem::path& filename, const Eigen::MatrixXd & V,
                                                 const Eigen::MatrixXi & F);
 
     static bool replaceWith(std::string &src, const std::string &original, const std::string &now);

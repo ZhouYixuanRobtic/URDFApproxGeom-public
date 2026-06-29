@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.22)
 
 if (NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 17)
@@ -7,7 +7,7 @@ set(CMAKE_C_STANDARD 99)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(PROJECT_VERSION 1.3)
+set(PROJECT_VERSION 1.4)
 set(PROJECT_SO_VERSION 1)
 
 # Set the author and email
@@ -50,7 +50,7 @@ include(Utilities)
 
 # find IRMV packages (NO IRMV DEPENDS)
 set(THIS_PACKAGE_IRMV_DEPENDS
-        "irmv_core 0.4"
+        "irmv_core 1.0"
 )
 prepare_irmv_dependencies("${THIS_PACKAGE_IRMV_DEPENDS}" IRMV_PACKAGE_DEPENDS)
 
@@ -77,8 +77,6 @@ prepare_debian_dependencies("${THIS_PACKAGE_BINARY_DEPENDS}" DEBIAN_PACKAGE_DEPE
 
 # add definitions
 # common definitions
-add_definitions(-DPLOG_CAPTURE_FILE)
-add_definitions(-DFMT_HEADER_ONLY)
 add_definitions(-D${PROJECT_NAME}_RESOURCE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources")
 add_definitions(-D${PROJECT_NAME}_CONFIG_PATH="${CMAKE_CURRENT_SOURCE_DIR}/config")
 

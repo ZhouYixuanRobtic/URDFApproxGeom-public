@@ -46,7 +46,7 @@
 #include <ctime>  // clock_t, clock, CLOCKS_PER_SEC
 #include <gtest/gtest.h>
 #include <filesystem>
-#include <iostream>
+#include "irmv/bot_common/log/singleton_logger.h"
 #include <vector>
 #include <string>
 #include <igl/copyleft/cgal/convex_hull.h>
@@ -78,7 +78,7 @@ public:
                            std::vector<std::string> &results) {
         namespace fs = std::filesystem;
         if (!fs::exists(directory_path) || !fs::is_directory(directory_path)) {
-            std::cerr << "Directory does not exist or is not a directory: " << directory_path << std::endl;
+            IRMV_ERROR("Directory does not exist or is not a directory: {}", directory_path.string());
             return;
         }
 
@@ -90,9 +90,9 @@ public:
                 }
             }
         } catch (const fs::filesystem_error &e) {
-            std::cerr << "Filesystem error: " << e.what() << std::endl;
+            IRMV_ERROR("Filesystem error: {}", e.what());
         } catch (const std::exception &e) {
-            std::cerr << "General error: " << e.what() << std::endl;
+            IRMV_ERROR("General error: {}", e.what());
         }
     }
 
@@ -132,9 +132,9 @@ TEST_F(SimplifyTest, CVHTest) {
         replaceWith(output_path, "/visual", "/collision/simple");
         replaceWith(output_path, ".stl", ".obj");
         if (!igl::writeOBJ(output_path, CH_V, CH_F)) {
-            std::cerr << "Error: Unable to write OBJ file to " << stlFile << std::endl;
+            IRMV_ERROR("Error: Unable to write OBJ file to {}", stlFile);
         } else
-            std::cout << "Success: write watertight OBJ file for " << stlFile << std::endl;
+            IRMV_INFO("Success: write watertight OBJ file for {}", stlFile);
 
     }
 }

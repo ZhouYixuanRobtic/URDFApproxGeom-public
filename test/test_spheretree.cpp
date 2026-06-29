@@ -46,6 +46,7 @@
 #include <ctime>  // clock_t, clock, CLOCKS_PER_SEC
 #include <gtest/gtest.h>
 #include <filesystem>
+#include "irmv/bot_common/log/singleton_logger.h"
 #include "sphereTreeWrapper/sphereTreeBase.h"
 #include "sphereTreeWrapper/sphereTreeSpawn.h"
 #include "sphereTreeWrapper/sphereTreeOctree.h"
@@ -74,9 +75,9 @@ public:
                 }
             }
         } catch (const fs::filesystem_error &e) {
-            std::cerr << "Filesystem error: " << e.what() << std::endl;
+            IRMV_ERROR("Filesystem error: {}", e.what());
         } catch (const std::exception &e) {
-            std::cerr << "General error: " << e.what() << std::endl;
+            IRMV_ERROR("General error: {}", e.what());
         }
     }
 
@@ -104,8 +105,8 @@ TEST_F(SphereTreeTest, MedialTest) {
     const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(meshPath, tree);
-    std::cout<<ret.error_msg()<<std::endl;
-    ASSERT_TRUE(ret.IsOK());
+    IRMV_INFO("{}", ret.message());
+    ASSERT_TRUE(ret.isOk());
 }
 
 TEST_F(SphereTreeTest, GridTest) {
@@ -116,8 +117,8 @@ TEST_F(SphereTreeTest, GridTest) {
     const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
-    std::cout<<ret.error_msg()<<std::endl;
-    ASSERT_TRUE(ret.IsOK());
+    IRMV_INFO("{}", ret.message());
+    ASSERT_TRUE(ret.isOk());
 }
 
 TEST_F(SphereTreeTest, SpawnTest) {
@@ -128,8 +129,8 @@ TEST_F(SphereTreeTest, SpawnTest) {
     const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
-    std::cout<<ret.error_msg()<<std::endl;
-    ASSERT_TRUE(ret.IsOK());
+    IRMV_INFO("{}", ret.message());
+    ASSERT_TRUE(ret.isOk());
 }
 
 
@@ -141,8 +142,8 @@ TEST_F(SphereTreeTest, HubbardTest) {
     const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
-    std::cout<<ret.error_msg()<<std::endl;
-    ASSERT_TRUE(ret.IsOK());
+    IRMV_INFO("{}", ret.message());
+    ASSERT_TRUE(ret.isOk());
 }
 
 TEST_F(SphereTreeTest, OctreeTest) {
@@ -153,8 +154,8 @@ TEST_F(SphereTreeTest, OctreeTest) {
     const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
-    std::cout<<ret.error_msg()<<std::endl;
-    ASSERT_TRUE(ret.IsOK());
+    IRMV_INFO("{}", ret.message());
+    ASSERT_TRUE(ret.isOk());
 }
 
 int main(int argc, char **argv) {

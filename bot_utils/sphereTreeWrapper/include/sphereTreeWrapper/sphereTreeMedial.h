@@ -60,7 +60,7 @@ namespace SphereTreeMethod {
 
         static SphereTreeUniquePtr create(const std::string &config_path);
 
-        bot_common::ErrorInfo constructTree(Surface &sur, MySphereTree& tree) override;
+        irmv_core::bot_common::ErrorInfo constructTree(Surface &sur, MySphereTree& tree) override;
 
     protected:
         int testerLevels = -1;      ///<  number of levels for NON-CONVEX, -1 uses CONVEX tester
@@ -83,7 +83,7 @@ namespace SphereTreeMethod {
 
     };
 
-    inline bot_common::REGISTER_ALGORITHM(SphereTreeMethodBase, SphereTreeMethodMedialName, SphereTreeMethodMedial,
+    inline irmv_core::bot_common::REGISTER_ALGORITHM(SphereTreeMethodBase, SphereTreeMethodMedialName, SphereTreeMethodMedial,
                                           const std::string&);
 }
 

@@ -6,6 +6,6 @@ add_library(${BOT_LIB_NAME} ${COMPILE_TYPE}
 )
 set_target_properties(${BOT_LIB_NAME} PROPERTIES VERSION "${${PROJECT_NAME}_VERSION}")
 
-target_link_libraries(${BOT_LIB_NAME} STG yaml-cpp)
+target_link_libraries(${BOT_LIB_NAME} STG yaml-cpp ${irmv_core_LIBRARIES})
 
 set_target_properties(${BOT_LIB_NAME} PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_SO_VERSION})

@@ -60,7 +60,7 @@ namespace SphereTreeMethod {
 
         static SphereTreeUniquePtr create(const std::string &config_path);
 
-        bot_common::ErrorInfo constructTree(Surface &sur, MySphereTree& tree) override;
+        irmv_core::bot_common::ErrorInfo constructTree(Surface &sur, MySphereTree& tree) override;
 
     protected:
         int depth = 3;              ///<  depth of the sphere-tree
@@ -69,7 +69,7 @@ namespace SphereTreeMethod {
         bool eval = false;          ///<  do we evaluate the sphere-tree after construction
     };
 
-    inline bot_common::REGISTER_ALGORITHM(SphereTreeMethodBase, SphereTreeMethodOctreeName, SphereTreeMethodOctree,
+    inline irmv_core::bot_common::REGISTER_ALGORITHM(SphereTreeMethodBase, SphereTreeMethodOctreeName, SphereTreeMethodOctree,
                                           const std::string&);
 }
 

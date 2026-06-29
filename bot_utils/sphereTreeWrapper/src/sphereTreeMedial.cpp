@@ -44,7 +44,7 @@
 
 #include "sphereTreeWrapper/sphereTreeMedial.h"
 #include "yaml-cpp/yaml.h"
-#include "irmv/bot_common/log/log.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 #include "Surface/Surface.h"
 #include "Surface/OBJLoader.h"
 #include "API/MSGrid.h"
@@ -72,7 +72,7 @@ namespace SphereTreeMethod {
         try {
             v = node[name].as<T>();
         } catch (std::exception &e) {
-            PLOGW << "Yaml exception " << e.what();
+            IRMV_WARN("Yaml exception {}", e.what());
             v = defaultValue;
         }
         return v;
@@ -107,11 +107,11 @@ namespace SphereTreeMethod {
     }
 
     SphereTreeUniquePtr SphereTreeMethodMedial::create(const std::string &config_path) {
-        return bot_common::AlgorithmFactory<SphereTreeMethodBase, const std::string &>::CreateAlgorithm(
+        return irmv_core::bot_common::AlgorithmFactory<SphereTreeMethodBase, const std::string &>::CreateAlgorithm(
                 SphereTreeMethodMedialName, config_path);
     }
 
-    bot_common::ErrorInfo SphereTreeMethodMedial::constructTree(Surface &sur, MySphereTree &tree) {
+    irmv_core::bot_common::ErrorInfo SphereTreeMethodMedial::constructTree(Surface &sur, MySphereTree &tree) {
         float boxScale = sur.fitIntoBox(1000);
         MedialTester mt;
         mt.setSurface(sur);
@@ -129,14 +129,14 @@ namespace SphereTreeMethod {
             SSIsohedron::generateSamples(&sphPts, testerLevels - 1);
             sphEval.setup(mt, sphPts);
             eval_ = &sphEval;
-            PLOGI << "Using concave tester " << sphPts.getSize();
+            IRMV_INFO("Using concave tester {}", sphPts.getSize());
         }
 
         /*
             verify model
         */
         if (verify && !verifyModel(sur)) {
-            return {bot_common::ErrorCode::Error, "model is not usable"};
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "model is not usable"};
         }
 
         /*
@@ -144,7 +144,7 @@ namespace SphereTreeMethod {
         */
         Array<Surface::Point> coverPts;
         MSGrid::generateSamples(&coverPts, numCoverPts, sur, TRUE, minCoverPts);
-        PLOGD << coverPts.getSize() << "cover points";
+        IRMV_DEBUG("{} cover points", coverPts.getSize());
 
         /*
            Setup voronoi diagram
@@ -280,7 +280,7 @@ namespace SphereTreeMethod {
 
         treegen.constructTree(&m_tree);
         tree.setBySphereTree(m_tree, 1.0 / boxScale);
-        return bot_common::ErrorInfo::OK();
+        return irmv_core::bot_common::ErrorInfo::ok();
     }
 
 

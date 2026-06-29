@@ -50,7 +50,7 @@
 #include <igl/copyleft/cgal/convex_hull.h>
 #include <igl/moments.h>
 
-#include "irmv/bot_common/log/log.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 
 ConvexHullCollisionURDFGenerator::ConvexHullCollisionURDFGenerator() : URDFGenerator() {
     m_model = std::make_shared<urdf::ModelInterface>();
@@ -61,17 +61,17 @@ ConvexHullCollisionURDFGenerator::~ConvexHullCollisionURDFGenerator() {
     m_model = nullptr;
 }
 
-bot_common::ErrorInfo
+irmv_core::bot_common::ErrorInfo
 ConvexHullCollisionURDFGenerator::run(const std::string &urdf_path, const std::string &output_path,
                                       const std::vector<std::pair<std::string, std::string>>& replace_pairs) {
     auto ret = loadURDF(urdf_path, m_model);
-    if(!ret.IsOK()){
-        PLOGE<<ret.error_msg();
+    if(!ret.isOk()){
+        IRMV_ERROR("{}", ret.message());
         return ret;
     }
     for (auto &link_pair: m_model->links_) {
         if(link_pair.second->collision_array.size() > 1){
-            return {bot_common::ErrorCode::Error, "We only accept one collision mesh"};
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "We only accept one collision mesh"};
         }else{
             auto& collision = link_pair.second->collision;
             if(collision != nullptr){
@@ -87,8 +87,8 @@ ConvexHullCollisionURDFGenerator::run(const std::string &urdf_path, const std::s
                         Eigen::MatrixXi F, N;
                         bool alreadyOBJ = false;
                         ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
-                        if (!ret.IsOK()) {
-                            PLOGE << ret.error_msg();
+                        if (!ret.isOk()) {
+                            IRMV_ERROR("{}", ret.message());
                             return ret;
                         } else {
                             Eigen::MatrixXd CH_V;
@@ -97,8 +97,8 @@ ConvexHullCollisionURDFGenerator::run(const std::string &urdf_path, const std::s
                             igl::copyleft::cgal::convex_hull(V, CH_V, CH_F);
 
                             ret = saveCollisionGeometry(filename, CH_V, CH_F);
-                            if (!ret.IsOK()) {
-                                PLOGE << ret.error_msg();
+                            if (!ret.isOk()) {
+                                IRMV_ERROR("{}", ret.message());
                                 return ret;
                             }else{
                                 // compute inertia and write collision into URDF

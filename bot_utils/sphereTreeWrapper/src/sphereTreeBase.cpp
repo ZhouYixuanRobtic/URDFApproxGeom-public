@@ -140,21 +140,21 @@ namespace SphereTreeMethod {
         sur->stitchTriangles();
     }
 
-    bot_common::ErrorInfo
+    irmv_core::bot_common::ErrorInfo
     SphereTreeMethodBase::constructTree(const std::string &file, SphereTreeMethod::MySphereTree &tree) {
         if (file.size() > 4 && file.substr(file.size() - 4) == ".obj") {
             Surface sur;
 
             bool loaded = loadOBJ(&sur, file.c_str());
             if (!loaded) {
-                return {bot_common::ErrorCode::Error, file + " cannot be loaded"};
+                return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, file + " cannot be loaded"};
             }
             return constructTree(sur, tree);
         } else
-            return {bot_common::ErrorCode::Error, file + "is invalid file. Only OBJ file is supported"};
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, file + "is invalid file. Only OBJ file is supported"};
     }
 
-    bot_common::ErrorInfo SphereTreeMethodBase::constructTree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+    irmv_core::bot_common::ErrorInfo SphereTreeMethodBase::constructTree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
                                                               SphereTreeMethod::MySphereTree &tree) {
         Surface sur;
         loadOBJFromEigen(&sur, V, F);

@@ -54,7 +54,7 @@
 #include <vector>
 #include <string>
 #include <igl/decimate.h>
-#include "irmv/bot_common/log/log.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 #include "irmv/third_party/json.hpp"
 #include "ManifoldPlus/Manifold.h"
 #include <future>
@@ -74,29 +74,29 @@ SphereTreeURDFGenerator::~SphereTreeURDFGenerator() {
 
 }
 
-bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path, const std::string &output_path,
+irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path, const std::string &output_path,
                                                    const std::vector<std::pair<std::string, std::string>> &replace_pairs) {
 
     auto ret = loadURDF(urdf_path, m_model);
-    if (!ret.IsOK()) {
-        PLOGE << ret.error_msg();
+    if (!ret.isOk()) {
+        IRMV_ERROR("{}", ret.message());
         return ret;
     }
-    std::cout << "Got " << m_model->links_.size() << " links to process" << std::endl;
+    IRMV_INFO("Got {} links to process", m_model->links_.size());
     //do deep copy
     loadURDF(urdf_path, m_biggest_model);
 
 // Inside SphereTreeURDFGenerator::run
-    std::vector<std::future<bot_common::ErrorInfo>> futures;
+    std::vector<std::future<irmv_core::bot_common::ErrorInfo>> futures;
     int link_count = 0;
     //json
     nlohmann::json json;
     for (auto &link_pair: m_model->links_) {
         json[link_pair.first] = nlohmann::json();
         auto& link_json = json[link_pair.first];
-        futures.emplace_back(std::async(std::launch::async, [this, &link_pair, &replace_pairs, &link_count, &link_json]() -> bot_common::ErrorInfo {
+        futures.emplace_back(std::async(std::launch::async, [this, &link_pair, &replace_pairs, &link_count, &link_json]() -> irmv_core::bot_common::ErrorInfo {
             if (link_pair.second->collision_array.size() > 1) {
-                return {bot_common::ErrorCode::Error, "We only accept one collision mesh"};
+                return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "We only accept one collision mesh"};
             } else {
                 auto &collision = link_pair.second->collision;
 
@@ -115,19 +115,16 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                             MatrixI OUT_F;
                             bool alreadyOBJ = false;
                             auto ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
-                            if (!ret.IsOK()) {
-                                PLOGE << ret.error_msg();
+                            if (!ret.isOk()) {
+                                IRMV_ERROR("{}", ret.message());
                                 return ret;
                             } else {
                                 //do manifold watertight process
-                                std::cout << "-------------------Start Processing Watertight Manifold----------------"
-                                          << std::endl;
+                                IRMV_INFO("-------------------Start Processing Watertight Manifold----------------");
                                 auto m_manifold = std::make_unique<Manifold>();
                                 m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
-                                std::cout << "Got " << OUT_F.rows() << " faces after watertight manifold processing"
-                                          << std::endl;
-                                std::cout << "-------------------End Processing Watertight Manifold----------------"
-                                          << std::endl;
+                                IRMV_INFO("Got {} faces after watertight manifold processing", OUT_F.rows());
+                                IRMV_INFO("-------------------End Processing Watertight Manifold----------------");
                                 //compute volume;
                                 Eigen::VectorXd vol;
                                 Eigen::MatrixXi T(F.rows(), 4);
@@ -138,11 +135,11 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                 igl::volume(OUT_V, T, vol);
                                 Eigen::Vector3d centroid;
                                 if (doSimplify) {
-                                    std::cout << "-------------------Start Simplify----------------" << std::endl;
+                                    IRMV_INFO("-------------------Start Simplify----------------");
                                     Eigen::VectorXi J;
                                     igl::decimate(OUT_V, OUT_F, static_cast<size_t>(simplify_ratio * (double) OUT_F.rows()), V, F, J);
-                                    std::cout << "Simplify from " << OUT_F.rows() << " to " << F.rows() << std::endl;
-                                    std::cout << "-------------------End Simplify----------------" << std::endl;
+                                    IRMV_INFO("Simplify from {} to {}", OUT_F.rows(), F.rows());
+                                    IRMV_INFO("-------------------End Simplify----------------");
                                 } else {
                                     V = OUT_V;
                                     F = OUT_F;
@@ -152,14 +149,13 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                     centroid(i) = (V.col(i).maxCoeff() + V.col(i).minCoeff()) * 0.5;
                                 }
 
-                                if (!ret.IsOK()) {
-                                    PLOGE << ret.error_msg();
+                                if (!ret.isOk()) {
+                                    IRMV_ERROR("{}", ret.message());
                                     return ret;
                                 } else {
                                     SphereTreeMethod::MySphereTree tree;
                                     //todo: handle construct errors;
-                                    std::cout << "-------------------Start Sphere Tree Approximation for " << link_count++
-                                              << "-th link ----------------" << std::endl;
+                                    IRMV_INFO("-------------------Start Sphere Tree Approximation for {}-th link ----------------", link_count++);
                                     SphereTreeMethod::SphereTreeUniquePtr m_method;
                                     switch (type_) {
                                         case SphereTreeMethod::Grid:
@@ -231,8 +227,7 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                                         }
                                     }
                                     link_pair.second->collision = link_pair.second->collision_array[0];
-                                    std::cout << "-------------------End Sphere Tree Approximation----------------"
-                                              << std::endl;
+                                    IRMV_INFO("-------------------End Sphere Tree Approximation----------------");
                                 }
                             }
                             break;
@@ -242,13 +237,13 @@ bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path,
                     }
                 }
             }
-            return {bot_common::ErrorCode::OK, ""};
+            return {irmv_core::bot_common::ErrorCode::OK, ""};
         }));
     }
 
     for (auto &&future : futures) {
         auto fut_ret = future.get();
-        if (!fut_ret.IsOK()) {
+        if (!fut_ret.isOk()) {
             return fut_ret;
         }
     }

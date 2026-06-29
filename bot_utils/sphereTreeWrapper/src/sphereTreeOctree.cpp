@@ -45,7 +45,7 @@
 
 #include "sphereTreeWrapper/sphereTreeOctree.h"
 #include "yaml-cpp/yaml.h"
-#include "irmv/bot_common/log/log.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 #include "Surface/Surface.h"
 #include "Surface/OBJLoader.h"
 #include "API/STGOctree.h"
@@ -57,7 +57,7 @@ namespace SphereTreeMethod {
         try {
             v = node[name].as<T>();
         } catch (std::exception &e) {
-            PLOGW << "Yaml exception " << e.what();
+            IRMV_WARN("Yaml exception {}", e.what());
             v = defaultValue;
         }
         return v;
@@ -75,11 +75,11 @@ namespace SphereTreeMethod {
     }
 
     SphereTreeUniquePtr SphereTreeMethodOctree::create(const std::string &config_path) {
-        return bot_common::AlgorithmFactory<SphereTreeMethodBase, const std::string &>::CreateAlgorithm(
+        return irmv_core::bot_common::AlgorithmFactory<SphereTreeMethodBase, const std::string &>::CreateAlgorithm(
                 SphereTreeMethodOctreeName, config_path);
     }
 
-    bot_common::ErrorInfo SphereTreeMethodOctree::constructTree(Surface & sur, MySphereTree &tree) {
+    irmv_core::bot_common::ErrorInfo SphereTreeMethodOctree::constructTree(Surface & sur, MySphereTree &tree) {
         /*
                 scale box
             */
@@ -94,6 +94,6 @@ namespace SphereTreeMethod {
 
         treegen.constructTree(&m_tree);
         tree.setBySphereTree(m_tree, 1.0 / boxScale);
-        return bot_common::ErrorInfo::OK();
+        return irmv_core::bot_common::ErrorInfo::ok();
     }
 }

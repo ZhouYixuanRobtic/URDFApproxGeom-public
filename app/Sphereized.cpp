@@ -43,14 +43,17 @@
  */
 
 #include "SphereTreeURDFGenerator.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
 
 int main(int argc, char *argv[]) {
+    // Initialize logger
+    irmv_core::logging::SingletonLogger::getInstance().initialize("SpherizedURDFGenerator");
     if (argc < 4) {
-        std::cerr << "Usage: " << argv[0] << " -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [--simplify <0|1>]" << std::endl;
+        IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [--simplify <0|1>]", argv[0]);
         return 1;
     }
 
@@ -75,14 +78,14 @@ int main(int argc, char *argv[]) {
         }else if (arg == "--simplify" && i + 1 < argc) {
             simplify = std::stoi(argv[++i]);
         } else {
-            std::cerr << "Unknown argument: " << arg << std::endl;
+            IRMV_ERROR("Unknown argument: {}", arg);
             return 1;
         }
     }
 
     // Check if input and output paths are provided
     if (inputPath.empty() || outputPath.empty()) {
-        std::cerr << "Error: Missing input or output path." << std::endl;
+        IRMV_ERROR("Error: Missing input or output path.");
         return 1;
     }
 
@@ -92,7 +95,7 @@ int main(int argc, char *argv[]) {
 
     // Run the generator with the input, output, and replacement pairs
     auto ret = spherized_generator->run(inputPath, outputPath, replacements);
-    std::cout << "Processing " << inputPath << " -> " << outputPath << ": " << ret.error_msg() << std::endl;
+    IRMV_INFO("Processing {} -> {}: {}", inputPath, outputPath, ret.message());
 
     return 0;
 }

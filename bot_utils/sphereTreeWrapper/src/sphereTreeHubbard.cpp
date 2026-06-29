@@ -44,7 +44,7 @@
 
 #include "sphereTreeWrapper/sphereTreeHubbard.h"
 #include "yaml-cpp/yaml.h"
-#include "irmv/bot_common/log/log.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 #include "Surface/Surface.h"
 #include "Surface/OBJLoader.h"
 #include "MedialAxis/Voronoi3D.h"
@@ -61,7 +61,7 @@ namespace SphereTreeMethod {
         try {
             v = node[name].as<T>();
         } catch (std::exception &e) {
-            PLOGW << "Yaml exception " << e.what();
+            IRMV_WARN("Yaml exception {}", e.what());
             v = defaultValue;
         }
         return v;
@@ -81,11 +81,11 @@ namespace SphereTreeMethod {
     }
 
     SphereTreeUniquePtr SphereTreeMethodHubbard::create(const std::string &config_path) {
-        return bot_common::AlgorithmFactory<SphereTreeMethodBase, const std::string &>::CreateAlgorithm(
+        return irmv_core::bot_common::AlgorithmFactory<SphereTreeMethodBase, const std::string &>::CreateAlgorithm(
                 SphereTreeMethodHubbardName, config_path);
     }
 
-    bot_common::ErrorInfo SphereTreeMethodHubbard::constructTree(Surface& sur, MySphereTree &tree) {
+    irmv_core::bot_common::ErrorInfo SphereTreeMethodHubbard::constructTree(Surface& sur, MySphereTree &tree) {
         /*
                 scale box
             */
@@ -103,7 +103,7 @@ namespace SphereTreeMethod {
             verify model
         */
         if (verify && !verifyModel(sur)) {
-            return {bot_common::ErrorCode::Error, "model is not usable"};
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "model is not usable"};
         }
 
         /*
@@ -111,7 +111,7 @@ namespace SphereTreeMethod {
         */
         Array<Surface::Point> samplePts;
         MSGrid::generateSamples(&samplePts, numSamples, sur, TRUE, minSamples);
-        PLOGD << "sample points: " << samplePts.getSize();
+        IRMV_DEBUG("sample points: {}", samplePts.getSize());
 
         //  SurfaceRep coverRep;
         //  coverRep.setup(coverPts);
@@ -144,6 +144,6 @@ namespace SphereTreeMethod {
         m_tree.setupTree(branch, depth + 1);
         tree.setBySphereTree(m_tree, 1.0 / boxScale);
 
-        return bot_common::ErrorInfo::OK();
+        return irmv_core::bot_common::ErrorInfo::ok();
     }
 }

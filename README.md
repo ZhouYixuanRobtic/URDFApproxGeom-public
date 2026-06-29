@@ -58,7 +58,7 @@ The distribution also contains the following sources from other people (all are 
 
 This work is built on the basis of those fantastic works. We thank all the aforementioned open-source project for the help of the implementations.
 
-This work also relies on self-maintained pkg `irmv_core`, users could obtain the newest version from the **release** page in this repo.
+This work also relies on self-maintained pkg `irmv_core` (version >= 1.0), users could obtain the newest version from the **release** page in this repo.
 One can install it with simply
 
 ```shell
@@ -70,16 +70,12 @@ make -j8
 sudo make install
 cd ~ && rm -rf piqp
 
-cd ~ && git clone https://github.com/SergiusTheBest/plog.git
-cd plog && mkdir build
-cd build && cmake ..
-make && sudo make install
-cd ~ && sudo rm -rf ./plog
-
 sudo dpkg -i install irmv_core-xxx--Linux-Release-GNU-9.4.0.deb
 ```
 
 One can simply remove it with `sudo dpkg -r irmv_core`.
+
+**Note**: Starting from version 1.4, this project uses the new logging system from `irmv_core` (spdlog-based) instead of plog. Please ensure you have `irmv_core` version 1.0 or higher installed.
 
 # Compile
 

@@ -45,6 +45,7 @@
 #include <cstdio>
 #include <ctime>  // clock_t, clock, CLOCKS_PER_SEC
 #include <gtest/gtest.h>
+#include "irmv/bot_common/log/singleton_logger.h"
 #include "ConvexHullCollisionURDFGenerator.h"
 #include "SphereTreeURDFGenerator.h"
 
@@ -69,21 +70,17 @@ protected:
 };
 
 TEST_F(URDFGeneratorTest, CVXTest) {
-    auto ret = convex_generator->run("/home/irmv/project/Dual-Description/urdf/robot.urdf",
-                          "/home/irmv/project/Dual-Description/urdf/robot_convex.urdf",{
-                                             {"package://dual_description/", "/home/irmv/project/Dual-Description/"}
-    });
+    auto ret = convex_generator->run("/workspace/resources/fr3/urdf/fr3.urdf",
+                          "/workspace/resources/fr3/urdf/fr3_convex.urdf", {});
 
-    std::cout<<ret.error_msg()<<std::endl;
+    IRMV_INFO("{}", ret.message());
 }
 
 TEST_F(URDFGeneratorTest, STTest) {
-    auto ret = spherized_generator->run("/home/irmv/project/Dual-Description/urdf/robot_convex.urdf",
-                          "/home/irmv/project/Dual-Description/urdf/robot_spherized.urdf",{
-                                             {"package://dual_description/", "/home/irmv/project/Dual-Description/"}
-                                     });
+    auto ret = spherized_generator->run("/workspace/resources/fr3/urdf/fr3_convex.urdf",
+                          "/workspace/resources/fr3/urdf/fr3_spherized.urdf", {});
 
-    std::cout<<ret.error_msg()<<std::endl;
+    IRMV_INFO("{}", ret.message());
 }
 
 int main(int argc, char **argv) {
