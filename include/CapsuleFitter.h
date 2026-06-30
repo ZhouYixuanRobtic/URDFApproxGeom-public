@@ -48,6 +48,10 @@ double pointToSegmentDistance(const Eigen::Vector3d& p,
                               const Eigen::Vector3d& a,
                               const Eigen::Vector3d& b);
 
+/// Remove capsules fully nested inside another (redundant). Coverage-safe: a
+/// nested capsule's region is already covered by the larger one.
+std::vector<Capsule> dedupeNestedCapsules(const std::vector<Capsule>& caps);
+
 /// Sphere-decomposed, mesh-tight capsule fit. The sphere-tree spheres are a
 /// COVERING approximation -- their radii over-cover the real surface (measured
 /// ~1.4x), so a capsule fit to the spheres inherits that fatness. Instead:

@@ -133,6 +133,15 @@ TEST(CapsuleMeshFit, SlabSplits) {
     EXPECT_GE(caps.size(), 2u);
 }
 
+// A small capsule fully inside a big one is redundant -> dropped.
+TEST(CapsuleMeshFit, NestedCapsuleDeduped) {
+    Capsule big{Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(1, 0, 0), 0.1};
+    Capsule small{Eigen::Vector3d(0.4, 0, 0), Eigen::Vector3d(0.6, 0, 0), 0.03};  // inside big
+    Capsule side{Eigen::Vector3d(0, 1, 0), Eigen::Vector3d(1, 1, 0), 0.05};        // disjoint
+    auto out = dedupeNestedCapsules({big, small, side});
+    EXPECT_EQ(out.size(), 2u);  // small dropped
+}
+
 // Every mesh vertex must be covered by some capsule (collision safety).
 TEST(CapsuleMeshFit, AllVerticesCovered) {
     Eigen::MatrixXd V(40, 3);

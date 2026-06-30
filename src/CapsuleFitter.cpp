@@ -290,7 +290,36 @@ void fit_recursive_points(const Eigen::MatrixXd& V, int budget,
     fit_recursive_points(VL, bl, min_cluster_size, fat_split_ratio, out);
     fit_recursive_points(VR, br, min_cluster_size, fat_split_ratio, out);
 }
+    // (dedupe_nested lives in the urdf_approx_geom namespace, below.)
 }  // namespace
+
+// Drop capsules fully nested inside another (a k-means split can leave a small
+// child capsule geographically inside a larger sibling). Safe for coverage: if
+// C is inside D, D already covers every point C did. C is nested in D when both
+// of C's end-spheres lie inside D, i.e. dist(C.endpoint, D.segment)+C.r <= D.r
+// (capsules are convex, so end-spheres inside D => whole C inside D).
+std::vector<Capsule> dedupeNestedCapsules(const std::vector<Capsule>& caps) {
+    std::vector<char> removed(caps.size(), 0);
+    for (size_t i = 0; i < caps.size(); ++i) {
+        if (removed[i]) continue;
+        for (size_t j = 0; j < caps.size(); ++j) {
+            if (i == j) continue;
+            const Capsule& C = caps[i];
+            const Capsule& D = caps[j];
+            if (D.radius < C.radius - 1e-9) continue;  // D must be at least as big
+            double d0 = pointToSegmentDistance(C.p0, D.p0, D.p1);
+            double d1 = pointToSegmentDistance(C.p1, D.p0, D.p1);
+            if (d0 + C.radius <= D.radius + 1e-9 && d1 + C.radius <= D.radius + 1e-9) {
+                removed[i] = 1;
+                break;
+            }
+        }
+    }
+    std::vector<Capsule> out;
+    for (size_t i = 0; i < caps.size(); ++i)
+        if (!removed[i]) out.push_back(caps[i]);
+    return out;
+}
 
 std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
                                          const std::vector<Eigen::Vector3d>& centers,
@@ -336,7 +365,7 @@ std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
         fit_recursive_points(Vc, max_capsules, min_cluster_size, fat_split_ratio, out);
     }
     if (out.empty()) fit_recursive_points(V, max_capsules, min_cluster_size, fat_split_ratio, out);
-    return out;
+    return dedupeNestedCapsules(out);
 }
 
 }  // namespace urdf_approx_geom
