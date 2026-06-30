@@ -202,6 +202,37 @@ TEST(CapsuleXSection, CylinderSectionsAreCircles) {
     }
 }
 
+// ---- Wu2018 COA metric (P2) ----
+
+// Unit square (CCW), side 1 centered at origin.
+static Contour2D unitSquare() {
+    Contour2D c;
+    c.points = {{-0.5, -0.5}, {0.5, -0.5}, {0.5, 0.5}, {-0.5, 0.5}};
+    return c;
+}
+
+// Circle fully inside the polygon -> no outside area.
+TEST(CapsuleCOA, CircleInsidePolygonIsZero) {
+    auto sq = unitSquare();
+    Circle2D c{{0, 0}, 0.3};
+    EXPECT_NEAR(circleOutsideArea(c, sq), 0.0, 1e-6);
+}
+
+// Circle centered in polygon, radius larger than the polygon -> outside area =
+// circle area - polygon area.
+TEST(CapsuleCOA, CircleContainsPolygon) {
+    auto sq = unitSquare();  // area = 1
+    Circle2D c{{0, 0}, 1.0};
+    EXPECT_NEAR(circleOutsideArea(c, sq), M_PI - 1.0, 1e-3);
+}
+
+// Circle disjoint from polygon (center outside) -> full circle area.
+TEST(CapsuleCOA, CircleOutsidePolygon) {
+    auto sq = unitSquare();
+    Circle2D c{{3.0, 0.0}, 0.5};
+    EXPECT_NEAR(circleOutsideArea(c, sq), M_PI * 0.25, 1e-3);
+}
+
 // End-to-end: run CapsuleURDFGenerator on FR3. Verify (a) the JSON sidecar
 // carries valid per-link capsule params, and (b) the output URDF now contains
 // NATIVE <cylinder> + <sphere> primitives (capsule = cylinder + 2 end spheres),
