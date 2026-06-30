@@ -16,10 +16,32 @@ import os
 import sys
 
 import numpy as np
+import trimesh
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FR3_URDF = os.path.join(REPO, "resources/fr3/urdf/fr3.urdf")
 CAPS_JSON = os.path.join(REPO, "resources/fr3/urdf/fr3_capsuleized.json")
+
+
+def build_capsule_mesh(p0, p1, radius, segments=28):
+    """Capsule (cylinder + 2 hemispheres) spanning p0->p1 in world coords."""
+    p0 = np.asarray(p0, dtype=float)
+    p1 = np.asarray(p1, dtype=float)
+    axis = p1 - p0
+    L = float(np.linalg.norm(axis))
+    if L < 1e-9:
+        m = trimesh.creation.uv_sphere(radius=radius)
+        m.apply_translation(p0)
+        return m
+    cyl = trimesh.creation.cylinder(radius=radius, height=L, sections=segments)
+    cap_p = trimesh.creation.uv_sphere(radius=radius); cap_p.apply_translation([0, 0, L / 2.0])
+    cap_n = trimesh.creation.uv_sphere(radius=radius); cap_n.apply_translation([0, 0, -L / 2.0])
+    mesh = trimesh.util.concatenate([cyl, cap_p, cap_n])
+    # mesh axis is +Z; rotate Z onto the segment direction, then translate to midpoint.
+    mat = trimesh.geometry.align_vectors(np.array([0.0, 0, 1.0]), axis / L)
+    mesh.apply_transform(mat)
+    mesh.apply_translation((p0 + p1) / 2.0)
+    return mesh
 
 
 def quat_align_z(direction):
@@ -117,22 +139,22 @@ def main():
             lw_pos, lw_orn = ls[4], ls[5]  # URDF link frame in world
         R = np.array(p.getMatrixFromQuaternion(lw_orn)).reshape(3, 3)
         origin = np.array(lw_pos)
-        for cp in body["capsules"]:
+        for k, cp in enumerate(body["capsules"]):
             p0 = np.array(cp["p0"], dtype=float)
             p1 = np.array(cp["p1"], dtype=float)
             r = float(cp["radius"])
             P0 = origin + R @ p0
             P1 = origin + R @ p1
-            mid = (P0 + P1) / 2.0
-            seg = P1 - P0
-            L = float(np.linalg.norm(seg))
-            orn = quat_align_z(seg)
-            vs = p.createVisualShape(p.GEOM_CAPSULE, radius=r, length=L,
-                                     rgbaColor=[1.0, 0.15, 0.15, 0.55])
+            mesh = build_capsule_mesh(P0, P1, r)
+            obj = f"/tmp/cap_{link}_{k}.obj"
+            mesh.export(obj)
+            vs = p.createVisualShape(p.GEOM_MESH, fileName=obj, meshScale=[1, 1, 1],
+                                     rgbaColor=[1.0, 0.15, 0.15, 0.5])
             p.createMultiBody(baseMass=0, baseVisualShapeIndex=vs,
-                              basePosition=mid.tolist(), baseOrientation=orn)
-            p.addUserDebugText(f"{link} r={r:.3f} L={L:.3f}", mid.tolist(),
-                               textColorRGB=[1, 1, 0], textSize=0.9)
+                              basePosition=[0, 0, 0], baseOrientation=[0, 0, 0, 1])
+            mid = ((P0 + P1) / 2.0).tolist()
+            p.addUserDebugText(f"{link} r={r:.3f} L={float(np.linalg.norm(P1-P0)):.3f}",
+                               mid, textColorRGB=[1, 1, 0], textSize=0.9)
             drawn += 1
 
     print(f"drew {drawn} capsules over {robot=} ({n} joints)")
