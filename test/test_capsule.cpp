@@ -20,6 +20,7 @@
 #include <fstream>
 #include <gtest/gtest.h>
 #include "CapsuleFitter.h"
+#include "CapsuleCrossSection.h"
 #include "CapsuleURDFGenerator.h"
 #include "irmv/third_party/json.hpp"
 
@@ -157,6 +158,47 @@ TEST(CapsuleMeshFit, AllVerticesCovered) {
         for (const auto& cap : caps)
             best = std::min(best, pointToSegmentDistance(V.row(i).transpose(), cap.p0, cap.p1));
         EXPECT_LE(best, Rmax + 1e-9);
+    }
+}
+
+// ---- Wu2018 cross-section extraction (P1) ----
+
+// Build an open cylinder surface (2 rings, side triangles) of radius r, length L.
+static void makeCylinder(double r, double L, int M, Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
+    V.resize(2 * M, 3);
+    for (int ring = 0; ring < 2; ++ring)
+        for (int i = 0; i < M; ++i) {
+            double a = 2.0 * M_PI * i / M;
+            V.row(ring * M + i) << ring * L, r * std::cos(a), r * std::sin(a);
+        }
+    std::vector<Eigen::Vector3i> faces;
+    for (int i = 0; i < M; ++i) {
+        int ni = (i + 1) % M;
+        faces.push_back({i, ni, M + i});
+        faces.push_back({ni, M + ni, M + i});
+    }
+    F.resize(faces.size(), 3);
+    for (size_t i = 0; i < faces.size(); ++i)
+        F.row(i) = faces[i];
+}
+
+// Slicing a cylinder perpendicular to its axis yields circular contours whose
+// radius == the cylinder radius, centered on the axis (2D origin).
+TEST(CapsuleXSection, CylinderSectionsAreCircles) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeCylinder(0.05, 1.0, 24, V, F);
+    auto sections = extractSections(V, F, Eigen::Vector3d::UnitX(), Eigen::Vector3d(0.5, 0, 0), 5);
+    EXPECT_GE(sections.size(), 5u);
+    for (const auto& c : sections) {
+        ASSERT_GE(c.points.size(), 3u);
+        Eigen::Vector2d ctr = Eigen::Vector2d::Zero();
+        for (const auto& p : c.points) ctr += p;
+        ctr /= double(c.points.size());
+        double R = 0.0;
+        for (const auto& p : c.points) R = std::max(R, (p - ctr).norm());
+        EXPECT_NEAR(R, 0.05, 2e-3);       // tight to cylinder radius
+        EXPECT_LT(ctr.norm(), 1e-6);      // centered on axis
     }
 }
 
