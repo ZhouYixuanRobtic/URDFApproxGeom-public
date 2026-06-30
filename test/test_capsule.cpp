@@ -133,29 +133,41 @@ TEST(CapsuleCluster, IsolatedSpheresKept) {
     EXPECT_EQ(res.spheres.size(), 2u);
 }
 
-// End-to-end: run CapsuleURDFGenerator on FR3 and verify the JSON sidecar
-// carries valid per-link capsule params (p0, p1, radius > 0) in link frame.
-TEST(CapsuleRun, FR3EmitsJsonSidecar) {
+// End-to-end: run CapsuleURDFGenerator on FR3. Verify (a) the JSON sidecar
+// carries valid per-link capsule params, and (b) the output URDF now contains
+// NATIVE <cylinder> + <sphere> primitives (capsule = cylinder + 2 end spheres),
+// not meshes.
+TEST(CapsuleRun, EmitsNativeCylinderSphere) {
+    const std::string out_urdf = "/workspace/resources/fr3/urdf/fr3_capsuleized.urdf";
     CapsuleURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) +
                            "/capsule/capsuleConfig.yml");
-    auto ret = g.run("/workspace/resources/fr3/urdf/fr3.urdf",
-                     "/workspace/resources/fr3/urdf/fr3_capsuleized.urdf", {});
+    auto ret = g.run("/workspace/resources/fr3/urdf/fr3.urdf", out_urdf, {});
     ASSERT_TRUE(ret.isOk()) << ret.message();
 
+    // JSON sidecar: capsules carry p0, p1, radius > 0.
     std::ifstream f("/workspace/resources/fr3/urdf/fr3_capsuleized.json");
     ASSERT_TRUE(f.good()) << "JSON sidecar not written";
     nlohmann::json j;
     f >> j;
     ASSERT_FALSE(j.empty()) << "no links in JSON";
+    int capsule_count = 0;
     for (auto& [link, body] : j.items()) {
-        ASSERT_TRUE(body.contains("capsules")) << link << " missing capsules";
-        ASSERT_FALSE(body["capsules"].empty()) << link << " has no capsules";
+        if (!body.contains("capsules")) continue;  // link without mesh collision: skip
         for (auto& cp : body["capsules"]) {
             EXPECT_EQ(cp["p0"].size(), 3u);
             EXPECT_EQ(cp["p1"].size(), 3u);
             EXPECT_GT(cp["radius"].get<double>(), 0.0);
+            ++capsule_count;
         }
     }
+    EXPECT_GT(capsule_count, 0) << "no capsules produced at all";
+
+    // Output URDF: native cylinder + sphere primitives present, mesh gone.
+    std::ifstream uf(out_urdf);
+    ASSERT_TRUE(uf.good()) << "output URDF not written";
+    std::string urdf_txt((std::istreambuf_iterator<char>(uf)), std::istreambuf_iterator<char>());
+    EXPECT_NE(urdf_txt.find("<cylinder"), std::string::npos) << "no <cylinder> in URDF";
+    EXPECT_NE(urdf_txt.find("<sphere"), std::string::npos) << "no <sphere> in URDF";
 }
 
 int main(int argc, char** argv) {

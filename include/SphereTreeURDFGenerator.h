@@ -52,6 +52,7 @@
 #include "URDFGenerator.h"
 #include "sphereTreeWrapper/sphereTreeBase.h"
 #include "ManifoldPlus/Manifold.h"
+#include "irmv/third_party/json.hpp"
 
 class SphereTreeURDFGenerator : public URDFGenerator {
 public:
@@ -64,6 +65,15 @@ protected:
     double simplify_ratio = 0.01;
     SphereTreeMethod::STMethodType type_;
     std::string config_path_;
+    nlohmann::json spheres_json_;  // per-link data, filled by buildSphereModel
+
+    /// In-memory sphere-tree build: loads the URDF, runs watertight manifold +
+    /// sphere tree per mesh link, populates m_model with sub-sphere collisions,
+    /// m_biggest_model with the biggest sphere, and spheres_json_ with the data.
+    /// No file writes -- subclasses (CapsuleURDFGenerator) reuse this and emit
+    /// their own representation.
+    irmv_core::bot_common::ErrorInfo buildSphereModel(const std::string& urdf_path,
+                                       const std::vector<std::pair<std::string, std::string>>& replace_pairs);
 public:
     irmv_core::bot_common::ErrorInfo run(const std::string &urdf_path, const std::string &output_path,
                               const std::vector<std::pair<std::string, std::string>> &replace_pairs) override;

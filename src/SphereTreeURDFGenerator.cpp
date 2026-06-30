@@ -74,7 +74,7 @@ SphereTreeURDFGenerator::~SphereTreeURDFGenerator() {
 
 }
 
-irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path, const std::string &output_path,
+irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(const std::string &urdf_path,
                                                    const std::vector<std::pair<std::string, std::string>> &replace_pairs) {
 
     auto ret = loadURDF(urdf_path, m_model);
@@ -247,11 +247,22 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string 
             return fut_ret;
         }
     }
+    spheres_json_ = std::move(json);
+    return {irmv_core::bot_common::ErrorCode::OK, ""};
+}
+
+irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path, const std::string &output_path,
+                                                   const std::vector<std::pair<std::string, std::string>> &replace_pairs) {
+    auto ret = buildSphereModel(urdf_path, replace_pairs);
+    if (!ret.isOk()) {
+        IRMV_ERROR("{}", ret.message());
+        return ret;
+    }
     //write to json file.
     std::string json_output_path = output_path;
     replaceWith(json_output_path, ".urdf", ".json");
     std::ofstream json_file(json_output_path);
-    json_file << json.dump(4);
+    json_file << spheres_json_.dump(4);
     json_file.close();
     //change xxx.urdf to xxx_spherized.urdf
     std::string biggest_output_path = output_path;
