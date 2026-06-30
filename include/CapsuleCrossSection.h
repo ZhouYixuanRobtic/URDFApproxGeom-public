@@ -72,6 +72,11 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
                                                int max_circles_per_section = 4,
                                                int max_capsules = 6);
 
+/// Grow capsule radii so every vertex is within its nearest capsule
+/// (collision-safe outer fit). Call against the ORIGINAL mesh vertices when the
+/// fit was run on a processed (e.g. watertight) mesh that may differ.
+void growCapsulesToCover(std::vector<Capsule>& caps, const Eigen::MatrixXd& V);
+
 }  // namespace urdf_approx_geom
 
 #endif  // URDFAPPROXGEOM_CAPSULECROSSSECTION_H

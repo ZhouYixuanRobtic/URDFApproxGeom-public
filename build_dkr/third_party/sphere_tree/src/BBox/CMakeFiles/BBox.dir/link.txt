@@ -1,0 +1,2 @@
+/usr/bin/ar qc libBBox.a CMakeFiles/BBox.dir/BBox.cpp.o CMakeFiles/BBox.dir/eigen.cpp.o
+/usr/bin/ranlib libBBox.a

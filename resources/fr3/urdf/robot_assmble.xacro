@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="bot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- property -->
+        <xacro:property name="pi" value="3.14159265358979323846" />
+        <xacro:property name="deg" value = "${pi/180}"/>
+        
+        <xacro:property name="prefix" value="/home/admin1/projects/CFDF/resources/fr3" />
+        <xacro:property name="path" value="/home/admin1/projects/CFDF/resources/fr3" />
+        <!-- include files -->
+        <xacro:include filename="${path}/urdf/fr3.xacro" />
+        <xacro:include filename="${path}/urdf/franka_hand.xacro" />
+
+        <!-- mount left fr3 to world -->
+        <link name="world"/>
+        <xacro:fr3 id="fr3" prefix="${prefix}/meshes" connected_with="world" xyz="0 0 0" rpy="0 0 0"/>
+        <xacro:franka_hand id="hand" prefix="${prefix}/meshes" connected_with="fr3_link8" xyz="0 0 0" rpy="0 0 ${-pi/4}"/>
+</robot>

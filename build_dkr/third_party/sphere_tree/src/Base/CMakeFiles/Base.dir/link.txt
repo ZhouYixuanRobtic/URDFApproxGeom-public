@@ -1,0 +1,2 @@
+/usr/bin/ar qc libBase.a CMakeFiles/Base.dir/ProcMon.cpp.o
+/usr/bin/ranlib libBase.a

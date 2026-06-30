@@ -1,0 +1,2 @@
+/usr/bin/ar qc libpcube.a CMakeFiles/pcube.dir/pcube.cpp.o CMakeFiles/pcube.dir/fpcube.cpp.o
+/usr/bin/ranlib libpcube.a

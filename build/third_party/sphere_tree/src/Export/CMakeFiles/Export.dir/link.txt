@@ -1,0 +1,2 @@
+/usr/bin/ar qc libExport.a CMakeFiles/Export.dir/VRML.cpp.o CMakeFiles/Export.dir/POV.cpp.o
+/usr/bin/ranlib libExport.a

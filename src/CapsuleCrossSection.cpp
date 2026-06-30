@@ -106,6 +106,39 @@ Circle2D mec2d(std::vector<Eigen::Vector2d> P) {
     return C;
 }
 
+// Merge capsules that are collinear, end-to-end, and similar radius (a chain of
+// section-pair capsules along a tube -> one long capsule). Coverage-safe: the
+// merged capsule (max radius, full span) contains both.
+std::vector<Capsule> mergeCollinearCapsules(std::vector<Capsule> caps) {
+    bool changed = true;
+    while (changed) {
+        changed = false;
+        for (size_t i = 0; i < caps.size() && !changed; ++i) {
+            for (size_t j = 0; j < caps.size(); ++j) {
+                if (i == j) continue;
+                Capsule& A = caps[i];
+                Capsule& B = caps[j];
+                double la = (A.p1 - A.p0).norm();
+                double lb = (B.p1 - B.p0).norm();
+                if (la < 1e-9 || lb < 1e-9) continue;            // skip degenerate
+                if (std::abs(A.radius - B.radius) > 0.30 * std::max(A.radius, B.radius)) continue;
+                double gap = (A.p1 - B.p0).norm();               // end-to-end adjacency
+                if (gap > 0.3 * std::max(la, lb)) continue;
+                Eigen::Vector3d axa = (A.p1 - A.p0) / la;
+                Eigen::Vector3d axb = (B.p1 - B.p0) / lb;
+                if (axa.dot(axb) < 0.3) continue;                // grossly non-collinear (L-joint)
+                // orient B to follow A
+                Capsule merged{A.p0, B.p1, std::max(A.radius, B.radius)};
+                caps[i] = merged;
+                caps.erase(caps.begin() + j);
+                changed = true;
+                break;
+            }
+        }
+    }
+    return caps;
+}
+
 // Sample a polygon: subdivided boundary edges + interior grid points.
 std::vector<Eigen::Vector2d> sampleContour(const Contour2D& c, int edgeN = 24, int grid = 24) {
     std::vector<Eigen::Vector2d> pts;
@@ -407,7 +440,7 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
                     used[best] = 1;
                     emit_pair(a, sections[k].t, sec[k + 1][best], sections[k + 1].t);
                 } else {
-                    emit_pair(a, sections[k].t, a, sections[k].t);  // no partner: sphere-cap
+                    emit_pair(a, sections[k].t, a, sections[k].t);  // unpaired: sphere-cap (coverage)
                 }
             }
             for (size_t j = 0; j < sec[k + 1].size(); ++j)
@@ -426,17 +459,11 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         if (std::abs(a1 - tN) < 1e-9) cap.p1 += (amax - tN) * u;
     }
 
+    // Merge collinear chains (a tube's section capsules -> one long capsule).
+    caps = mergeCollinearCapsules(caps);
+
     // Grow to cover: every vertex within its nearest capsule (collision-safe).
-    for (int i = 0; i < V.rows(); ++i) {
-        Eigen::Vector3d p = V.row(i).transpose();
-        int best = -1;
-        double bd = std::numeric_limits<double>::max();
-        for (int c = 0; c < static_cast<int>(caps.size()); ++c) {
-            double d = pointToSegmentDistance(p, caps[c].p0, caps[c].p1);
-            if (d < bd) { bd = d; best = c; }
-        }
-        if (best >= 0 && bd > caps[best].radius) caps[best].radius = bd;
-    }
+    growCapsulesToCover(caps, V);
 
     // Drop capsules fully nested in another.
     caps = dedupeNestedCapsules(caps);
@@ -452,6 +479,20 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         caps.erase(caps.begin() + worst);
     }
     return caps;
+}
+
+void growCapsulesToCover(std::vector<Capsule>& caps, const Eigen::MatrixXd& V) {
+    if (caps.empty() || V.rows() == 0) return;
+    for (int i = 0; i < V.rows(); ++i) {
+        Eigen::Vector3d p = V.row(i).transpose();
+        int best = -1;
+        double bd = std::numeric_limits<double>::max();
+        for (int c = 0; c < static_cast<int>(caps.size()); ++c) {
+            double d = pointToSegmentDistance(p, caps[c].p0, caps[c].p1);
+            if (d < bd) { bd = d; best = c; }
+        }
+        if (best >= 0 && bd > caps[best].radius) caps[best].radius = bd;
+    }
 }
 
 }  // namespace urdf_approx_geom

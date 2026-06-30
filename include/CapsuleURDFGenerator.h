@@ -19,17 +19,16 @@
 #ifndef URDFAPPROXGEOM_CAPSULEURDFGENERATOR_H
 #define URDFAPPROXGEOM_CAPSULEURDFGENERATOR_H
 
-#include "SphereTreeURDFGenerator.h"
+#include "URDFGenerator.h"
 
-/// Sphere-based capsule approximation. Inherits the sphere-tree build from
-/// SphereTreeURDFGenerator (no duplication): run() calls the parent pipeline to
-/// populate m_model with per-link sub-spheres, then post-processes -- clusters
-/// the spheres, fits a covering capsule per cluster, and writes the capsules as
-/// NATIVE URDF primitives (one <cylinder> + two <sphere> end-caps per capsule,
-/// leftover spheres as <sphere>) plus a JSON sidecar of capsule params.
-/// Cylinder+sphere is the URDF-native form of a capsule (loadable in ROS /
-/// pybullet / MuJoCo).
-class CapsuleURDFGenerator : public SphereTreeURDFGenerator {
+/// Wu2018 cross-section capsule approximation. Per link: make the mesh
+/// watertight, slice it into cross-sections perpendicular to its PCA axis,
+/// fit COA-minimized circles per section (Lloyd), link adjacent-section circles
+/// into capsules, grow to cover, and write the capsules as NATIVE URDF
+/// primitives (one <cylinder> + two <sphere> end-caps per capsule) + a JSON
+/// sidecar of capsule params. Cylinder+sphere is the URDF-native form of a
+/// capsule (loadable in ROS / pybullet / MuJoCo).
+class CapsuleURDFGenerator : public URDFGenerator {
 public:
     explicit CapsuleURDFGenerator(const std::string& capsule_config_path);
 
@@ -39,10 +38,11 @@ public:
                                          const std::vector<std::pair<std::string, std::string>>& replace_pairs) override;
 
 private:
-    double cluster_gap_ = 0.02;
-    int min_cluster_size_ = 2;
-    double fat_split_ratio_ = 0.6;
-    int max_capsules_ = 3;
+    std::string config_path_;
+    int n_sections_ = 4;
+    double coa_threshold_ = 0.005;
+    int max_circles_per_section_ = 4;
+    int max_capsules_ = 6;
 };
 
 #endif  // URDFAPPROXGEOM_CAPSULEURDFGENERATOR_H

@@ -1,0 +1,622 @@
+[
+{
+  "directory": "/workspace/build_dkr",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_EXPORTS -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/SpherizedURDFGenerator.dir/src/SphereTreeURDFGenerator.cpp.o -c /workspace/src/SphereTreeURDFGenerator.cpp",
+  "file": "/workspace/src/SphereTreeURDFGenerator.cpp"
+},
+{
+  "directory": "/workspace/build_dkr",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_EXPORTS -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/SpherizedURDFGenerator.dir/src/ConvexHullCollisionURDFGenerator.cpp.o -c /workspace/src/ConvexHullCollisionURDFGenerator.cpp",
+  "file": "/workspace/src/ConvexHullCollisionURDFGenerator.cpp"
+},
+{
+  "directory": "/workspace/build_dkr",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_EXPORTS -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/SpherizedURDFGenerator.dir/src/URDFGenerator.cpp.o -c /workspace/src/URDFGenerator.cpp",
+  "file": "/workspace/src/URDFGenerator.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/ManifoldPlus",
+  "command": "/usr/bin/g++ -DManifoldPlus_EXPORTS -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++17 -o CMakeFiles/ManifoldPlus.dir/src/IO.cc.o -c /workspace/third_party/ManifoldPlus/src/IO.cc",
+  "file": "/workspace/third_party/ManifoldPlus/src/IO.cc"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/ManifoldPlus",
+  "command": "/usr/bin/g++ -DManifoldPlus_EXPORTS -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++17 -o CMakeFiles/ManifoldPlus.dir/src/Intersection.cc.o -c /workspace/third_party/ManifoldPlus/src/Intersection.cc",
+  "file": "/workspace/third_party/ManifoldPlus/src/Intersection.cc"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/ManifoldPlus",
+  "command": "/usr/bin/g++ -DManifoldPlus_EXPORTS -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++17 -o CMakeFiles/ManifoldPlus.dir/src/Manifold.cc.o -c /workspace/third_party/ManifoldPlus/src/Manifold.cc",
+  "file": "/workspace/third_party/ManifoldPlus/src/Manifold.cc"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/ManifoldPlus",
+  "command": "/usr/bin/g++ -DManifoldPlus_EXPORTS -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++17 -o CMakeFiles/ManifoldPlus.dir/src/MeshProjector.cc.o -c /workspace/third_party/ManifoldPlus/src/MeshProjector.cc",
+  "file": "/workspace/third_party/ManifoldPlus/src/MeshProjector.cc"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/ManifoldPlus",
+  "command": "/usr/bin/g++ -DManifoldPlus_EXPORTS -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++17 -o CMakeFiles/ManifoldPlus.dir/src/Octree.cc.o -c /workspace/third_party/ManifoldPlus/src/Octree.cc",
+  "file": "/workspace/third_party/ManifoldPlus/src/Octree.cc"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/ManifoldPlus",
+  "command": "/usr/bin/g++ -DManifoldPlus_EXPORTS -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++17 -o CMakeFiles/ManifoldPlus.dir/src/Parser.cc.o -c /workspace/third_party/ManifoldPlus/src/Parser.cc",
+  "file": "/workspace/third_party/ManifoldPlus/src/Parser.cc"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/ManifoldPlus",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIE -fdiagnostics-color=always -std=c++17 -o CMakeFiles/manifold.dir/main.cc.o -c /workspace/third_party/ManifoldPlus/main.cc",
+  "file": "/workspace/third_party/ManifoldPlus/main.cc"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/STG.dir/src/DecodeParam.cpp.o -c /workspace/third_party/sphere_tree/src/DecodeParam.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/DecodeParam.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/STG.dir/src/VerifyModel.cpp.o -c /workspace/third_party/sphere_tree/src/VerifyModel.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/VerifyModel.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/STG.dir/src/EvalTree.cpp.o -c /workspace/third_party/sphere_tree/src/EvalTree.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/EvalTree.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIE -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++11 -o CMakeFiles/makeTreeMedial.dir/src/makeTreeMedial.cpp.o -c /workspace/third_party/sphere_tree/src/makeTreeMedial.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/makeTreeMedial.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIE -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++11 -o CMakeFiles/makeTreeHubbard.dir/src/makeTreeHubbard.cpp.o -c /workspace/third_party/sphere_tree/src/makeTreeHubbard.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/makeTreeHubbard.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIE -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++11 -o CMakeFiles/makeTreeOctree.dir/src/makeTreeOctree.cpp.o -c /workspace/third_party/sphere_tree/src/makeTreeOctree.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/makeTreeOctree.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIE -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++11 -o CMakeFiles/makeTreeGrid.dir/src/makeTreeGrid.cpp.o -c /workspace/third_party/sphere_tree/src/makeTreeGrid.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/makeTreeGrid.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIE -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++11 -o CMakeFiles/makeTreeSpawn.dir/src/makeTreeSpawn.cpp.o -c /workspace/third_party/sphere_tree/src/makeTreeSpawn.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/makeTreeSpawn.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/DomainSampler.cpp.o -c /workspace/third_party/sphere_tree/src/API/DomainSampler.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/DomainSampler.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/Hybrid.cpp.o -c /workspace/third_party/sphere_tree/src/API/Hybrid.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/Hybrid.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/MSBase.cpp.o -c /workspace/third_party/sphere_tree/src/API/MSBase.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/MSBase.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/MSGrid.cpp.o -c /workspace/third_party/sphere_tree/src/API/MSGrid.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/MSGrid.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/MSRelaxation.cpp.o -c /workspace/third_party/sphere_tree/src/API/MSRelaxation.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/MSRelaxation.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/MergeHubbard.cpp.o -c /workspace/third_party/sphere_tree/src/API/MergeHubbard.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/MergeHubbard.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/REBase.cpp.o -c /workspace/third_party/sphere_tree/src/API/REBase.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/REBase.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/REDiscard.cpp.o -c /workspace/third_party/sphere_tree/src/API/REDiscard.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/REDiscard.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/RELargest.cpp.o -c /workspace/third_party/sphere_tree/src/API/RELargest.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/RELargest.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/RELargestLM.cpp.o -c /workspace/third_party/sphere_tree/src/API/RELargestLM.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/RELargestLM.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/REMaxElim.cpp.o -c /workspace/third_party/sphere_tree/src/API/REMaxElim.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/REMaxElim.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/RESelect.cpp.o -c /workspace/third_party/sphere_tree/src/API/RESelect.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/RESelect.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SEConvex.cpp.o -c /workspace/third_party/sphere_tree/src/API/SEConvex.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SEConvex.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SEPoint.cpp.o -c /workspace/third_party/sphere_tree/src/API/SEPoint.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SEPoint.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SESphPt.cpp.o -c /workspace/third_party/sphere_tree/src/API/SESphPt.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SESphPt.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SFBase.cpp.o -c /workspace/third_party/sphere_tree/src/API/SFBase.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SFBase.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SFMinErr.cpp.o -c /workspace/third_party/sphere_tree/src/API/SFMinErr.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SFMinErr.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SFRitter.cpp.o -c /workspace/third_party/sphere_tree/src/API/SFRitter.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SFRitter.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SFWhite.cpp.o -c /workspace/third_party/sphere_tree/src/API/SFWhite.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SFWhite.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SOBalance.cpp.o -c /workspace/third_party/sphere_tree/src/API/SOBalance.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SOBalance.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SOBase.cpp.o -c /workspace/third_party/sphere_tree/src/API/SOBase.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SOBase.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SOPerSphere.cpp.o -c /workspace/third_party/sphere_tree/src/API/SOPerSphere.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SOPerSphere.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SOSimplex.cpp.o -c /workspace/third_party/sphere_tree/src/API/SOSimplex.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SOSimplex.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SRBurst.cpp.o -c /workspace/third_party/sphere_tree/src/API/SRBurst.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SRBurst.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SRComposite.cpp.o -c /workspace/third_party/sphere_tree/src/API/SRComposite.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SRComposite.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SRExpand.cpp.o -c /workspace/third_party/sphere_tree/src/API/SRExpand.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SRExpand.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SRGrid.cpp.o -c /workspace/third_party/sphere_tree/src/API/SRGrid.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SRGrid.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SRMerge.cpp.o -c /workspace/third_party/sphere_tree/src/API/SRMerge.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SRMerge.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SRQuickBurst.cpp.o -c /workspace/third_party/sphere_tree/src/API/SRQuickBurst.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SRQuickBurst.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SRSpawn.cpp.o -c /workspace/third_party/sphere_tree/src/API/SRSpawn.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SRSpawn.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SRStandOff.cpp.o -c /workspace/third_party/sphere_tree/src/API/SRStandOff.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SRStandOff.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SRVoronoi.cpp.o -c /workspace/third_party/sphere_tree/src/API/SRVoronoi.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SRVoronoi.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SSIsohedron.cpp.o -c /workspace/third_party/sphere_tree/src/API/SSIsohedron.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SSIsohedron.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SSRings.cpp.o -c /workspace/third_party/sphere_tree/src/API/SSRings.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SSRings.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/STGGeneric.cpp.o -c /workspace/third_party/sphere_tree/src/API/STGGeneric.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/STGGeneric.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/STGHubbard.cpp.o -c /workspace/third_party/sphere_tree/src/API/STGHubbard.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/STGHubbard.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/STGOctree.cpp.o -c /workspace/third_party/sphere_tree/src/API/STGOctree.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/STGOctree.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/SurfaceDiv.cpp.o -c /workspace/third_party/sphere_tree/src/API/SurfaceDiv.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SurfaceDiv.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/VFAdaptive.cpp.o -c /workspace/third_party/sphere_tree/src/API/VFAdaptive.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/VFAdaptive.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/API.dir/VFGapCross.cpp.o -c /workspace/third_party/sphere_tree/src/API/VFGapCross.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/VFGapCross.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API/SFWhite",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/SFWhite.dir/ball.cpp.o -c /workspace/third_party/sphere_tree/src/API/SFWhite/ball.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SFWhite/ball.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API/SFWhite",
+  "command": "/usr/bin/gcc -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=gnu99 -o CMakeFiles/SFWhite.dir/complex.c.o -c /workspace/third_party/sphere_tree/src/API/SFWhite/complex.c",
+  "file": "/workspace/third_party/sphere_tree/src/API/SFWhite/complex.c"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API/SFWhite",
+  "command": "/usr/bin/gcc -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=gnu99 -o CMakeFiles/SFWhite.dir/nrutil.c.o -c /workspace/third_party/sphere_tree/src/API/SFWhite/nrutil.c",
+  "file": "/workspace/third_party/sphere_tree/src/API/SFWhite/nrutil.c"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/API/SFWhite",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/SFWhite.dir/svd.cpp.o -c /workspace/third_party/sphere_tree/src/API/SFWhite/svd.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/API/SFWhite/svd.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Base",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Base.dir/ProcMon.cpp.o -c /workspace/third_party/sphere_tree/src/Base/ProcMon.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Base/ProcMon.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/BBox.dir/BBox.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/BBox.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/BBox.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/BBox.dir/eigen.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/eigen.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/eigen.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/MVBB",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/MVBB.dir/gdiam.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/MVBB/gdiam.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/MVBB/gdiam.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/geom.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/geom.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/geom.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/geom2.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/geom2.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/geom2.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/global.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/global.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/global.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/mem.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/mem.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/mem.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/merge.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/merge.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/merge.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/poly.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/poly.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/poly.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/poly2.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/poly2.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/poly2.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/qhull.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/qhull.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/qhull.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/set.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/set.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/set.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/stat.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/stat.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/stat.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/BBox/qHull",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/qHull.dir/user.cpp.o -c /workspace/third_party/sphere_tree/src/BBox/qHull/user.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/BBox/qHull/user.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Exceptions",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Exceptions.dir/ErrorLog.cpp.o -c /workspace/third_party/sphere_tree/src/Exceptions/ErrorLog.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Exceptions/ErrorLog.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Exceptions",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Exceptions.dir/MemoryException.cpp.o -c /workspace/third_party/sphere_tree/src/Exceptions/MemoryException.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Exceptions/MemoryException.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Exceptions",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Exceptions.dir/Exception.cpp.o -c /workspace/third_party/sphere_tree/src/Exceptions/Exception.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Exceptions/Exception.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Circle.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Circle.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Circle.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/CubeTri.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/CubeTri.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/CubeTri.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Line2D.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Line2D.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Line2D.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/LineSeg.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/LineSeg.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/LineSeg.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Plane.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Plane.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Plane.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Point2D.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Point2D.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Point2D.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Point3D.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Point3D.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Point3D.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Sphere.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Sphere.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Sphere.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Transform2D.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Transform2D.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Transform2D.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Transform3D.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Transform3D.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Transform3D.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/TriTri.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/TriTri.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/TriTri.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Vector2D.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Vector2D.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Vector2D.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Vector3D.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Vector3D.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Vector3D.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/gcc -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=gnu99 -o CMakeFiles/Geometry.dir/RayBox.c.o -c /workspace/third_party/sphere_tree/src/Geometry/RayBox.c",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/RayBox.c"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Geometry.dir/Ray.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/Ray.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/Ray.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry/pcube",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/pcube.dir/pcube.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/pcube/pcube.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/pcube/pcube.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Geometry/pcube",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/pcube.dir/fpcube.cpp.o -c /workspace/third_party/sphere_tree/src/Geometry/pcube/fpcube.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Geometry/pcube/fpcube.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/LinearAlgebra",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Matrix.dir/Matrix.cpp.o -c /workspace/third_party/sphere_tree/src/LinearAlgebra/Matrix.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/LinearAlgebra/Matrix.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/MedialAxis",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/MedialAxis.dir/Clusters.cpp.o -c /workspace/third_party/sphere_tree/src/MedialAxis/Clusters.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/MedialAxis/Clusters.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/MedialAxis",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/MedialAxis.dir/MedialTester.cpp.o -c /workspace/third_party/sphere_tree/src/MedialAxis/MedialTester.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/MedialAxis/MedialTester.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/MedialAxis",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/MedialAxis.dir/Voronoi3D.cpp.o -c /workspace/third_party/sphere_tree/src/MedialAxis/Voronoi3D.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/MedialAxis/Voronoi3D.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/MedialAxis",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/MedialAxis.dir/VoronoiFace.cpp.o -c /workspace/third_party/sphere_tree/src/MedialAxis/VoronoiFace.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/MedialAxis/VoronoiFace.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/MinMax",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/MinMax.dir/Simplex.cpp.o -c /workspace/third_party/sphere_tree/src/MinMax/Simplex.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/MinMax/Simplex.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/SphereTree",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/SphereTree.dir/SphereTree.cpp.o -c /workspace/third_party/sphere_tree/src/SphereTree/SphereTree.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/SphereTree/SphereTree.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Storage",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Storage.dir/null.cpp.o -c /workspace/third_party/sphere_tree/src/Storage/null.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Storage/null.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Surface",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Surface.dir/Surface.cpp.o -c /workspace/third_party/sphere_tree/src/Surface/Surface.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Surface/Surface.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Surface",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Surface.dir/SpacialHash.cpp.o -c /workspace/third_party/sphere_tree/src/Surface/SpacialHash.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Surface/SpacialHash.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Surface",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Surface.dir/Internal.cpp.o -c /workspace/third_party/sphere_tree/src/Surface/Internal.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Surface/Internal.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Surface",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Surface.dir/Voxel.cpp.o -c /workspace/third_party/sphere_tree/src/Surface/Voxel.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Surface/Voxel.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Surface",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Surface.dir/SurfaceTester.cpp.o -c /workspace/third_party/sphere_tree/src/Surface/SurfaceTester.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Surface/SurfaceTester.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Surface",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Surface.dir/VolInt.cpp.o -c /workspace/third_party/sphere_tree/src/Surface/VolInt.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Surface/VolInt.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Surface",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Surface.dir/SurfaceRep.cpp.o -c /workspace/third_party/sphere_tree/src/Surface/SurfaceRep.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Surface/SurfaceRep.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Surface",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Surface.dir/InternalGem.cpp.o -c /workspace/third_party/sphere_tree/src/Surface/InternalGem.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Surface/InternalGem.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Surface",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Surface.dir/OBJLoader.cpp.o -c /workspace/third_party/sphere_tree/src/Surface/OBJLoader.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Surface/OBJLoader.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Export",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Export.dir/VRML.cpp.o -c /workspace/third_party/sphere_tree/src/Export/VRML.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Export/VRML.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/third_party/sphere_tree/src/Export",
+  "command": "/usr/bin/g++ -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -std=c++11 -o CMakeFiles/Export.dir/POV.cpp.o -c /workspace/third_party/sphere_tree/src/Export/POV.cpp",
+  "file": "/workspace/third_party/sphere_tree/src/Export/POV.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/bot_utils/sphereTreeWrapper",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -DsphereTreeWrapper_EXPORTS -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeBase.cpp.o -c /workspace/bot_utils/sphereTreeWrapper/src/sphereTreeBase.cpp",
+  "file": "/workspace/bot_utils/sphereTreeWrapper/src/sphereTreeBase.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/bot_utils/sphereTreeWrapper",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -DsphereTreeWrapper_EXPORTS -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeGrid.cpp.o -c /workspace/bot_utils/sphereTreeWrapper/src/sphereTreeGrid.cpp",
+  "file": "/workspace/bot_utils/sphereTreeWrapper/src/sphereTreeGrid.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/bot_utils/sphereTreeWrapper",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -DsphereTreeWrapper_EXPORTS -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeHubbard.cpp.o -c /workspace/bot_utils/sphereTreeWrapper/src/sphereTreeHubbard.cpp",
+  "file": "/workspace/bot_utils/sphereTreeWrapper/src/sphereTreeHubbard.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/bot_utils/sphereTreeWrapper",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -DsphereTreeWrapper_EXPORTS -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeMedial.cpp.o -c /workspace/bot_utils/sphereTreeWrapper/src/sphereTreeMedial.cpp",
+  "file": "/workspace/bot_utils/sphereTreeWrapper/src/sphereTreeMedial.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/bot_utils/sphereTreeWrapper",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -DsphereTreeWrapper_EXPORTS -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeOctree.cpp.o -c /workspace/bot_utils/sphereTreeWrapper/src/sphereTreeOctree.cpp",
+  "file": "/workspace/bot_utils/sphereTreeWrapper/src/sphereTreeOctree.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/bot_utils/sphereTreeWrapper",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -DsphereTreeWrapper_EXPORTS -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIC -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeSpawn.cpp.o -c /workspace/bot_utils/sphereTreeWrapper/src/sphereTreeSpawn.cpp",
+  "file": "/workspace/bot_utils/sphereTreeWrapper/src/sphereTreeSpawn.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/app",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIE -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/spherized.dir/Sphereized.cpp.o -c /workspace/app/Sphereized.cpp",
+  "file": "/workspace/app/Sphereized.cpp"
+},
+{
+  "directory": "/workspace/build_dkr/app",
+  "command": "/usr/bin/g++ -DFMT_LOCALE -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -DSpherizedURDFGenerator_CONFIG_PATH=\\\"/workspace/config\\\" -DSpherizedURDFGenerator_RESOURCE_PATH=\\\"/workspace/resources\\\" -isystem /usr/include/eigen3 -isystem /workspace/include -isystem /workspace/third_party/header_only -isystem /workspace/third_party/ManifoldPlus/include -isystem /workspace/third_party/sphere_tree/src -isystem /workspace/bot_utils/sphereTreeWrapper/include -isystem /usr/include/irmv/third_party -O3 -DNDEBUG -fPIE -fdiagnostics-color=always -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast -Wsuggest-override -std=c++17 -o CMakeFiles/convex.dir/Convex.cpp.o -c /workspace/app/Convex.cpp",
+  "file": "/workspace/app/Convex.cpp"
+}
+]

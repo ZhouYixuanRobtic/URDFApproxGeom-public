@@ -1,0 +1,2 @@
+/usr/bin/ar qc libSFWhite.a CMakeFiles/SFWhite.dir/ball.cpp.o CMakeFiles/SFWhite.dir/complex.c.o CMakeFiles/SFWhite.dir/nrutil.c.o CMakeFiles/SFWhite.dir/svd.cpp.o
+/usr/bin/ranlib libSFWhite.a

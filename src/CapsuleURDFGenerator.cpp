@@ -17,9 +17,10 @@
  */
 
 #include "CapsuleURDFGenerator.h"
-#include "CapsuleFitter.h"
+#include "CapsuleCrossSection.h"
 
 #include <urdf_model/model.h>
+#include <ManifoldPlus/Manifold.h>
 #include <yaml-cpp/yaml.h>
 #include "irmv/third_party/json.hpp"
 
@@ -31,39 +32,15 @@
 
 #include "irmv/bot_common/log/singleton_logger.h"
 
-namespace {
-// Resolve the sphere-tree config path relative to the capsule config dir, and
-// the simplify flag, so the parent (SphereTreeURDFGenerator) ctor can read
-// Method/SimplifyRatio from the real sphere-tree config.
-std::string resolveSphereTreeConfig(const std::string& capsule_config_path) {
-    std::string rel = "../sphereTree/sphereTreeConfig.yml";
-    try {
-        YAML::Node doc = YAML::LoadFile(capsule_config_path);
-        rel = doc["SphereTreeConfigPath"].as<std::string>(rel);
-    } catch (...) {
-    }
-    namespace fs = std::filesystem;
-    return fs::weakly_canonical(fs::path(capsule_config_path).parent_path() / rel).string();
-}
-bool resolveSimplify(const std::string& capsule_config_path) {
-    try {
-        return YAML::LoadFile(capsule_config_path)["Simplify"].as<bool>(true);
-    } catch (...) {
-        return true;
-    }
-}
-}  // namespace
-
-CapsuleURDFGenerator::CapsuleURDFGenerator(const std::string& capsule_config_path)
-    : SphereTreeURDFGenerator(resolveSphereTreeConfig(capsule_config_path),
-                              resolveSimplify(capsule_config_path)) {
+CapsuleURDFGenerator::CapsuleURDFGenerator(const std::string& capsule_config_path) : URDFGenerator() {
+    m_model = std::make_shared<urdf::ModelInterface>();
     config_path_ = capsule_config_path;
     try {
         YAML::Node doc = YAML::LoadFile(capsule_config_path);
-        max_capsules_ = doc["MaxCapsulesPerLink"].as<int>(3);
-        cluster_gap_ = doc["ClusterGap"].as<double>(0.02);
-        min_cluster_size_ = doc["MinClusterSize"].as<int>(2);
-        fat_split_ratio_ = doc["FatSplitRatio"].as<double>(0.6);
+        n_sections_ = doc["NSections"].as<int>(n_sections_);
+        coa_threshold_ = doc["CoaThreshold"].as<double>(coa_threshold_);
+        max_circles_per_section_ = doc["MaxCirclesPerSection"].as<int>(max_circles_per_section_);
+        max_capsules_ = doc["MaxCapsulesPerLink"].as<int>(max_capsules_);
     } catch (...) {
         // keep defaults
     }
@@ -74,30 +51,36 @@ CapsuleURDFGenerator::~CapsuleURDFGenerator() = default;
 irmv_core::bot_common::ErrorInfo
 CapsuleURDFGenerator::run(const std::string& urdf_path, const std::string& output_path,
                           const std::vector<std::pair<std::string, std::string>>& replace_pairs) {
-    // 1. In-memory sphere build (inherited): populates m_model with per-link
-    //    sub-sphere collisions in link frame. The spheres DECOMPOSE each link.
-    auto ret = buildSphereModel(urdf_path, replace_pairs);
+    auto ret = loadURDF(urdf_path, m_model);
     if (!ret.isOk()) {
         IRMV_ERROR("{}", ret.message());
         return ret;
     }
+    IRMV_INFO("Got {} links to process", m_model->links_.size());
 
-    // 2. Load the ORIGINAL meshes: buildSphereModel replaced collisions with
-    //    spheres, so the mesh path is gone from m_model. Capsules are fit TIGHT
-    //    to the mesh surface per sphere-cluster (sphere radii over-cover ~1.4x,
-    //    so fitting to spheres would inherit that fatness).
-    urdf::ModelInterfaceSharedPtr mesh_model;
-    auto mret = loadURDF(urdf_path, mesh_model);
-    if (!mret.isOk()) {
-        IRMV_ERROR("{}", mret.message());
-        return mret;
-    }
-
-    // Emit one capsule = <cylinder> + two <sphere> end-caps.
+    // Emit one capsule = <cylinder> + two <sphere> end-caps (link frame).
+    // A degenerate (L~0) capsule is emitted as a single <sphere>.
     auto emit_capsule = [&](urdf::LinkSharedPtr& link, const urdf_approx_geom::Capsule& cap,
                             nlohmann::json& cap_arr) {
         Eigen::Vector3d axis = cap.p1 - cap.p0;
         double len = axis.norm();
+        if (len < 1e-9) {
+            auto sph_col = std::make_shared<urdf::Collision>();
+            auto sph = std::make_shared<urdf::Sphere>();
+            sph->radius = cap.radius;
+            sph_col->geometry = sph;
+            sph_col->origin.position.x = cap.p0.x();
+            sph_col->origin.position.y = cap.p0.y();
+            sph_col->origin.position.z = cap.p0.z();
+            sph_col->origin.rotation.clear();
+            link->collision_array.push_back(sph_col);
+            nlohmann::json cp;
+            cp["p0"] = std::vector<double>{cap.p0.x(), cap.p0.y(), cap.p0.z()};
+            cp["p1"] = cp["p0"];
+            cp["radius"] = cap.radius;
+            cap_arr.push_back(cp);
+            return;
+        }
         auto cyl_col = std::make_shared<urdf::Collision>();
         auto cyl = std::make_shared<urdf::Cylinder>();
         cyl->radius = cap.radius;
@@ -135,62 +118,64 @@ CapsuleURDFGenerator::run(const std::string& urdf_path, const std::string& outpu
         cap_arr.push_back(cp);
     };
 
-    // 3. Per link: read spheres (decomposition) + mesh vertices (tight fit),
-    //    fit capsules, replace collisions.
     nlohmann::json json;
     for (auto& link_pair : m_model->links_) {
         const auto& link_name = link_pair.first;
         auto& link = link_pair.second;
-
-        std::vector<Eigen::Vector3d> centers;
-        std::vector<double> radii;
-        for (const auto& col : link->collision_array) {
-            if (!col || col->geometry->type != urdf::Geometry::SPHERE) continue;
-            const auto* sph = dynamic_cast<const urdf::Sphere*>(col->geometry.get());
-            centers.emplace_back(col->origin.position.x, col->origin.position.y, col->origin.position.z);
-            radii.push_back(sph->radius);
+        if (link->collision_array.size() > 1) {
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                    std::string("only one collision mesh per link accepted (") + link_name + ")"};
         }
+        const auto& collision = link->collision;
+        if (!collision || collision->geometry->type != urdf::Geometry::MESH) continue;
 
-        auto mit = mesh_model->links_.find(link_name);
-        if (centers.empty() || mit == mesh_model->links_.end() || !mit->second->collision ||
-            mit->second->collision->geometry->type != urdf::Geometry::MESH) {
-            continue;
-        }
-
-        auto* mesh = dynamic_cast<urdf::Mesh*>(mit->second->collision->geometry.get());
+        auto* mesh = dynamic_cast<urdf::Mesh*>(collision->geometry.get());
         std::string filename_raw = mesh->filename;
         for (const auto& rp : replace_pairs) replaceWith(filename_raw, rp.first, rp.second);
+
         Eigen::MatrixXd V;
+        MatrixD OUT_V;
         Eigen::MatrixXi F, N;
+        MatrixI OUT_F;
         bool alreadyOBJ = false;
         auto lret = loadedIntoIGL(std::filesystem::path(filename_raw), V, F, N, alreadyOBJ);
-        if (!lret.isOk() || V.rows() == 0) {
+        if (!lret.isOk()) {
             IRMV_ERROR("{}", lret.message());
-            continue;
+            return lret;
         }
 
-        // Mesh-local -> link frame via the collision origin (same transform as
-        // the sphere build uses).
-        const auto& o = mit->second->collision->origin;
+        // Watertight manifold (cross-section slicing needs a closed surface).
+        auto m_manifold = std::make_unique<Manifold>();
+        m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
+        if (OUT_V.rows() < 4 || OUT_F.rows() == 0) continue;
+
+        // Mesh-local -> link frame via the collision origin.
+        const auto& o = collision->origin;
         Eigen::Matrix3d R = Eigen::Quaterniond(o.rotation.w, o.rotation.x, o.rotation.y,
                                                 o.rotation.z).toRotationMatrix();
         Eigen::Vector3d T(o.position.x, o.position.y, o.position.z);
-        Eigen::MatrixXd Vlf(V.rows(), 3);
-        for (int i = 0; i < V.rows(); ++i)
-            Vlf.row(i) = (T + R * V.row(i).transpose()).transpose();
+        Eigen::MatrixXd Vlf(OUT_V.rows(), 3);
+        for (int i = 0; i < OUT_V.rows(); ++i)
+            Vlf.row(i) = (T + R * OUT_V.row(i).transpose()).transpose();
 
-        auto caps = urdf_approx_geom::fitCapsulesFromMesh(
-            Vlf, centers, radii, cluster_gap_, min_cluster_size_, fat_split_ratio_, max_capsules_);
+        auto caps = urdf_approx_geom::fitCapsulesByCrossSection(
+            Vlf, OUT_F, n_sections_, coa_threshold_, max_circles_per_section_, max_capsules_);
+
+        // The fit ran on the watertight (Manifold) mesh, which may differ from
+        // the original; grow again against the ORIGINAL mesh vertices so the
+        // real collision surface is fully covered.
+        Eigen::MatrixXd Vorig_lf(V.rows(), 3);
+        for (int i = 0; i < V.rows(); ++i)
+            Vorig_lf.row(i) = (T + R * V.row(i).transpose()).transpose();
+        urdf_approx_geom::growCapsulesToCover(caps, Vorig_lf);
 
         link->collision_array.clear();
         nlohmann::json cap_arr = nlohmann::json::array();
         for (const auto& cap : caps) emit_capsule(link, cap, cap_arr);
         if (!link->collision_array.empty()) link->collision = link->collision_array[0];
-
         json[link_name]["capsules"] = cap_arr;
     }
 
-    // 4. Emit capsule URDF + JSON sidecar.
     std::string json_path = output_path;
     replaceWith(json_path, ".urdf", ".json");
     std::ofstream json_file(json_path);

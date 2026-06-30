@@ -1,15 +1,11 @@
-# Capsule approximation config.
-# Pipeline: build sphere-tree (config below) -> cluster sub-spheres -> fit one
-# covering capsule per cluster -> emit <cylinder>+<sphere> URDF + JSON sidecar.
+# Capsule approximation config (Wu2018 cross-section method).
+# Pipeline: watertight mesh -> slice into cross-sections perpendicular to the
+# link's PCA axis -> fit COA-minimized circles per section (Lloyd) -> link
+# adjacent-section circles into capsules -> grow to cover -> emit
+# <cylinder>+<sphere> URDF + JSON sidecar.
 
-# Sphere-tree build: reuse the shared sphere-tree config (Method + per-method
-# knobs + SimplifyRatio live there). Path is relative to THIS file's directory.
-SphereTreeConfigPath: ../sphereTree/sphereTreeConfig.yml
-Simplify: true
-
-# Clustering + splitting knobs.
-MaxCapsulesPerLink: 3     # ceiling on capsules produced per link (recursion budget).
-ClusterGap: 0.02          # m: union spheres whose centers are within r_i + r_j + gap.
-MinClusterSize: 8         # min mesh vertices before a cluster may split (vertex scale).
-FatSplitRatio: 0.4        # split a capsule when radius > ratio * segment_length
-                          # (lower = more splitting; 0.4 splits wide bases, keeps rods).
+NSections: 4              # cross-section planes per link (more = tighter + more capsules).
+CoaThreshold: 0.005       # Circle-Outside-Area (over-cover) target per section; a section
+                          # splits into more circles until COA < this (lower = tighter/split).
+MaxCirclesPerSection: 4   # ceiling on circles per section (wide links -> several capsules).
+MaxCapsulesPerLink: 12    # soft ceiling on capsules per link (drops shortest if exceeded).

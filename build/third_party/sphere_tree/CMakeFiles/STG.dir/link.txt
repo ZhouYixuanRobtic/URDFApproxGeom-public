@@ -1,0 +1,2 @@
+/usr/bin/ar qc libSTG.a CMakeFiles/STG.dir/src/DecodeParam.cpp.o CMakeFiles/STG.dir/src/VerifyModel.cpp.o CMakeFiles/STG.dir/src/EvalTree.cpp.o
+/usr/bin/ranlib libSTG.a
