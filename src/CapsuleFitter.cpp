@@ -264,17 +264,35 @@ void fit_recursive(const std::vector<Eigen::Vector3d>& centers,
         return;
     }
 
-    // Split at the axial median along the capsule axis.
-    Eigen::Vector3d u = (cap.p1 - cap.p0).normalized();
-    std::vector<double> ts(idxs.size());
-    for (size_t k = 0; k < idxs.size(); ++k) ts[k] = (centers[idxs[k]] - cap.p0).dot(u);
-    std::vector<double> sorted_t = ts;
-    std::sort(sorted_t.begin(), sorted_t.end());
-    double median = sorted_t[sorted_t.size() / 2];
-
+    // Split via k-means(k=2) on sphere centers. A spatial partition is required
+    // here: an axial-median cut cannot reduce a *perpendicular* spread, so it
+    // would not tighten a wide/short base -- each half would keep the full
+    // width. Spatial k-means divides a fat blob into two regions, each fit by a
+    // tighter capsule.
+    Eigen::Vector3d s0 = centers[idxs.front()];
+    Eigen::Vector3d s1 = centers[idxs.front()];
+    double bestd = -1.0;
+    for (int i : idxs) {
+        double d = (centers[i] - s0).squaredNorm();
+        if (d > bestd) { bestd = d; s1 = centers[i]; }
+    }
     std::vector<int> L, R;
-    for (size_t k = 0; k < idxs.size(); ++k) (ts[k] <= median ? L : R).push_back(idxs[k]);
-    if (L.empty() || R.empty()) { res.capsules.push_back(cap); return; }
+    for (int iter = 0; iter < 5; ++iter) {
+        L.clear();
+        R.clear();
+        for (int i : idxs)
+            ((centers[i] - s0).squaredNorm() <= (centers[i] - s1).squaredNorm() ? L : R).push_back(i);
+        if (L.empty() || R.empty()) break;
+        Eigen::Vector3d m0 = Eigen::Vector3d::Zero(), m1 = Eigen::Vector3d::Zero();
+        for (int i : L) m0 += centers[i];
+        for (int i : R) m1 += centers[i];
+        s0 = m0 / double(L.size());
+        s1 = m1 / double(R.size());
+    }
+    if (L.empty() || R.empty()) {
+        res.capsules.push_back(cap);
+        return;
+    }
 
     int bl = (budget + 1) / 2;
     int br = budget / 2;

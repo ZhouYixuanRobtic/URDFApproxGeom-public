@@ -1,3 +1,15 @@
-# Covering-capsule fit knobs.
-MaxCapsulesPerLink: 2     # adaptive split ceiling per link (1 = strict single capsule/link).
-SplitVolumeRatio: 5.0     # if capsule-volume / mesh-convex-hull-volume > this, split along axis.
+# Capsule approximation config.
+# Pipeline: build sphere-tree (config below) -> cluster sub-spheres -> fit one
+# covering capsule per cluster -> emit <cylinder>+<sphere> URDF + JSON sidecar.
+
+# Sphere-tree build: reuse the shared sphere-tree config (Method + per-method
+# knobs + SimplifyRatio live there). Path is relative to THIS file's directory.
+SphereTreeConfigPath: ../sphereTree/sphereTreeConfig.yml
+Simplify: true
+
+# Clustering + splitting knobs.
+MaxCapsulesPerLink: 3     # ceiling on capsules produced per link (recursion budget).
+ClusterGap: 0.02          # m: union spheres whose centers are within r_i + r_j + gap.
+MinClusterSize: 2         # clusters smaller than this stay as <sphere> primitives.
+FatSplitRatio: 0.4        # split a capsule when radius > ratio * segment_length
+                          # (lower = more splitting; 0.4 splits wide bases, keeps rods).
