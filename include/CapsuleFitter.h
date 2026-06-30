@@ -20,6 +20,7 @@
 #define URDFAPPROXGEOM_CAPSULEFITTER_H
 
 #include <Eigen/Dense>
+#include <utility>
 #include <vector>
 
 namespace urdf_approx_geom {
@@ -52,6 +53,24 @@ std::vector<Capsule> fitCoveringCapsules(const Eigen::MatrixXd& V,
 double pointToSegmentDistance(const Eigen::Vector3d& p,
                               const Eigen::Vector3d& a,
                               const Eigen::Vector3d& b);
+
+/// Result of sphere-based capsule fitting: covering capsules + spheres that
+/// were too few/isolated to form a capsule (emitted as <sphere> primitives).
+struct SphereFitResult {
+    std::vector<Capsule> capsules;
+    std::vector<std::pair<Eigen::Vector3d, double>> spheres;  // center, radius
+};
+
+/// Cluster spheres {centers[i], radii[i]} by proximity (Union-Find: union when
+/// |c_i-c_j| <= r_i+r_j+cluster_gap), fit one covering capsule per cluster, and
+/// recursively split "fat" clusters (radius > fat_split_ratio*segment_length)
+/// up to max_capsules. Clusters smaller than min_cluster_size stay as spheres.
+SphereFitResult fitCapsulesFromSpheres(const std::vector<Eigen::Vector3d>& centers,
+                                       const std::vector<double>& radii,
+                                       double cluster_gap = 0.02,
+                                       int min_cluster_size = 2,
+                                       double fat_split_ratio = 0.6,
+                                       int max_capsules = 3);
 
 }  // namespace urdf_approx_geom
 

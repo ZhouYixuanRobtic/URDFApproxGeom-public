@@ -98,6 +98,41 @@ TEST(CapsuleFit, DiskAwareCylinderOfSpheres) {
         EXPECT_LE(pointToSegmentDistance(centers[i], c.p0, c.p1) + radii[i], c.radius + 1e-9);
 }
 
+// ---- sphere clustering (fitCapsulesFromSpheres) ----
+
+// A thin rod of touching spheres -> one capsule, tight radius.
+TEST(CapsuleCluster, RodIsOneCapsule) {
+    std::vector<Eigen::Vector3d> c;
+    std::vector<double> r;
+    for (int i = 0; i < 10; ++i) { c.emplace_back(0.02 * i, 0, 0); r.push_back(0.015); }
+    auto res = fitCapsulesFromSpheres(c, r, 0.02, 2, 0.6, 3);
+    EXPECT_EQ(res.capsules.size(), 1u);
+    EXPECT_TRUE(res.spheres.empty());
+    EXPECT_NEAR(res.capsules[0].radius, 0.015, 1e-6);
+    for (size_t i = 0; i < c.size(); ++i)
+        EXPECT_LE(pointToSegmentDistance(c[i], res.capsules[0].p0, res.capsules[0].p1) + r[i],
+                  res.capsules[0].radius + 1e-9);
+}
+
+// A wide flat blob (5x5 grid) -> split into >=2 capsules (too fat for one).
+TEST(CapsuleCluster, FatBlobSplits) {
+    std::vector<Eigen::Vector3d> c;
+    std::vector<double> r;
+    for (int i = 0; i < 5; ++i)
+        for (int j = 0; j < 5; ++j) { c.emplace_back(0, 0.05 * i, 0.05 * j); r.push_back(0.02); }
+    auto res = fitCapsulesFromSpheres(c, r, 0.02, 2, 0.6, 3);
+    EXPECT_GE(res.capsules.size(), 2u);
+}
+
+// A couple of isolated spheres -> no capsule, kept as spheres.
+TEST(CapsuleCluster, IsolatedSpheresKept) {
+    std::vector<Eigen::Vector3d> c{{0, 0, 0}, {1, 1, 1}};
+    std::vector<double> r{0.01, 0.01};
+    auto res = fitCapsulesFromSpheres(c, r, 0.02, 2, 0.6, 3);
+    EXPECT_TRUE(res.capsules.empty());
+    EXPECT_EQ(res.spheres.size(), 2u);
+}
+
 // End-to-end: run CapsuleURDFGenerator on FR3 and verify the JSON sidecar
 // carries valid per-link capsule params (p0, p1, radius > 0) in link frame.
 TEST(CapsuleRun, FR3EmitsJsonSidecar) {

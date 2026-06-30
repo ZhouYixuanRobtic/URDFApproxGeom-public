@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <map>
 #include <random>
 #include <vector>
 
@@ -226,6 +227,85 @@ std::vector<Capsule> fitCoveringCapsules(const Eigen::MatrixXd& V,
     (void)split_volume_ratio;
     (void)max_capsules;
     return {fitCoveringCapsule(V)};
+}
+
+// ---- sphere clustering ---------------------------------------------------
+
+namespace {
+struct UnionFind {
+    std::vector<int> parent;
+    explicit UnionFind(int n) : parent(n) { for (int i = 0; i < n; ++i) parent[i] = i; }
+    int find(int x) { while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; }
+    void unite(int a, int b) { parent[find(a)] = find(b); }
+};
+
+// Recursive fit + fat-split on one index set. Appends capsules/spheres to res.
+void fit_recursive(const std::vector<Eigen::Vector3d>& centers,
+                   const std::vector<double>& radii,
+                   const std::vector<int>& idxs,
+                   int budget, int min_cluster_size, double fat_split_ratio,
+                   SphereFitResult& res) {
+    if (idxs.size() < static_cast<size_t>(min_cluster_size)) {
+        for (int i : idxs) res.spheres.emplace_back(centers[i], radii[i]);
+        return;
+    }
+    std::vector<Eigen::Vector3d> sc;
+    std::vector<double> sr;
+    sc.reserve(idxs.size()); sr.reserve(idxs.size());
+    for (int i : idxs) { sc.push_back(centers[i]); sr.push_back(radii[i]); }
+
+    Capsule cap = fitCapsuleCoveringDisks(sc, sr);
+    double seg_len = (cap.p1 - cap.p0).norm();
+    bool fat = seg_len > 1e-9 && cap.radius > fat_split_ratio * seg_len;
+    bool can_split = budget > 1 && idxs.size() >= 2 * static_cast<size_t>(min_cluster_size);
+
+    if (!fat || !can_split) {
+        res.capsules.push_back(cap);
+        return;
+    }
+
+    // Split at the axial median along the capsule axis.
+    Eigen::Vector3d u = (cap.p1 - cap.p0).normalized();
+    std::vector<double> ts(idxs.size());
+    for (size_t k = 0; k < idxs.size(); ++k) ts[k] = (centers[idxs[k]] - cap.p0).dot(u);
+    std::vector<double> sorted_t = ts;
+    std::sort(sorted_t.begin(), sorted_t.end());
+    double median = sorted_t[sorted_t.size() / 2];
+
+    std::vector<int> L, R;
+    for (size_t k = 0; k < idxs.size(); ++k) (ts[k] <= median ? L : R).push_back(idxs[k]);
+    if (L.empty() || R.empty()) { res.capsules.push_back(cap); return; }
+
+    int bl = (budget + 1) / 2;
+    int br = budget / 2;
+    fit_recursive(centers, radii, L, bl, min_cluster_size, fat_split_ratio, res);
+    fit_recursive(centers, radii, R, br, min_cluster_size, fat_split_ratio, res);
+}
+}  // namespace
+
+SphereFitResult fitCapsulesFromSpheres(const std::vector<Eigen::Vector3d>& centers,
+                                       const std::vector<double>& radii,
+                                       double cluster_gap,
+                                       int min_cluster_size,
+                                       double fat_split_ratio,
+                                       int max_capsules) {
+    SphereFitResult res;
+    const int n = static_cast<int>(centers.size());
+    if (n == 0) return res;
+    std::vector<double> r = radii;
+    if (r.size() != centers.size()) r.assign(centers.size(), 0.0);
+
+    UnionFind uf(n);
+    for (int i = 0; i < n; ++i)
+        for (int j = i + 1; j < n; ++j)
+            if ((centers[i] - centers[j]).norm() <= r[i] + r[j] + cluster_gap)
+                uf.unite(i, j);
+
+    std::map<int, std::vector<int>> comps;
+    for (int i = 0; i < n; ++i) comps[uf.find(i)].push_back(i);
+    for (auto& kv : comps)
+        fit_recursive(centers, r, kv.second, max_capsules, min_cluster_size, fat_split_ratio, res);
+    return res;
 }
 
 }  // namespace urdf_approx_geom
