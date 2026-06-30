@@ -31,14 +31,19 @@ struct Capsule {
     double radius = 0.0;
 };
 
-/// Fit a single covering capsule to a point cloud: PCA principal axis defines
-/// the segment extent, radius = max point-to-segment distance (conservative /
-/// outer fit, the collision-safe choice).
+/// Fit a single covering capsule to a point cloud. Thin wrapper over
+/// fitCapsuleCoveringDisks with zero radii (points = degenerate disks).
 Capsule fitCoveringCapsule(const Eigen::MatrixXd& V);
 
-/// Fit 1..max_capsules covering capsules. v1 returns a single capsule per call;
-/// the split_volume_ratio knob is retained for adaptive splitting of wide /
-/// non-convex links (capsule-volume / convex-hull-volume > ratio -> split).
+/// Covering capsule for a set of spheres {centers[i], radii[i]}: for the
+/// optimal axis, radius = max_i( dist(center_i, axis_segment) + r_i ).
+/// Conservative outer fit -- every sphere lies inside the capsule.
+/// (Reuses the v1 candidate-axis + sphere pattern-search machinery.)
+Capsule fitCapsuleCoveringDisks(const std::vector<Eigen::Vector3d>& centers,
+                                const std::vector<double>& radii);
+
+/// Fit 1..max_capsules covering capsules (v1 single-capsule path; superseded
+/// by fitCapsulesFromSpheres once the generator switches to the sphere path).
 std::vector<Capsule> fitCoveringCapsules(const Eigen::MatrixXd& V,
                                          double split_volume_ratio = 5.0,
                                          int max_capsules = 2);

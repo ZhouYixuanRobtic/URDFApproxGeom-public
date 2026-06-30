@@ -77,6 +77,27 @@ TEST(CapsuleFit, SphereShellIsCovered) {
                   c.radius + 1e-9);
 }
 
+// Two rings of small spheres (caps shape of a cylinder): the disk-aware fit
+// must give radius == ring_r + sphere_r and span the length, covering every
+// sphere (dist(center, seg) + r_i <= R).
+TEST(CapsuleFit, DiskAwareCylinderOfSpheres) {
+    const double ring_r = 0.05, sph_r = 0.01;
+    std::vector<Eigen::Vector3d> centers;
+    std::vector<double> radii;
+    for (double x : {0.0, 1.0}) {
+        for (int i = 0; i < 32; ++i) {
+            double a = 2.0 * M_PI * i / 32;
+            centers.emplace_back(x, ring_r * std::cos(a), ring_r * std::sin(a));
+            radii.push_back(sph_r);
+        }
+    }
+    Capsule c = fitCapsuleCoveringDisks(centers, radii);
+    EXPECT_NEAR(c.radius, ring_r + sph_r, 1e-6);
+    EXPECT_NEAR((c.p1 - c.p0).norm(), 1.0, 1e-6);
+    for (size_t i = 0; i < centers.size(); ++i)
+        EXPECT_LE(pointToSegmentDistance(centers[i], c.p0, c.p1) + radii[i], c.radius + 1e-9);
+}
+
 // End-to-end: run CapsuleURDFGenerator on FR3 and verify the JSON sidecar
 // carries valid per-link capsule params (p0, p1, radius > 0) in link frame.
 TEST(CapsuleRun, FR3EmitsJsonSidecar) {

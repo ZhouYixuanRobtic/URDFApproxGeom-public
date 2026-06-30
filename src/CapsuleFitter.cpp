@@ -83,44 +83,63 @@ static Circle2 min_enclosing_circle(std::vector<V2> P) {
     return C;
 }
 
-// Optimal covering capsule for a FIXED axis u: radius = MEC of points
-// projected to the plane perpendicular to u; segment spans the axial extent.
-static Capsule capsule_for_axis(const Eigen::MatrixXd& V, const Eigen::Vector3d& c,
-                                Eigen::Vector3d u) {
+// Optimal covering capsule for a FIXED axis u over spheres {centers, radii}:
+// lateral center = MEC of projected centers (axis offset), then
+// R = max_i( |proj_i - c_perp| + r_i ); segment spans the axial extent.
+static Capsule capsule_for_axis(const std::vector<Eigen::Vector3d>& centers,
+                                const std::vector<double>& radii,
+                                const Eigen::Vector3d& c, Eigen::Vector3d u) {
     u.normalize();
     Eigen::Vector3d ref = std::abs(u.x()) < 0.9 ? Eigen::Vector3d::UnitX() : Eigen::Vector3d::UnitY();
     Eigen::Vector3d e1 = u.cross(ref).normalized();
     Eigen::Vector3d e2 = u.cross(e1).normalized();
 
-    std::vector<V2> P(V.rows());
-    Eigen::VectorXd t(V.rows());
-    for (int i = 0; i < V.rows(); ++i) {
-        Eigen::Vector3d d = V.row(i).transpose() - c;
+    const size_t n = centers.size();
+    std::vector<V2> P(n);
+    Eigen::VectorXd t(n);
+    double tmin = std::numeric_limits<double>::max();
+    double tmax = std::numeric_limits<double>::lowest();
+    for (size_t i = 0; i < n; ++i) {
+        Eigen::Vector3d d = centers[i] - c;
         P[i] = V2(d.dot(e1), d.dot(e2));
         t(i) = d.dot(u);
+        tmin = std::min(tmin, t(i));
+        tmax = std::max(tmax, t(i));
     }
+    // ponytail: MEC of projected *centers* (not disks) -> lateral center is
+    // near-optimal; r_i spread is small. R inflates by each disk radius so the
+    // fit always covers (collision-safe). True MEC-of-disks only if too loose.
     Circle2 circ = min_enclosing_circle(P);
     Eigen::Vector3d seg_center = c + circ.c.x() * e1 + circ.c.y() * e2;
+    double R = 0.0;
+    for (size_t i = 0; i < n; ++i)
+        R = std::max(R, (P[i] - circ.c).norm() + radii[i]);
+
     Capsule cap;
-    cap.p0 = seg_center + t.minCoeff() * u;
-    cap.p1 = seg_center + t.maxCoeff() * u;
-    cap.radius = circ.r;
+    cap.p0 = seg_center + tmin * u;
+    cap.p1 = seg_center + tmax * u;
+    cap.radius = R;
     return cap;
 }
 
 static Eigen::Vector3d rotate_around(const Eigen::Vector3d& u,
                                      const Eigen::Vector3d& axis, double ang) {
-    // Rodrigues rotation of u about unit `axis` by ang.
     double c = std::cos(ang), s = std::sin(ang);
     return (u * c + axis.cross(u) * s + axis * (axis.dot(u)) * (1.0 - c)).normalized();
 }
 
-Capsule fitCoveringCapsule(const Eigen::MatrixXd& V) {
-    Eigen::Vector3d c = V.colwise().mean();
+// Candidate axis directions + local pattern-search refinement, shared by the
+// point and disk fitters. Returns the min-radius covering Capsule.
+static Capsule fit_axis_search(const std::vector<Eigen::Vector3d>& centers,
+                               const std::vector<double>& radii) {
+    Eigen::Vector3d c = Eigen::Vector3d::Zero();
+    for (const auto& p : centers) c += p;
+    c /= double(centers.size());
 
     // candidate directions: PCA eigenvectors, cardinals, diameter, fibonacci sphere.
-    Eigen::MatrixXd Cn = V.rowwise() - c.transpose();
-    Eigen::Matrix3d cov = (Cn.transpose() * Cn) / double(V.rows());
+    Eigen::MatrixXd Cn(centers.size(), 3);
+    for (size_t i = 0; i < centers.size(); ++i) Cn.row(i) = centers[i].transpose() - c.transpose();
+    Eigen::Matrix3d cov = (Cn.transpose() * Cn) / double(centers.size());
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es(cov);
     std::vector<Eigen::Vector3d> dirs;
     for (int k = 0; k < 3; ++k) dirs.push_back(es.eigenvectors().col(k));
@@ -128,15 +147,15 @@ Capsule fitCoveringCapsule(const Eigen::MatrixXd& V) {
     dirs.emplace_back(Eigen::Vector3d::UnitY());
     dirs.emplace_back(Eigen::Vector3d::UnitZ());
     {
-        const int step = std::max(1, static_cast<int>(V.rows()) / 1500);
+        const int step = std::max(1, static_cast<int>(centers.size()) / 1500);
         double best = -1.0;
         Eigen::Vector3d diam = Eigen::Vector3d::UnitX();
-        for (int i = 0; i < V.rows(); i += step)
-            for (int j = i + 1; j < V.rows(); j += step) {
-                double d = (V.row(i) - V.row(j)).squaredNorm();
+        for (size_t i = 0; i < centers.size(); i += step)
+            for (size_t j = i + 1; j < centers.size(); j += step) {
+                double d = (centers[i] - centers[j]).squaredNorm();
                 if (d > best) {
                     best = d;
-                    diam = (V.row(j) - V.row(i)).transpose().normalized();
+                    diam = (centers[j] - centers[i]).normalized();
                 }
             }
         dirs.push_back(diam);
@@ -152,7 +171,7 @@ Capsule fitCoveringCapsule(const Eigen::MatrixXd& V) {
     Capsule best;
     double best_r = std::numeric_limits<double>::max();
     for (const auto& u : dirs) {
-        Capsule cap = capsule_for_axis(V, c, u);
+        Capsule cap = capsule_for_axis(centers, radii, c, u);
         if (cap.radius < best_r) {
             best_r = cap.radius;
             best = cap;
@@ -170,7 +189,7 @@ Capsule fitCoveringCapsule(const Eigen::MatrixXd& V) {
         Eigen::Vector3d e2 = u.cross(e1).normalized();
         std::vector<Eigen::Vector3d> rot_axes = {e1, e2, Eigen::Vector3d(-e1), Eigen::Vector3d(-e2)};
         for (const Eigen::Vector3d& ax : rot_axes) {
-            Capsule cand = capsule_for_axis(V, c, rotate_around(u, ax, step));
+            Capsule cand = capsule_for_axis(centers, radii, c, rotate_around(u, ax, step));
             if (cand.radius < best_r - 1e-9) {
                 best_r = cand.radius;
                 best = cand;
@@ -183,12 +202,27 @@ Capsule fitCoveringCapsule(const Eigen::MatrixXd& V) {
     return best;
 }
 
+Capsule fitCapsuleCoveringDisks(const std::vector<Eigen::Vector3d>& centers,
+                                const std::vector<double>& radii) {
+    if (centers.empty()) return {Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), 0.0};
+    std::vector<double> r = radii;
+    if (r.size() != centers.size()) r.assign(centers.size(), 0.0);
+    if (centers.size() == 1) return {centers[0], centers[0], r[0]};
+    return fit_axis_search(centers, r);
+}
+
+Capsule fitCoveringCapsule(const Eigen::MatrixXd& V) {
+    std::vector<Eigen::Vector3d> centers(V.rows());
+    for (int i = 0; i < V.rows(); ++i) centers[i] = V.row(i).transpose();
+    std::vector<double> zeros(V.rows(), 0.0);
+    return fitCapsuleCoveringDisks(centers, zeros);
+}
+
 std::vector<Capsule> fitCoveringCapsules(const Eigen::MatrixXd& V,
                                          double split_volume_ratio,
                                          int max_capsules) {
-    // ponytail: single optimal capsule per link. Adaptive splitting along the
-    // axis (when capsule/hull volume > split_volume_ratio) is the documented
-    // escalation for wide/non-capsule-shaped links (e.g. a robot base).
+    // v1 single-capsule path retained until the generator switches to the
+    // sphere-based fitter (fitCapsulesFromSpheres). split hook documented.
     (void)split_volume_ratio;
     (void)max_capsules;
     return {fitCoveringCapsule(V)};

@@ -98,9 +98,11 @@ CapsuleURDFGenerator::run(const std::string& urdf_path, const std::string& outpu
                 for (const auto& cap : caps) {
                     Eigen::Vector3d p0 = T + R * cap.p0;
                     Eigen::Vector3d p1 = T + R * cap.p1;
-                    arr.push_back({{"p0", {p0.x(), p0.y(), p0.z()}},
-                                   {"p1", {p1.x(), p1.y(), p1.z()}},
-                                   {"radius", cap.radius}});
+                    nlohmann::json cp;
+                    cp["p0"] = std::vector<double>{p0.x(), p0.y(), p0.z()};
+                    cp["p1"] = std::vector<double>{p1.x(), p1.y(), p1.z()};
+                    cp["radius"] = cap.radius;
+                    arr.push_back(cp);
                 }
                 json[link_pair.first]["capsules"] = arr;
                 break;
