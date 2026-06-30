@@ -233,6 +233,35 @@ TEST(CapsuleCOA, CircleOutsidePolygon) {
     EXPECT_NEAR(circleOutsideArea(c, sq), M_PI * 0.25, 1e-3);
 }
 
+// ---- Wu2018 Lloyd circle clustering (P3) ----
+
+// A narrow circular contour -> one circle ~= its MEC.
+TEST(CapsuleLloyd, NarrowCircleIsOneCircle) {
+    Contour2D c;
+    for (int i = 0; i < 48; ++i) {
+        double a = 2.0 * M_PI * i / 48;
+        c.points.emplace_back(0.1 * std::cos(a), 0.1 * std::sin(a));
+    }
+    auto circles = fitCirclesLloyd(c, 0.01, 4);
+    ASSERT_EQ(circles.size(), 1u);
+    EXPECT_NEAR(circles[0].radius, 0.1, 2e-3);
+}
+
+// A wide rectangle -> split into >=2 circles whose union still covers the contour.
+TEST(CapsuleLloyd, WideRectangleSplits) {
+    Contour2D c;
+    c.points = {{-0.5, -0.1}, {0.5, -0.1}, {0.5, 0.1}, {-0.5, 0.1}};  // 1.0 x 0.2
+    auto circles = fitCirclesLloyd(c, 0.005, 4);
+    EXPECT_GE(circles.size(), 2u);
+    // coverage: every contour vertex within some circle
+    for (const auto& v : c.points) {
+        bool covered = false;
+        for (const auto& cir : circles)
+            if ((cir.center - v).norm() <= cir.radius + 1e-6) { covered = true; break; }
+        EXPECT_TRUE(covered);
+    }
+}
+
 // End-to-end: run CapsuleURDFGenerator on FR3. Verify (a) the JSON sidecar
 // carries valid per-link capsule params, and (b) the output URDF now contains
 // NATIVE <cylinder> + <sphere> primitives (capsule = cylinder + 2 end spheres),

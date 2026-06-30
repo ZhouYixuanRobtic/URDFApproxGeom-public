@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <random>
 #include <utility>
 #include <vector>
 
@@ -66,6 +67,66 @@ bool clipSegToCircle(const Eigen::Vector2d& p0, const Eigen::Vector2d& p1,
     q0 = p0 + lo * dir;
     q1 = p0 + hi * dir;
     return true;
+}
+
+// Compact 2D minimum enclosing circle (Welzl move-to-front), fixed seed.
+Circle2D mec2d(std::vector<Eigen::Vector2d> P) {
+    std::mt19937 rng(0xC0FFEE);
+    std::shuffle(P.begin(), P.end(), rng);
+    Circle2D C{Eigen::Vector2d::Zero(), -1.0};
+    auto from2 = [](const Eigen::Vector2d& a, const Eigen::Vector2d& b) {
+        return Circle2D{0.5 * (a + b), 0.5 * (a - b).norm()};
+    };
+    auto from3 = [&](const Eigen::Vector2d& a, const Eigen::Vector2d& b, const Eigen::Vector2d& c) {
+        double ax = a.x(), ay = a.y(), bx = b.x(), by = b.y(), cx = c.x(), cy = c.y();
+        double d = 2.0 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
+        if (std::abs(d) < 1e-18) {
+            double ab = (a - b).squaredNorm(), ac = (a - c).squaredNorm(), bc = (b - c).squaredNorm();
+            return (ab >= ac && ab >= bc) ? from2(a, b) : (ac >= bc ? from2(a, c) : from2(b, c));
+        }
+        double ux = ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) +
+                     (cx * cx + cy * cy) * (ay - by)) / d;
+        double uy = ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) +
+                     (cx * cx + cy * cy) * (bx - ax)) / d;
+        Eigen::Vector2d ctr(ux, uy);
+        return Circle2D{ctr, (a - ctr).norm()};
+    };
+    for (size_t i = 0; i < P.size(); ++i) {
+        if (C.radius < 0.0 || (P[i] - C.center).norm() > C.radius + 1e-12) {
+            C = {P[i], 0.0};
+            for (size_t j = 0; j < i; ++j)
+                if ((P[j] - C.center).norm() > C.radius + 1e-12) {
+                    C = from2(P[i], P[j]);
+                    for (size_t k = 0; k < j; ++k)
+                        if ((P[k] - C.center).norm() > C.radius + 1e-12) C = from3(P[i], P[j], P[k]);
+                }
+        }
+    }
+    if (C.radius < 0.0) C = {Eigen::Vector2d::Zero(), 0.0};
+    return C;
+}
+
+// Sample a polygon: subdivided boundary edges + interior grid points.
+std::vector<Eigen::Vector2d> sampleContour(const Contour2D& c, int edgeN = 24, int grid = 24) {
+    std::vector<Eigen::Vector2d> pts;
+    int n = static_cast<int>(c.points.size());
+    Eigen::Vector2d lo = c.points[0], hi = c.points[0];
+    for (const auto& p : c.points) {
+        lo = lo.cwiseMin(p);
+        hi = hi.cwiseMax(p);
+    }
+    for (int i = 0; i < n; ++i) {
+        const Eigen::Vector2d& p0 = c.points[i];
+        const Eigen::Vector2d& p1 = c.points[(i + 1) % n];
+        for (int s = 0; s < edgeN; ++s) pts.push_back(p0 + (double(s) / edgeN) * (p1 - p0));
+    }
+    for (int gx = 1; gx < grid; ++gx)
+        for (int gy = 1; gy < grid; ++gy) {
+            Eigen::Vector2d p(lo.x() + (hi.x() - lo.x()) * gx / grid,
+                              lo.y() + (hi.y() - lo.y()) * gy / grid);
+            if (pointInPolygon(p, c.points)) pts.push_back(p);
+        }
+    return pts;
 }
 }  // namespace
 
@@ -200,7 +261,76 @@ double circleOutsideArea(const Circle2D& C, const Contour2D& P) {
     return M_PI * r * r + Ain;          // Eq 5 (Ain is the negative complementary)
 }
 
-std::vector<Circle2D> fitCirclesLloyd(const Contour2D&, double, int) { return {}; }  // P3
+// Wu2018 §III-B: adaptive Lloyd circle clustering. Start from one MEC of the
+// sampled contour; while total COA exceeds the threshold (and budget remains),
+// split the worst-COA circle into two via k-means(2) on its assigned points and
+// refit each (teleportation). Returns circles covering the contour.
+std::vector<Circle2D> fitCirclesLloyd(const Contour2D& contour, double coa_threshold,
+                                      int max_circles) {
+    std::vector<Circle2D> circles;
+    if (contour.points.size() < 3 || max_circles < 1) return circles;
+    auto pts = sampleContour(contour);
+    if (pts.empty()) return circles;
+
+    auto totalCOA = [&]() {
+        double s = 0.0;
+        for (const auto& c : circles) s += circleOutsideArea(c, contour);
+        return s;
+    };
+    auto nearest = [&](const Eigen::Vector2d& p) {
+        int b = 0;
+        double bd = std::numeric_limits<double>::max();
+        for (int i = 0; i < static_cast<int>(circles.size()); ++i) {
+            double d = (circles[i].center - p).squaredNorm();
+            if (d < bd) { bd = d; b = i; }
+        }
+        return b;
+    };
+    auto kmeans2 = [&](const std::vector<Eigen::Vector2d>& sub,
+                       std::vector<Eigen::Vector2d>& g0, std::vector<Eigen::Vector2d>& g1) {
+        Eigen::Vector2d s0 = sub.front();
+        Eigen::Vector2d s1 = sub.front();
+        double best = -1.0;
+        for (const auto& p : sub) {
+            double d = (p - s0).squaredNorm();
+            if (d > best) { best = d; s1 = p; }
+        }
+        for (int it = 0; it < 6; ++it) {
+            g0.clear(); g1.clear();
+            for (const auto& p : sub)
+                ((p - s0).squaredNorm() <= (p - s1).squaredNorm() ? g0 : g1).push_back(p);
+            if (g0.empty() || g1.empty()) return;
+            Eigen::Vector2d m0 = Eigen::Vector2d::Zero(), m1 = Eigen::Vector2d::Zero();
+            for (const auto& p : g0) m0 += p;
+            for (const auto& p : g1) m1 += p;
+            s0 = m0 / double(g0.size());
+            s1 = m1 / double(g1.size());
+        }
+    };
+
+    circles.push_back(mec2d(pts));
+    int guard = 0;
+    while (totalCOA() > coa_threshold && static_cast<int>(circles.size()) < max_circles &&
+           guard++ < 8 * max_circles) {
+        int worst = 0;
+        double wc = -1.0;
+        for (int i = 0; i < static_cast<int>(circles.size()); ++i) {
+            double a = circleOutsideArea(circles[i], contour);
+            if (a > wc) { wc = a; worst = i; }
+        }
+        std::vector<Eigen::Vector2d> sub;
+        for (const auto& p : pts)
+            if (nearest(p) == worst) sub.push_back(p);
+        if (sub.size() < 4) break;
+        std::vector<Eigen::Vector2d> g0, g1;
+        kmeans2(sub, g0, g1);
+        if (g0.empty() || g1.empty()) break;
+        circles.erase(circles.begin() + worst);
+        circles.push_back(mec2d(g0));
+        circles.push_back(mec2d(g1));
+    }
+    return circles;
+}
 
 std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd&, const Eigen::MatrixXi&,
                                                int, double, int, int) {
