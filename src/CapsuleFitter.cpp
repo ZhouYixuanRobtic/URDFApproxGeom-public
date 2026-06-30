@@ -219,17 +219,7 @@ Capsule fitCoveringCapsule(const Eigen::MatrixXd& V) {
     return fitCapsuleCoveringDisks(centers, zeros);
 }
 
-std::vector<Capsule> fitCoveringCapsules(const Eigen::MatrixXd& V,
-                                         double split_volume_ratio,
-                                         int max_capsules) {
-    // v1 single-capsule path retained until the generator switches to the
-    // sphere-based fitter (fitCapsulesFromSpheres). split hook documented.
-    (void)split_volume_ratio;
-    (void)max_capsules;
-    return {fitCoveringCapsule(V)};
-}
-
-// ---- sphere clustering ---------------------------------------------------
+// ---- sphere-decomposed, mesh-tight capsule fit ---------------------------
 
 namespace {
 struct UnionFind {
@@ -239,91 +229,114 @@ struct UnionFind {
     void unite(int a, int b) { parent[find(a)] = find(b); }
 };
 
-// Recursive fit + fat-split on one index set. Appends capsules/spheres to res.
-void fit_recursive(const std::vector<Eigen::Vector3d>& centers,
-                   const std::vector<double>& radii,
-                   const std::vector<int>& idxs,
-                   int budget, int min_cluster_size, double fat_split_ratio,
-                   SphereFitResult& res) {
-    if (idxs.size() < static_cast<size_t>(min_cluster_size)) {
-        for (int i : idxs) res.spheres.emplace_back(centers[i], radii[i]);
-        return;
-    }
-    std::vector<Eigen::Vector3d> sc;
-    std::vector<double> sr;
-    sc.reserve(idxs.size()); sr.reserve(idxs.size());
-    for (int i : idxs) { sc.push_back(centers[i]); sr.push_back(radii[i]); }
-
-    Capsule cap = fitCapsuleCoveringDisks(sc, sr);
-    double seg_len = (cap.p1 - cap.p0).norm();
-    bool fat = seg_len > 1e-9 && cap.radius > fat_split_ratio * seg_len;
-    bool can_split = budget > 1 && idxs.size() >= 2 * static_cast<size_t>(min_cluster_size);
-
-    if (!fat || !can_split) {
-        res.capsules.push_back(cap);
-        return;
-    }
-
-    // Split via k-means(k=2) on sphere centers. A spatial partition is required
-    // here: an axial-median cut cannot reduce a *perpendicular* spread, so it
-    // would not tighten a wide/short base -- each half would keep the full
-    // width. Spatial k-means divides a fat blob into two regions, each fit by a
-    // tighter capsule.
-    Eigen::Vector3d s0 = centers[idxs.front()];
-    Eigen::Vector3d s1 = centers[idxs.front()];
-    double bestd = -1.0;
-    for (int i : idxs) {
-        double d = (centers[i] - s0).squaredNorm();
-        if (d > bestd) { bestd = d; s1 = centers[i]; }
-    }
-    std::vector<int> L, R;
-    for (int iter = 0; iter < 5; ++iter) {
-        L.clear();
-        R.clear();
-        for (int i : idxs)
-            ((centers[i] - s0).squaredNorm() <= (centers[i] - s1).squaredNorm() ? L : R).push_back(i);
-        if (L.empty() || R.empty()) break;
-        Eigen::Vector3d m0 = Eigen::Vector3d::Zero(), m1 = Eigen::Vector3d::Zero();
-        for (int i : L) m0 += centers[i];
-        for (int i : R) m1 += centers[i];
-        s0 = m0 / double(L.size());
-        s1 = m1 / double(R.size());
-    }
-    if (L.empty() || R.empty()) {
-        res.capsules.push_back(cap);
-        return;
-    }
-
-    int bl = (budget + 1) / 2;
-    int br = budget / 2;
-    fit_recursive(centers, radii, L, bl, min_cluster_size, fat_split_ratio, res);
-    fit_recursive(centers, radii, R, br, min_cluster_size, fat_split_ratio, res);
-}
-}  // namespace
-
-SphereFitResult fitCapsulesFromSpheres(const std::vector<Eigen::Vector3d>& centers,
-                                       const std::vector<double>& radii,
-                                       double cluster_gap,
-                                       int min_cluster_size,
-                                       double fat_split_ratio,
-                                       int max_capsules) {
-    SphereFitResult res;
+// Cluster sphere indices by proximity (centers within r_i+r_j+gap).
+std::vector<std::vector<int>> clusterSpheres(const std::vector<Eigen::Vector3d>& centers,
+                                             const std::vector<double>& radii,
+                                             double cluster_gap) {
     const int n = static_cast<int>(centers.size());
-    if (n == 0) return res;
-    std::vector<double> r = radii;
-    if (r.size() != centers.size()) r.assign(centers.size(), 0.0);
-
     UnionFind uf(n);
     for (int i = 0; i < n; ++i)
         for (int j = i + 1; j < n; ++j)
-            if ((centers[i] - centers[j]).norm() <= r[i] + r[j] + cluster_gap)
+            if ((centers[i] - centers[j]).norm() <= radii[i] + radii[j] + cluster_gap)
                 uf.unite(i, j);
-
     std::map<int, std::vector<int>> comps;
     for (int i = 0; i < n; ++i) comps[uf.find(i)].push_back(i);
-    for (auto& kv : comps)
-        fit_recursive(centers, r, kv.second, max_capsules, min_cluster_size, fat_split_ratio, res);
-    return res;
+    std::vector<std::vector<int>> out;
+    out.reserve(comps.size());
+    for (auto& kv : comps) out.push_back(std::move(kv.second));
+    return out;
+}
+
+// Recursive tight point-fit + k-means fat-split on a vertex block.
+void fit_recursive_points(const Eigen::MatrixXd& V, int budget,
+                          int min_cluster_size, double fat_split_ratio,
+                          std::vector<Capsule>& out) {
+    if (V.rows() == 0) return;
+    Capsule cap = fitCoveringCapsule(V);  // tight: radius = true surface dist
+    double seg_len = (cap.p1 - cap.p0).norm();
+    bool fat = seg_len > 1e-9 && cap.radius > fat_split_ratio * seg_len;
+    bool can_split = budget > 1 && V.rows() >= 2 * min_cluster_size;
+    if (!fat || !can_split) { out.push_back(cap); return; }
+
+    // k-means(k=2) on vertices: a spatial split reduces a perpendicular spread
+    // (an axial cut cannot tighten a wide/short region).
+    Eigen::Vector3d s0 = V.row(0).transpose();
+    Eigen::Vector3d s1 = s0;
+    double bestd = -1.0;
+    for (int i = 0; i < V.rows(); ++i) {
+        double d = (V.row(i).transpose() - s0).squaredNorm();
+        if (d > bestd) { bestd = d; s1 = V.row(i).transpose(); }
+    }
+    std::vector<int> L, R;
+    for (int iter = 0; iter < 5; ++iter) {
+        L.clear(); R.clear();
+        for (int i = 0; i < V.rows(); ++i) {
+            Eigen::Vector3d p = V.row(i).transpose();
+            ((p - s0).squaredNorm() <= (p - s1).squaredNorm() ? L : R).push_back(i);
+        }
+        if (L.empty() || R.empty()) break;
+        Eigen::Vector3d m0 = Eigen::Vector3d::Zero(), m1 = Eigen::Vector3d::Zero();
+        for (int i : L) m0 += V.row(i).transpose();
+        for (int i : R) m1 += V.row(i).transpose();
+        s0 = m0 / double(L.size());
+        s1 = m1 / double(R.size());
+    }
+    if (L.empty() || R.empty()) { out.push_back(cap); return; }
+
+    Eigen::MatrixXd VL(L.size(), 3), VR(R.size(), 3);
+    for (size_t k = 0; k < L.size(); ++k) VL.row(k) = V.row(L[k]);
+    for (size_t k = 0; k < R.size(); ++k) VR.row(k) = V.row(R[k]);
+    int bl = (budget + 1) / 2, br = budget / 2;
+    fit_recursive_points(VL, bl, min_cluster_size, fat_split_ratio, out);
+    fit_recursive_points(VR, br, min_cluster_size, fat_split_ratio, out);
+}
+}  // namespace
+
+std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
+                                         const std::vector<Eigen::Vector3d>& centers,
+                                         const std::vector<double>& radii,
+                                         double cluster_gap,
+                                         int min_cluster_size,
+                                         double fat_split_ratio,
+                                         int max_capsules) {
+    std::vector<Capsule> out;
+    if (V.rows() == 0) return out;
+
+    // No spheres -> single tight capsule over all vertices.
+    if (centers.empty()) {
+        fit_recursive_points(V, max_capsules, min_cluster_size, fat_split_ratio, out);
+        return out;
+    }
+
+    auto comps = clusterSpheres(centers, radii, cluster_gap);
+    // Assign each vertex to its nearest sphere, then to that sphere's cluster.
+    std::vector<int> sph2comp(centers.size(), -1);
+    for (int ci = 0; ci < static_cast<int>(comps.size()); ++ci)
+        for (int s : comps[ci]) sph2comp[s] = ci;
+    int ncomp = static_cast<int>(comps.size());
+    std::vector<std::vector<int>> compverts(ncomp);
+    for (int i = 0; i < V.rows(); ++i) {
+        Eigen::Vector3d p = V.row(i).transpose();
+        double bestd = std::numeric_limits<double>::max();
+        int bests = 0;
+        for (int s = 0; s < static_cast<int>(centers.size()); ++s) {
+            double d = (centers[s] - p).squaredNorm();
+            if (d < bestd) { bestd = d; bests = s; }
+        }
+        compverts[sph2comp[bests]].push_back(i);
+    }
+
+    // Fit a tight capsule per cluster (every vertex stays covered). Tiny
+    // clusters get a (possibly degenerate) capsule rather than being dropped.
+    for (int ci = 0; ci < ncomp; ++ci) {
+        const auto& idxs = compverts[ci];
+        if (idxs.empty()) continue;
+        Eigen::MatrixXd Vc(idxs.size(), 3);
+        for (size_t k = 0; k < idxs.size(); ++k) Vc.row(k) = V.row(idxs[k]);
+        fit_recursive_points(Vc, max_capsules, min_cluster_size, fat_split_ratio, out);
+    }
+    if (out.empty()) fit_recursive_points(V, max_capsules, min_cluster_size, fat_split_ratio, out);
+    return out;
 }
 
 }  // namespace urdf_approx_geom

@@ -10,6 +10,6 @@ Simplify: true
 # Clustering + splitting knobs.
 MaxCapsulesPerLink: 3     # ceiling on capsules produced per link (recursion budget).
 ClusterGap: 0.02          # m: union spheres whose centers are within r_i + r_j + gap.
-MinClusterSize: 2         # clusters smaller than this stay as <sphere> primitives.
+MinClusterSize: 8         # min mesh vertices before a cluster may split (vertex scale).
 FatSplitRatio: 0.4        # split a capsule when radius > ratio * segment_length
                           # (lower = more splitting; 0.4 splits wide bases, keeps rods).

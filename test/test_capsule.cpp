@@ -98,39 +98,57 @@ TEST(CapsuleFit, DiskAwareCylinderOfSpheres) {
         EXPECT_LE(pointToSegmentDistance(centers[i], c.p0, c.p1) + radii[i], c.radius + 1e-9);
 }
 
-// ---- sphere clustering (fitCapsulesFromSpheres) ----
+// ---- mesh-tight capsule fit (fitCapsulesFromMesh) ----
 
-// A thin rod of touching spheres -> one capsule, tight radius.
-TEST(CapsuleCluster, RodIsOneCapsule) {
-    std::vector<Eigen::Vector3d> c;
-    std::vector<double> r;
-    for (int i = 0; i < 10; ++i) { c.emplace_back(0.02 * i, 0, 0); r.push_back(0.015); }
-    auto res = fitCapsulesFromSpheres(c, r, 0.02, 2, 0.6, 3);
-    EXPECT_EQ(res.capsules.size(), 1u);
-    EXPECT_TRUE(res.spheres.empty());
-    EXPECT_NEAR(res.capsules[0].radius, 0.015, 1e-6);
-    for (size_t i = 0; i < c.size(); ++i)
-        EXPECT_LE(pointToSegmentDistance(c[i], res.capsules[0].p0, res.capsules[0].p1) + r[i],
-                  res.capsules[0].radius + 1e-9);
+// Cylinder surface vertices + one over-covering decomposition sphere -> ONE
+// tight capsule whose radius ~= the true cylinder radius (NOT the sphere
+// radius, which over-covers). Proves the fit hugs the mesh, not the spheres.
+TEST(CapsuleMeshFit, CylinderSurfaceIsTight) {
+    const double R_true = 0.05;
+    Eigen::MatrixXd V(64, 3);
+    for (int i = 0; i < 64; ++i) {
+        double x = (i < 32) ? 0.0 : 1.0;
+        double a = 2.0 * M_PI * (i % 32) / 32;
+        V(i, 0) = x; V(i, 1) = R_true * std::cos(a); V(i, 2) = R_true * std::sin(a);
+    }
+    std::vector<Eigen::Vector3d> c{{0.5, 0, 0}};
+    std::vector<double> r{0.1};  // over-covers by 2x on purpose
+    auto caps = fitCapsulesFromMesh(V, c, r, 0.02, 8, 0.4, 3);
+    ASSERT_EQ(caps.size(), 1u);
+    EXPECT_NEAR(caps[0].radius, R_true, 1e-6);
+    EXPECT_NEAR((caps[0].p1 - caps[0].p0).norm(), 1.0, 1e-6);
 }
 
-// A wide flat blob (5x5 grid) -> split into >=2 capsules (too fat for one).
-TEST(CapsuleCluster, FatBlobSplits) {
-    std::vector<Eigen::Vector3d> c;
-    std::vector<double> r;
-    for (int i = 0; i < 5; ++i)
-        for (int j = 0; j < 5; ++j) { c.emplace_back(0, 0.05 * i, 0.05 * j); r.push_back(0.02); }
-    auto res = fitCapsulesFromSpheres(c, r, 0.02, 2, 0.6, 3);
-    EXPECT_GE(res.capsules.size(), 2u);
+// A wide flat slab of vertices -> fat -> k-means split into >=2 capsules.
+TEST(CapsuleMeshFit, SlabSplits) {
+    std::vector<Eigen::Vector3d> verts;
+    for (int i = 0; i < 9; ++i)
+        for (int j = 0; j < 9; ++j)
+            verts.emplace_back(0, 0.05 * i, 0.05 * j);
+    Eigen::MatrixXd V(verts.size(), 3);
+    for (size_t k = 0; k < verts.size(); ++k) V.row(k) = verts[k].transpose();
+    std::vector<Eigen::Vector3d> c{{0, 0.1, 0.1}};
+    std::vector<double> r{0.3};
+    auto caps = fitCapsulesFromMesh(V, c, r, 0.02, 8, 0.4, 3);
+    EXPECT_GE(caps.size(), 2u);
 }
 
-// A couple of isolated spheres -> no capsule, kept as spheres.
-TEST(CapsuleCluster, IsolatedSpheresKept) {
-    std::vector<Eigen::Vector3d> c{{0, 0, 0}, {1, 1, 1}};
-    std::vector<double> r{0.01, 0.01};
-    auto res = fitCapsulesFromSpheres(c, r, 0.02, 2, 0.6, 3);
-    EXPECT_TRUE(res.capsules.empty());
-    EXPECT_EQ(res.spheres.size(), 2u);
+// Every mesh vertex must be covered by some capsule (collision safety).
+TEST(CapsuleMeshFit, AllVerticesCovered) {
+    Eigen::MatrixXd V(40, 3);
+    for (int i = 0; i < 40; ++i) { V(i, 0) = 0.05 * i; V(i, 1) = 0.03 * std::sin(i); V(i, 2) = 0.03 * std::cos(i); }
+    std::vector<Eigen::Vector3d> c{{0.5, 0, 0}};
+    std::vector<double> r{0.1};
+    auto caps = fitCapsulesFromMesh(V, c, r, 0.02, 8, 0.4, 3);
+    ASSERT_FALSE(caps.empty());
+    double Rmax = 0.0;
+    for (const auto& cap : caps) Rmax = std::max(Rmax, cap.radius);
+    for (int i = 0; i < V.rows(); ++i) {
+        double best = 1e9;
+        for (const auto& cap : caps)
+            best = std::min(best, pointToSegmentDistance(V.row(i).transpose(), cap.p0, cap.p1));
+        EXPECT_LE(best, Rmax + 1e-9);
+    }
 }
 
 // End-to-end: run CapsuleURDFGenerator on FR3. Verify (a) the JSON sidecar
