@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <map>
 #include <random>
 #include <utility>
 #include <vector>
@@ -391,14 +392,33 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
     Eigen::Vector3d e1 = u.cross(ref).normalized();
     Eigen::Vector3d e2 = u.cross(e1).normalized();
 
-    auto sections = extractSections(V, F, u, origin, n_sections);
-    int N = static_cast<int>(sections.size());
-    if (N == 0) return caps;
+    auto rawSections = extractSections(V, F, u, origin, n_sections);
+    if (rawSections.empty()) return caps;
 
-    // Per-section circles. 2D center (cx,cy) + radius; 3D center below.
-    std::vector<std::vector<Circle2D>> sec(N);
-    for (int k = 0; k < N; ++k)
-        sec[k] = fitCirclesLloyd(sections[k].contour, coa_threshold, max_circles_per_section);
+    // Group contours by plane (axial t): one plane can cut multiple loops. Fit
+    // ONE circle per plane (MEC of all its loops' sampled points) -> uniform
+    // circle count across planes -> consecutive capsules share endpoints ->
+    // chains merge into few long capsules. (Per-loop multi-circle COA
+    // over-segments flanged robot links; max_circles_per_section>1 left as a
+    // future escalation.)
+    std::map<double, std::vector<Contour2D>> planes;
+    for (auto& s : rawSections) planes[s.t].push_back(std::move(s.contour));
+    std::vector<double> planeT;
+    std::vector<Circle2D> planeCircle;
+    for (auto& kv : planes) {
+        std::vector<Eigen::Vector2d> allpts;
+        for (auto& ct : kv.second) {
+            auto p = sampleContour(ct);
+            allpts.insert(allpts.end(), p.begin(), p.end());
+        }
+        if (allpts.empty()) continue;
+        planeT.push_back(kv.first);
+        planeCircle.push_back(mec2d(allpts));
+    }
+    int N = static_cast<int>(planeT.size());
+    if (N == 0) return caps;
+    (void)coa_threshold;
+    (void)max_circles_per_section;
 
     auto to3d = [&](const Circle2D& c, double t) {
         return origin + t * u + c.center.x() * e1 + c.center.y() * e2;
@@ -413,9 +433,8 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         amax = std::max(amax, t);
     }
 
-    // Link circles across consecutive sections by nearest 2D center; each pair
-    // -> a capsule (constant radius = max end radius). Unpaired circles ->
-    // degenerate capsule (sphere-cap).
+    // Chain one capsule per consecutive plane pair (1 circle/plane -> shared
+    // endpoints -> mergeable into long capsules). N==1 -> single sphere-cap.
     auto emit_pair = [&](const Circle2D& a, double ta, const Circle2D& b, double tb) {
         Capsule cap;
         cap.p0 = to3d(a, ta);
@@ -424,34 +443,16 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         caps.push_back(cap);
     };
     if (N == 1) {
-        for (const auto& c : sec[0]) emit_pair(c, sections[0].t, c, sections[0].t);
+        emit_pair(planeCircle[0], planeT[0], planeCircle[0], planeT[0]);
     } else {
-        for (int k = 0; k < N - 1; ++k) {
-            std::vector<char> used(sec[k + 1].size(), 0);
-            for (const auto& a : sec[k]) {
-                int best = -1;
-                double bd = std::numeric_limits<double>::max();
-                for (size_t j = 0; j < sec[k + 1].size(); ++j) {
-                    if (used[j]) continue;
-                    double d = (sec[k + 1][j].center - a.center).squaredNorm();
-                    if (d < bd) { bd = d; best = static_cast<int>(j); }
-                }
-                if (best >= 0) {
-                    used[best] = 1;
-                    emit_pair(a, sections[k].t, sec[k + 1][best], sections[k + 1].t);
-                } else {
-                    emit_pair(a, sections[k].t, a, sections[k].t);  // unpaired: sphere-cap (coverage)
-                }
-            }
-            for (size_t j = 0; j < sec[k + 1].size(); ++j)
-                if (!used[j]) emit_pair(sec[k + 1][j], sections[k + 1].t, sec[k + 1][j], sections[k + 1].t);
-        }
+        for (int k = 0; k < N - 1; ++k)
+            emit_pair(planeCircle[k], planeT[k], planeCircle[k + 1], planeT[k + 1]);
     }
 
     // Extend the chain's end capsules to the mesh axial extremes so the ends
     // (outside the midpoint sections) are covered axially (else grow balloons
     // the radius to reach them). Keep each endpoint's lateral offset.
-    double t0 = sections.front().t, tN = sections.back().t;
+    double t0 = planeT.front(), tN = planeT.back();
     for (auto& cap : caps) {
         double a0 = (cap.p0 - origin).dot(u);
         double a1 = (cap.p1 - origin).dot(u);
