@@ -37,11 +37,19 @@ struct Contour2D {
     std::vector<Eigen::Vector2d> points;  // ordered, implicitly closed (last->first)
 };
 
+/// A cross-section: its 2D contour + axial position t along the axis
+/// (3D plane = { p : u.(p-origin) = t }).
+struct Section2D {
+    Contour2D contour;
+    double t = 0.0;
+};
+
 /// Cross-section extraction (Wu2018 §III-A): slice the mesh with N planes
 /// perpendicular to axis `u` (through `origin`), chain triangle-plane
-/// intersections into closed 2D contours. `origin` is any point on the axis.
-/// Returns up to N contours (one per plane that cuts the mesh).
-std::vector<Contour2D> extractSections(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F,
+/// intersections into closed 2D contours. Sections span the full axial extent
+/// [tmin,tmax] (endpoint-inclusive) so capsules cover the whole link. Returns
+/// one Section2D per plane that cuts the mesh (ascending t).
+std::vector<Section2D> extractSections(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F,
                                        const Eigen::Vector3d& u, const Eigen::Vector3d& origin,
                                        int N);
 

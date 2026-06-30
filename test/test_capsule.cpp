@@ -190,13 +190,14 @@ TEST(CapsuleXSection, CylinderSectionsAreCircles) {
     makeCylinder(0.05, 1.0, 24, V, F);
     auto sections = extractSections(V, F, Eigen::Vector3d::UnitX(), Eigen::Vector3d(0.5, 0, 0), 5);
     EXPECT_GE(sections.size(), 5u);
-    for (const auto& c : sections) {
-        ASSERT_GE(c.points.size(), 3u);
+    for (const auto& s : sections) {
+        const auto& pts = s.contour.points;
+        ASSERT_GE(pts.size(), 3u);
         Eigen::Vector2d ctr = Eigen::Vector2d::Zero();
-        for (const auto& p : c.points) ctr += p;
-        ctr /= double(c.points.size());
+        for (const auto& p : pts) ctr += p;
+        ctr /= double(pts.size());
         double R = 0.0;
-        for (const auto& p : c.points) R = std::max(R, (p - ctr).norm());
+        for (const auto& p : pts) R = std::max(R, (p - ctr).norm());
         EXPECT_NEAR(R, 0.05, 2e-3);       // tight to cylinder radius
         EXPECT_LT(ctr.norm(), 1e-6);      // centered on axis
     }
@@ -260,6 +261,23 @@ TEST(CapsuleLloyd, WideRectangleSplits) {
             if ((cir.center - v).norm() <= cir.radius + 1e-6) { covered = true; break; }
         EXPECT_TRUE(covered);
     }
+}
+
+// ---- Wu2018 capsule assembly (P4) ----
+
+// A cylinder -> one capsule spanning its length, radius ~= cylinder radius,
+// covering every vertex (collision-safe).
+TEST(CapsuleXSectionFit, CylinderToOneCoveringCapsule) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeCylinder(0.05, 1.0, 24, V, F);
+    auto caps = fitCapsulesByCrossSection(V, F, 2, 0.005, 4, 6);
+    ASSERT_EQ(caps.size(), 1u);
+    EXPECT_NEAR(caps[0].radius, 0.05, 1e-3);
+    EXPECT_NEAR((caps[0].p1 - caps[0].p0).norm(), 1.0, 2e-2);
+    for (int i = 0; i < V.rows(); ++i)
+        EXPECT_LE(pointToSegmentDistance(V.row(i).transpose(), caps[0].p0, caps[0].p1),
+                  caps[0].radius + 1e-9);
 }
 
 // End-to-end: run CapsuleURDFGenerator on FR3. Verify (a) the JSON sidecar

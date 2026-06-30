@@ -132,10 +132,10 @@ std::vector<Eigen::Vector2d> sampleContour(const Contour2D& c, int edgeN = 24, i
 
 // Wu2018 §III-A: slice the mesh with planes perpendicular to axis u, chain the
 // triangle-plane intersection segments into closed 2D contours.
-std::vector<Contour2D> extractSections(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F,
+std::vector<Section2D> extractSections(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F,
                                        const Eigen::Vector3d& u, const Eigen::Vector3d& origin,
                                        int N) {
-    std::vector<Contour2D> out;
+    std::vector<Section2D> out;
     if (V.rows() == 0 || F.rows() == 0 || N <= 0) return out;
     Eigen::Vector3d un = u.normalized();
     Eigen::Vector3d ref = std::abs(un.x()) < 0.9 ? Eigen::Vector3d::UnitX() : Eigen::Vector3d::UnitY();
@@ -156,7 +156,8 @@ std::vector<Contour2D> extractSections(const Eigen::MatrixXd& V, const Eigen::Ma
     if (tmax - tmin < 1e-12) return out;
 
     const double eps = 1e-9;
-    auto chain = [&](std::vector<std::pair<Eigen::Vector2d, Eigen::Vector2d>>& segs) {
+    auto chain = [&](std::vector<std::pair<Eigen::Vector2d, Eigen::Vector2d>>& segs,
+                     std::vector<Contour2D>& dest) {
         std::vector<char> used(segs.size(), 0);
         for (size_t s = 0; s < segs.size(); ++s) {
             if (used[s]) continue;
@@ -185,12 +186,16 @@ std::vector<Contour2D> extractSections(const Eigen::MatrixXd& V, const Eigen::Ma
                     break;
                 }
             }
-            out.push_back(std::move(c));
+            dest.push_back(std::move(c));
         }
     };
 
+    auto tk_at = [&](int k) {
+        // midpoint spacing (robust: endpoint planes degenerate on flat caps).
+        return tmin + (k + 0.5) * (tmax - tmin) / N;
+    };
     for (int k = 0; k < N; ++k) {
-        double tk = tmin + (k + 0.5) * (tmax - tmin) / N;
+        double tk = tk_at(k);
         std::vector<std::pair<Eigen::Vector2d, Eigen::Vector2d>> segs;
         for (int f = 0; f < F.rows(); ++f) {
             int va[3] = {F(f, 0), F(f, 1), F(f, 2)};
@@ -212,7 +217,9 @@ std::vector<Contour2D> extractSections(const Eigen::MatrixXd& V, const Eigen::Ma
             }
             if (pts.size() == 2) segs.push_back({proj(pts[0]), proj(pts[1])});
         }
-        chain(segs);
+        std::vector<Contour2D> cs;
+        chain(segs, cs);
+        for (auto& c : cs) out.push_back({std::move(c), tk});
     }
     return out;
 }
@@ -332,9 +339,119 @@ std::vector<Circle2D> fitCirclesLloyd(const Contour2D& contour, double coa_thres
     return circles;
 }
 
-std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd&, const Eigen::MatrixXi&,
-                                               int, double, int, int) {
-    return {};  // P4/P5
+// Wu2018 §III-C..E: section circles -> capsules -> dedupe -> grow to cover.
+// Capsule endpoints sit at circle centers (axial t of consecutive sections),
+// radius = max of the two end radii (constant-radius for <cylinder>+<sphere>).
+std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F,
+                                               int n_sections, double coa_threshold,
+                                               int max_circles_per_section, int max_capsules) {
+    std::vector<Capsule> caps;
+    if (V.rows() < 4 || F.rows() == 0 || n_sections < 1) return caps;
+
+    // PCA axis (longest dimension = "bone direction").
+    Eigen::Vector3d origin = V.colwise().mean();
+    Eigen::MatrixXd Cn = V.rowwise() - origin.transpose();
+    Eigen::Matrix3d cov = (Cn.transpose() * Cn) / double(V.rows());
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es(cov);
+    Eigen::Vector3d u = es.eigenvectors().col(2);
+    Eigen::Vector3d ref = std::abs(u.x()) < 0.9 ? Eigen::Vector3d::UnitX() : Eigen::Vector3d::UnitY();
+    Eigen::Vector3d e1 = u.cross(ref).normalized();
+    Eigen::Vector3d e2 = u.cross(e1).normalized();
+
+    auto sections = extractSections(V, F, u, origin, n_sections);
+    int N = static_cast<int>(sections.size());
+    if (N == 0) return caps;
+
+    // Per-section circles. 2D center (cx,cy) + radius; 3D center below.
+    std::vector<std::vector<Circle2D>> sec(N);
+    for (int k = 0; k < N; ++k)
+        sec[k] = fitCirclesLloyd(sections[k].contour, coa_threshold, max_circles_per_section);
+
+    auto to3d = [&](const Circle2D& c, double t) {
+        return origin + t * u + c.center.x() * e1 + c.center.y() * e2;
+    };
+
+    // Mesh axial extremes (capsule chain endpoints get extended to these).
+    double amin = std::numeric_limits<double>::max();
+    double amax = std::numeric_limits<double>::lowest();
+    for (int i = 0; i < V.rows(); ++i) {
+        double t = (V.row(i).transpose() - origin).dot(u);
+        amin = std::min(amin, t);
+        amax = std::max(amax, t);
+    }
+
+    // Link circles across consecutive sections by nearest 2D center; each pair
+    // -> a capsule (constant radius = max end radius). Unpaired circles ->
+    // degenerate capsule (sphere-cap).
+    auto emit_pair = [&](const Circle2D& a, double ta, const Circle2D& b, double tb) {
+        Capsule cap;
+        cap.p0 = to3d(a, ta);
+        cap.p1 = to3d(b, tb);
+        cap.radius = std::max(a.radius, b.radius);
+        caps.push_back(cap);
+    };
+    if (N == 1) {
+        for (const auto& c : sec[0]) emit_pair(c, sections[0].t, c, sections[0].t);
+    } else {
+        for (int k = 0; k < N - 1; ++k) {
+            std::vector<char> used(sec[k + 1].size(), 0);
+            for (const auto& a : sec[k]) {
+                int best = -1;
+                double bd = std::numeric_limits<double>::max();
+                for (size_t j = 0; j < sec[k + 1].size(); ++j) {
+                    if (used[j]) continue;
+                    double d = (sec[k + 1][j].center - a.center).squaredNorm();
+                    if (d < bd) { bd = d; best = static_cast<int>(j); }
+                }
+                if (best >= 0) {
+                    used[best] = 1;
+                    emit_pair(a, sections[k].t, sec[k + 1][best], sections[k + 1].t);
+                } else {
+                    emit_pair(a, sections[k].t, a, sections[k].t);  // no partner: sphere-cap
+                }
+            }
+            for (size_t j = 0; j < sec[k + 1].size(); ++j)
+                if (!used[j]) emit_pair(sec[k + 1][j], sections[k + 1].t, sec[k + 1][j], sections[k + 1].t);
+        }
+    }
+
+    // Extend the chain's end capsules to the mesh axial extremes so the ends
+    // (outside the midpoint sections) are covered axially (else grow balloons
+    // the radius to reach them). Keep each endpoint's lateral offset.
+    double t0 = sections.front().t, tN = sections.back().t;
+    for (auto& cap : caps) {
+        double a0 = (cap.p0 - origin).dot(u);
+        double a1 = (cap.p1 - origin).dot(u);
+        if (std::abs(a0 - t0) < 1e-9) cap.p0 += (amin - t0) * u;
+        if (std::abs(a1 - tN) < 1e-9) cap.p1 += (amax - tN) * u;
+    }
+
+    // Grow to cover: every vertex within its nearest capsule (collision-safe).
+    for (int i = 0; i < V.rows(); ++i) {
+        Eigen::Vector3d p = V.row(i).transpose();
+        int best = -1;
+        double bd = std::numeric_limits<double>::max();
+        for (int c = 0; c < static_cast<int>(caps.size()); ++c) {
+            double d = pointToSegmentDistance(p, caps[c].p0, caps[c].p1);
+            if (d < bd) { bd = d; best = c; }
+        }
+        if (best >= 0 && bd > caps[best].radius) caps[best].radius = bd;
+    }
+
+    // Drop capsules fully nested in another.
+    caps = dedupeNestedCapsules(caps);
+
+    // Soft budget: if over max_capsules, drop the shortest (least axial cover).
+    while (static_cast<int>(caps.size()) > max_capsules && caps.size() > 1) {
+        int worst = 0;
+        double wl = std::numeric_limits<double>::max();
+        for (int c = 0; c < static_cast<int>(caps.size()); ++c) {
+            double L = (caps[c].p1 - caps[c].p0).norm();
+            if (L < wl) { wl = L; worst = c; }
+        }
+        caps.erase(caps.begin() + worst);
+    }
+    return caps;
 }
 
 }  // namespace urdf_approx_geom
