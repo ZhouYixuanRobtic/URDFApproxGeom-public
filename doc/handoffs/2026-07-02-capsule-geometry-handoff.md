@@ -29,19 +29,42 @@
 
 **FR3 tight result:** generated with `config/capsule/capsuleConfig_tight.yml`; must pass `scripts/check_capsule_tightness.py --caps-json <tight-json>`.
 
-**Test suite:** 15 C++ unit tests + 1 integration test + 1 Python round-trip test — all green.
+**Test suite:** 23 C++ unit tests + 1 integration test + 1 Python round-trip test — 22/23 pass (WideBox ratio regression 1.038 vs 1.0, known).
 
-**Config:** `config/capsule/capsuleConfig.yml`
+**Config — sparse** (`config/capsule/capsuleConfig.yml`):
 ```yaml
-NSections: 6
+NSections: 4
 CoaThreshold: 0.005
-MaxCirclesPerSection: 4
-MaxCapsulesPerLink: 24
-AdaptiveCircleCount: true
+MaxCirclesPerSection: 1
+MaxCapsulesPerLink: 12
+AdaptiveCircleCount: false
 MaxRadiusBinRatio: 1.45
 ```
 
-**Active algorithm:** Wu2018 cross-section decomposition with AdaptiveCircleCount: each section plane adaptively chooses the smallest circle count whose normalized COA proxy is below `CoaThreshold`, capped by `MaxCirclesPerSection`. Sparse config (`capsuleConfig.yml`) uses relaxed tuning for low primitive count. Tight config (`capsuleConfig_tight.yml`) requests tighter coverage and passes the capsule tightness gate.
+**Config — tight** (`config/capsule/capsuleConfig_tight.yml`):
+```yaml
+NSections: 6
+CoaThreshold: 0.005
+MaxCirclesPerSection: 1
+MaxCapsulesPerLink: 16
+AdaptiveCircleCount: false
+MaxRadiusBinRatio: 1.45
+```
+
+**FR3 sparse/tight verification (2026-07-02):**
+```json
+{
+  "sparse_count": 15,
+  "sparse_worst_capV_aabb": 2.51,
+  "sparse_worst_r_binMed": 1.48,
+  "tight_count": 17,
+  "tight_worst_capV_aabb": 2.33,
+  "tight_worst_r_binMed": 1.36
+}
+```
+Comparison gate PASSES (tight improves over sparse). Tightness gate (`capV/aabb <= 2.10`) still fails for both presets — structural: single-circle cross-sections on flanged robot links require more axial sections to hit 2.10.
+
+**Active algorithm:** Wu2018 cross-section decomposition with assignment-based metrics. `MaxCirclesPerSection > 1` empirically worsens gate metrics on FR3 (more small capsules increase total volume-to-AABB ratio). The winning strategy is more axial sections (`NSections`) with single circles per plane — shorter capsules fit local geometry better. Adaptive circle count, COA-Lloyd, and local axial splitting are implemented and config-switchable but currently disabled by default pending better cross-plane circle matching.
 
 ---
 
@@ -76,7 +99,7 @@ config/capsule/
 └── capsuleConfig.yml
 
 test/
-└── test_capsule.cpp         # 15 unit tests + 1 integration test
+└── test_capsule.cpp         # 23 unit tests + 1 integration test
 
 interface/
 └── urdf_approx_geom.cpp     # pybind11: capsuleized(), convex(), spherized()
@@ -99,14 +122,17 @@ scripts/
    a. loadedIntoIGL(V_orig, F_orig)           // original mesh
    b. Manifold(V_orig, F_orig) -> OUT_V, OUT_F  // watertight
    c. Transform OUT_V to link frame -> V_lf
-   d. fitCapsulesByCrossSection(V_lf, OUT_F)
+   d. fitCapsulesByCrossSection(V_lf, OUT_F, options)
       - PCA axis u = largest eigenvector
       - N cross-section planes perpendicular to u
-      - Per plane: MEC of all contour-loop points -> 1 circle
-      - Chain: plane[k].circle -> plane[k+1].circle -> capsule
+      - Per plane: fitFixedCountCirclesForPlane or fitAdaptiveCirclesForPlane (config-driven)
+      - Active-chain matching: circles tracked across planes, degenerate capsules avoided
       - Extend chain ends to mesh axial extremes
-      - mergeCollinearCapsules -> few long capsules
+      - splitMostInflatedCapsules (accepted-split: recompute radii, gate on metrics)
+      - mergeCollinearCapsules (radius-diff guard 0.15)
       - growCapsulesToCover(V_lf)
+      - dedupeNestedCapsules
+      - Coverage-aware budget pruning (re-grow, check coverage, pick min-volume)
    e. growCapsulesToCover(V_orig_lf)          // cover original mesh
    f. emit cylinder + 2 spheres per capsule; JSON
 3. writeURDF + JSON sidecar
