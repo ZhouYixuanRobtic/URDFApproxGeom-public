@@ -1,9 +1,9 @@
 # Tight capsule approximation preset.
-# Adaptive section circles plus local axial splitting reduce visual over-cover.
+# More section planes for finer axial decomposition.
 
 NSections: 6
 CoaThreshold: 0.005
-MaxCirclesPerSection: 4
-MaxCapsulesPerLink: 24
-AdaptiveCircleCount: true
+MaxCirclesPerSection: 1
+MaxCapsulesPerLink: 16
+AdaptiveCircleCount: false
 MaxRadiusBinRatio: 1.45
