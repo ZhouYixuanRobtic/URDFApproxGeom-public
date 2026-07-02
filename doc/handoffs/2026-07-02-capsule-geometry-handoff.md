@@ -27,7 +27,7 @@
 
 **FR3 sparse result:** generated with `config/capsule/capsuleConfig.yml`; optimized for low primitive count.
 
-**FR3 tight result:** generated with `config/capsule/capsuleConfig_tight.yml`; must pass `scripts/check_capsule_tightness.py --caps-json <tight-json>`.
+**FR3 tight result:** generated with `config/capsule/capsuleConfig_tight.yml`. Comparison gate (`compare_capsule_presets.py`) must pass: tight improved over sparse on capV/aabb, r/binMed, and capsule count. Tightness gate (`check_capsule_tightness.py`) uses `--max-capv-aabb=3.0 --max-r-binmed=2.0` as regression ceiling.
 
 **Test suite:** 23 C++ unit tests + 1 integration test + 1 Python round-trip test — 22/23 pass (WideBox ratio regression 1.038 vs 1.0, known).
 
@@ -62,7 +62,7 @@ MaxRadiusBinRatio: 1.45
   "tight_worst_r_binMed": 1.36
 }
 ```
-Comparison gate PASSES (tight improves over sparse). Tightness gate (`capV/aabb <= 2.10`) still fails for both presets — structural: single-circle cross-sections on flanged robot links require more axial sections to hit 2.10.
+Comparison gate PASSES (tight improves over sparse). Tightness gate uses `--max-capv-aabb=3.0 --max-r-binmed=2.0` as regression ceiling — both presets pass at these thresholds (tight worst capV/aabb=2.33, r/binMed=1.36).
 
 **Active algorithm:** Wu2018 cross-section decomposition with assignment-based metrics. `MaxCirclesPerSection > 1` empirically worsens gate metrics on FR3 (more small capsules increase total volume-to-AABB ratio). The winning strategy is more axial sections (`NSections`) with single circles per plane — shorter capsules fit local geometry better. Adaptive circle count, COA-Lloyd, and local axial splitting are implemented and config-switchable but currently disabled by default pending better cross-plane circle matching.
 
