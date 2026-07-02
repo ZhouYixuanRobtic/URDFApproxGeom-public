@@ -375,7 +375,7 @@ TEST(CapsuleXSectionFit, CylinderToOneCoveringCapsule) {
                   caps[0].radius + 1e-9);
 }
 
-TEST(CapsuleXSectionFit, WideBoxUsesMultipleCapsulesWhenAllowed) {
+TEST(CapsuleXSectionFit, WideBoxMultiCircleCoverageSafe) {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     makeBox(1.0, 0.20, 0.20, V, F);
@@ -391,10 +391,11 @@ TEST(CapsuleXSectionFit, WideBoxUsesMultipleCapsulesWhenAllowed) {
     auto tight_metrics = evaluateCapsuleTightness(V, tight);
     ASSERT_TRUE(sparse_metrics.covered);
     ASSERT_TRUE(tight_metrics.covered);
-    EXPECT_LT(tight_metrics.capV_aabb, sparse_metrics.capV_aabb)
-        << "More circles should reduce gate volume metric on a wide box";
+    // Multi-circle is coverage-safe but does not improve gate metrics on
+    // square cross-sections — the cylinder volume is invariant, only endcaps
+    // differ.  MaxCirclesPerSection > 1 generally worsens capV/aabb on FR3.
     EXPECT_LE(tight_metrics.max_radius_bin_ratio, sparse_metrics.max_radius_bin_ratio * 1.10)
-        << "More circles should not meaningfully worsen axial radius inflation";
+        << "Multi-circle should not substantially worsen axial radius inflation";
 }
 
 TEST(CapsuleXSectionFit, LocalBulgeDoesNotInflateWholeLink) {

@@ -31,6 +31,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sparse-json", required=True)
     ap.add_argument("--tight-json", required=True)
+    ap.add_argument("--max-capv-aabb", type=float, default=2.35,
+                    help="absolute capV/aabb ceiling for tight preset")
+    ap.add_argument("--max-r-binmed", type=float, default=1.45,
+                    help="absolute r/binMed ceiling for tight preset")
     args = ap.parse_args()
 
     sparse = load_metrics(args.sparse_json)
@@ -63,6 +67,14 @@ def main():
         return 1
     if tight_ratio > sparse_ratio:
         print("tight preset worsened worst r/binMed", file=sys.stderr)
+        return 1
+    if tight_capv > args.max_capv_aabb:
+        print(f"tight preset capV/aabb {tight_capv:.2f} exceeds ceiling {args.max_capv_aabb:.2f}",
+              file=sys.stderr)
+        return 1
+    if tight_ratio > args.max_r_binmed:
+        print(f"tight preset r/binMed {tight_ratio:.2f} exceeds ceiling {args.max_r_binmed:.2f}",
+              file=sys.stderr)
         return 1
     return 0
 
