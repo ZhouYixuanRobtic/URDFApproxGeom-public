@@ -182,6 +182,26 @@ static void makeCylinder(double r, double L, int M, Eigen::MatrixXd& V, Eigen::M
         F.row(i) = faces[i];
 }
 
+// Axis-aligned box mesh centered at origin with dimensions (x, y, z).
+static void makeBox(double x, double y, double z, Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
+    V.resize(8, 3);
+    V << -x/2, -y/2, -z/2,
+          x/2, -y/2, -z/2,
+          x/2,  y/2, -z/2,
+         -x/2,  y/2, -z/2,
+         -x/2, -y/2,  z/2,
+          x/2, -y/2,  z/2,
+          x/2,  y/2,  z/2,
+         -x/2,  y/2,  z/2;
+    F.resize(12, 3);
+    F << 0, 1, 2, 0, 2, 3,
+         4, 6, 5, 4, 7, 6,
+         0, 4, 5, 0, 5, 1,
+         1, 5, 6, 1, 6, 2,
+         2, 6, 7, 2, 7, 3,
+         3, 7, 4, 3, 4, 0;
+}
+
 // Slicing a cylinder perpendicular to its axis yields circular contours whose
 // radius == the cylinder radius, centered on the axis (2D origin).
 TEST(CapsuleXSection, CylinderSectionsAreCircles) {
@@ -278,6 +298,34 @@ TEST(CapsuleXSectionFit, CylinderToOneCoveringCapsule) {
     for (int i = 0; i < V.rows(); ++i)
         EXPECT_LE(pointToSegmentDistance(V.row(i).transpose(), caps[0].p0, caps[0].p1),
                   caps[0].radius + 1e-9);
+}
+
+TEST(CapsuleXSectionFit, WideBoxUsesMultipleCapsulesWhenAllowed) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeBox(1.0, 0.20, 0.20, V, F);
+
+    auto sparse = fitCapsulesByCrossSection(V, F, 4, 0.005, 1, 12);
+    auto tight = fitCapsulesByCrossSection(V, F, 4, 0.005, 4, 12);
+
+    ASSERT_GE(sparse.size(), 1u);
+    EXPECT_GT(tight.size(), sparse.size())
+        << "MaxCirclesPerSection must affect the fitter for wide sections";
+
+    double sparse_volume = 0.0;
+    for (const auto& c : sparse) {
+        const double L = (c.p1 - c.p0).norm();
+        sparse_volume += M_PI * c.radius * c.radius * L + 4.0 * M_PI * c.radius * c.radius * c.radius / 3.0;
+    }
+
+    double tight_volume = 0.0;
+    for (const auto& c : tight) {
+        const double L = (c.p1 - c.p0).norm();
+        tight_volume += M_PI * c.radius * c.radius * L + 4.0 * M_PI * c.radius * c.radius * c.radius / 3.0;
+    }
+
+    EXPECT_LT(tight_volume, 0.85 * sparse_volume)
+        << "More circles should reduce over-cover volume on a wide box";
 }
 
 // End-to-end: run CapsuleURDFGenerator on FR3. Verify (a) the JSON sidecar
