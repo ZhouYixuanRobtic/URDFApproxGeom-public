@@ -141,6 +141,33 @@ std::vector<Capsule> mergeCollinearCapsules(std::vector<Capsule> caps) {
     return caps;
 }
 
+bool allCovered(const std::vector<Capsule>& caps, const Eigen::MatrixXd& V, double eps = 1e-9) {
+    if (caps.empty()) return V.rows() == 0;
+    for (int i = 0; i < V.rows(); ++i) {
+        Eigen::Vector3d p = V.row(i).transpose();
+        bool covered = false;
+        for (const auto& cap : caps) {
+            if (pointToSegmentDistance(p, cap.p0, cap.p1) <= cap.radius + eps) {
+                covered = true;
+                break;
+            }
+        }
+        if (!covered) return false;
+    }
+    return true;
+}
+
+double capsuleVolume(const Capsule& cap) {
+    double L = (cap.p1 - cap.p0).norm();
+    return M_PI * cap.radius * cap.radius * L + 4.0 * M_PI * cap.radius * cap.radius * cap.radius / 3.0;
+}
+
+double capsuleSetVolume(const std::vector<Capsule>& caps) {
+    double total = 0.0;
+    for (const auto& cap : caps) total += capsuleVolume(cap);
+    return total;
+}
+
 // Sample a polygon: subdivided boundary edges + interior grid points.
 std::vector<Eigen::Vector2d> sampleContour(const Contour2D& c, int edgeN = 24, int grid = 24) {
     std::vector<Eigen::Vector2d> pts;
@@ -569,6 +596,14 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         caps.push_back(cap);
     };
 
+    auto emit_degenerate = [&](const Circle2D& c, double t) {
+        Capsule cap;
+        cap.p0 = to3d(c, t);
+        cap.p1 = cap.p0;
+        cap.radius = c.radius;
+        caps.push_back(cap);
+    };
+
     if (N == 1) {
         for (const auto& circle : planeCircles[0]) {
             emit_pair(circle, planeT[0], circle, planeT[0]);
@@ -577,21 +612,29 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         for (int section = 0; section < N - 1; ++section) {
             const auto& A = planeCircles[section];
             const auto& B = planeCircles[section + 1];
-            std::vector<char> used(B.size(), 0);
+            std::vector<char> usedB(B.size(), 0);
+
             for (const auto& a : A) {
                 int best = -1;
                 double best_dist = std::numeric_limits<double>::max();
                 for (int j = 0; j < static_cast<int>(B.size()); ++j) {
-                    if (used[j]) continue;
+                    if (usedB[j]) continue;
                     double d = (a.center - B[j].center).squaredNorm();
                     if (d < best_dist) {
                         best_dist = d;
                         best = j;
                     }
                 }
-                if (best < 0) best = 0;
-                used[best] = 1;
-                emit_pair(a, planeT[section], B[best], planeT[section + 1]);
+                if (best >= 0) {
+                    usedB[best] = 1;
+                    emit_pair(a, planeT[section], B[best], planeT[section + 1]);
+                } else {
+                    emit_degenerate(a, planeT[section]);
+                }
+            }
+
+            for (int j = 0; j < static_cast<int>(B.size()); ++j) {
+                if (!usedB[j]) emit_degenerate(B[j], planeT[section + 1]);
             }
         }
     }
@@ -611,14 +654,29 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
     caps = dedupeNestedCapsules(caps);
 
     while (static_cast<int>(caps.size()) > options.max_capsules && caps.size() > 1) {
-        int worst = 0;
-        double wl = std::numeric_limits<double>::max();
-        for (int c = 0; c < static_cast<int>(caps.size()); ++c) {
-            double L = (caps[c].p1 - caps[c].p0).norm();
-            if (L < wl) { wl = L; worst = c; }
+        int best_remove = -1;
+        double best_score = std::numeric_limits<double>::max();
+        std::vector<Capsule> best_candidate;
+
+        for (int i = 0; i < static_cast<int>(caps.size()); ++i) {
+            std::vector<Capsule> candidate = caps;
+            candidate.erase(candidate.begin() + i);
+            growCapsulesToCover(candidate, V);
+            candidate = dedupeNestedCapsules(candidate);
+            if (!allCovered(candidate, V)) continue;
+            double score = capsuleSetVolume(candidate);
+            if (score < best_score) {
+                best_score = score;
+                best_remove = i;
+                best_candidate = std::move(candidate);
+            }
         }
-        caps.erase(caps.begin() + worst);
+
+        if (best_remove < 0) break;
+        caps = std::move(best_candidate);
     }
+    growCapsulesToCover(caps, V);
+    caps = dedupeNestedCapsules(caps);
     return caps;
 }
 
