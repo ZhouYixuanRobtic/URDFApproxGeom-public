@@ -130,8 +130,6 @@ std::vector<Capsule> mergeCollinearCapsules(std::vector<Capsule> caps) {
                 if (axa.dot(axb) < 0.3) continue;                // grossly non-collinear (L-joint)
                 // orient B to follow A
                 double merged_radius = std::max(A.radius, B.radius);
-                double min_radius = std::min(A.radius, B.radius);
-                if (min_radius > 1e-12 && merged_radius / min_radius > 1.35) continue;
                 Capsule merged{A.p0, B.p1, merged_radius};
                 caps[i] = merged;
                 caps.erase(caps.begin() + j);
@@ -393,6 +391,7 @@ std::vector<Circle2D> fitFixedCountCirclesForPlane(const std::vector<Contour2D>&
     std::vector<Eigen::Vector2d> seeds;
     seeds.reserve(k);
     seeds.push_back(pts.front());
+    // ponytail: deterministic farthest-point seeding (not probabilistic k-means++); reproducibility over statistical optimality.
     while (static_cast<int>(seeds.size()) < k) {
         int best = 0;
         double best_dist = -1.0;
@@ -410,7 +409,9 @@ std::vector<Circle2D> fitFixedCountCirclesForPlane(const std::vector<Contour2D>&
     }
 
     std::vector<std::vector<Eigen::Vector2d>> groups(k);
-    for (int iter = 0; iter < 8; ++iter) {
+    constexpr int max_iters = 100;
+    constexpr double convergence_threshold = 1e-9;
+    for (int iter = 0; iter < max_iters; ++iter) {
         for (auto& group : groups) group.clear();
         for (const auto& p : pts) {
             int best = 0;
@@ -424,17 +425,23 @@ std::vector<Circle2D> fitFixedCountCirclesForPlane(const std::vector<Contour2D>&
             }
             groups[best].push_back(p);
         }
+        double max_movement = 0.0;
         for (int i = 0; i < k; ++i) {
             if (groups[i].empty()) continue;
             Eigen::Vector2d mean = Eigen::Vector2d::Zero();
             for (const auto& p : groups[i]) mean += p;
-            seeds[i] = mean / double(groups[i].size());
+            Eigen::Vector2d new_seed = mean / double(groups[i].size());
+            double movement = (new_seed - seeds[i]).norm();
+            max_movement = std::max(max_movement, movement);
+            seeds[i] = new_seed;
         }
+        if (max_movement < convergence_threshold) break;
     }
 
     for (int i = 0; i < k; ++i) {
         if (!groups[i].empty()) circles.push_back(mec2d(groups[i]));
     }
+    // ponytail: pad empty clusters with last circle; grow step corrects overlap.
     while (static_cast<int>(circles.size()) < k && !circles.empty()) {
         circles.push_back(circles.back());
     }
@@ -525,6 +532,7 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
                         best = j;
                     }
                 }
+                // ponytail: uniform k makes this path unreachable; defensive fallback only.
                 if (best < 0) best = 0;
                 used[best] = 1;
                 emit_pair(a, planeT[section], B[best], planeT[section + 1]);
