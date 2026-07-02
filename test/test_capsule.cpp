@@ -423,6 +423,33 @@ TEST(CapsuleXSectionFit, LocalSplitReducesRadiusBinInflation) {
     EXPECT_LE(metrics.max_radius_bin_ratio, 1.45);
 }
 
+TEST(CapsuleXSectionFit, LocalSplitReducesVolumeWhenAccepted) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeTwoBoxLink(V, F);
+
+    CapsuleFitOptions no_split;
+    no_split.n_sections = 6;
+    no_split.coa_threshold = 0.005;
+    no_split.max_circles_per_section = 4;
+    no_split.max_capsules = 12;
+    no_split.max_radius_bin_ratio = -1.0;
+    no_split.adaptive_circle_count = true;
+    auto before = fitCapsulesByCrossSection(V, F, no_split);
+    auto before_metrics = evaluateCapsuleTightness(V, before);
+    ASSERT_TRUE(before_metrics.covered);
+
+    CapsuleFitOptions split = no_split;
+    split.max_radius_bin_ratio = 1.45;
+    auto after = fitCapsulesByCrossSection(V, F, split);
+    auto after_metrics = evaluateCapsuleTightness(V, after);
+    ASSERT_TRUE(after_metrics.covered);
+
+    EXPECT_LT(after_metrics.capsule_volume, before_metrics.capsule_volume)
+        << "Accepted split must reduce volume, not merely add same-radius segments";
+    EXPECT_LE(after_metrics.max_radius_bin_ratio, before_metrics.max_radius_bin_ratio);
+}
+
 TEST(CapsuleXSectionFit, BudgetPruningPreservesCoverage) {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;

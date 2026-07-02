@@ -169,19 +169,52 @@ CapsuleBinProfile profileCapsuleBins(const Capsule& cap, const Eigen::MatrixXd& 
     return out;
 }
 
+static Eigen::MatrixXd assignedVerticesForCapsule(const Eigen::MatrixXd& V,
+                                                  const CapsuleVertexAssignment& assignment,
+                                                  int capsule_index) {
+    int count = 0;
+    for (int idx : assignment.capsule_index)
+        if (idx == capsule_index) ++count;
+    Eigen::MatrixXd out(count, 3);
+    int row = 0;
+    for (int i = 0; i < V.rows(); ++i) {
+        if (assignment.capsule_index[i] == capsule_index) out.row(row++) = V.row(i);
+    }
+    return out;
+}
+
+static void resizeCapsulesFromAssignedVertices(std::vector<Capsule>& caps,
+                                               const Eigen::MatrixXd& V) {
+    if (caps.empty() || V.rows() == 0) return;
+    auto assignment = assignVerticesToCapsules(V, caps);
+    std::vector<double> new_radius(caps.size(), 0.0);
+    for (int i = 0; i < V.rows(); ++i) {
+        int c = assignment.capsule_index[i];
+        if (c < 0) continue;
+        new_radius[c] = std::max(new_radius[c], assignment.raw_distance[i]);
+    }
+    for (int c = 0; c < static_cast<int>(caps.size()); ++c) {
+        caps[c].radius = std::max(caps[c].radius, new_radius[c]);
+    }
+}
+
 bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
                               const Eigen::MatrixXd& V,
                               double max_ratio,
                               int max_capsules) {
     if (static_cast<int>(caps.size()) >= max_capsules) return false;
 
+    auto before_metrics = evaluateCapsuleTightness(V, caps);
+    auto assignment = assignVerticesToCapsules(V, caps);
+
     int worst_index = -1;
     CapsuleBinProfile worst_profile;
     double worst_ratio = max_ratio;
     for (int i = 0; i < static_cast<int>(caps.size()); ++i) {
-        double length = (caps[i].p1 - caps[i].p0).norm();
-        if (length < 1e-9) continue;
-        auto profile = profileCapsuleBins(caps[i], V);
+        if ((caps[i].p1 - caps[i].p0).norm() < 1e-9) continue;
+        Eigen::MatrixXd local = assignedVerticesForCapsule(V, assignment, i);
+        if (local.rows() == 0) continue;
+        auto profile = profileCapsuleBins(caps[i], local);
         if (profile.ratio > worst_ratio) {
             worst_ratio = profile.ratio;
             worst_profile = profile;
@@ -205,11 +238,23 @@ bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
 
     double t = std::clamp(split_bin / double(worst_profile.bin_max.size()), 0.15, 0.85);
     Eigen::Vector3d mid = original.p0 + t * (original.p1 - original.p0);
-    Capsule left{original.p0, mid, original.radius};
-    Capsule right{mid, original.p1, original.radius};
-    caps[worst_index] = left;
-    caps.push_back(right);
-    growCapsulesToCover(caps, V);
+    Capsule left{original.p0, mid, 0.0};
+    Capsule right{mid, original.p1, 0.0};
+
+    std::vector<Capsule> candidate = caps;
+    candidate[worst_index] = left;
+    candidate.push_back(right);
+    resizeCapsulesFromAssignedVertices(candidate, V);
+    growCapsulesToCover(candidate, V);
+    candidate = dedupeNestedCapsules(candidate);
+
+    auto after_metrics = evaluateCapsuleTightness(V, candidate);
+    if (!after_metrics.covered) return false;
+    bool improves_volume = after_metrics.capsule_volume < before_metrics.capsule_volume * 0.995;
+    bool improves_ratio = after_metrics.max_radius_bin_ratio < before_metrics.max_radius_bin_ratio;
+    if (!improves_volume && !improves_ratio) return false;
+
+    caps = std::move(candidate);
     return true;
 }
 
