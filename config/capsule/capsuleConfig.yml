@@ -1,8 +1,9 @@
 # Capsule approximation config.
 # Sparse default: few URDF-native primitives, collision-safe outer cover.
-# Set MaxCirclesPerSection > 1 to enable tighter multi-circle sections.
 
 NSections: 4
 CoaThreshold: 0.005
 MaxCirclesPerSection: 1
 MaxCapsulesPerLink: 12
+AdaptiveCircleCount: false
+MaxRadiusBinRatio: 1.45

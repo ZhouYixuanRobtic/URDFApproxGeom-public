@@ -41,8 +41,10 @@ private:
     std::string config_path_;
     int n_sections_ = 4;
     double coa_threshold_ = 0.005;
-    int max_circles_per_section_ = 4;
-    int max_capsules_ = 6;
+    int max_circles_per_section_ = 1;
+    int max_capsules_ = 12;
+    double max_radius_bin_ratio_ = 1.45;
+    bool adaptive_circle_count_ = false;
 };
 
 #endif  // URDFAPPROXGEOM_CAPSULEURDFGENERATOR_H

@@ -41,6 +41,8 @@ CapsuleURDFGenerator::CapsuleURDFGenerator(const std::string& capsule_config_pat
         coa_threshold_ = doc["CoaThreshold"].as<double>(coa_threshold_);
         max_circles_per_section_ = doc["MaxCirclesPerSection"].as<int>(max_circles_per_section_);
         max_capsules_ = doc["MaxCapsulesPerLink"].as<int>(max_capsules_);
+        max_radius_bin_ratio_ = doc["MaxRadiusBinRatio"].as<double>(max_radius_bin_ratio_);
+        adaptive_circle_count_ = doc["AdaptiveCircleCount"].as<bool>(adaptive_circle_count_);
     } catch (...) {
         // keep defaults
     }
@@ -158,8 +160,15 @@ CapsuleURDFGenerator::run(const std::string& urdf_path, const std::string& outpu
         for (int i = 0; i < OUT_V.rows(); ++i)
             Vlf.row(i) = (T + R * OUT_V.row(i).transpose()).transpose();
 
-        auto caps = urdf_approx_geom::fitCapsulesByCrossSection(
-            Vlf, OUT_F, n_sections_, coa_threshold_, max_circles_per_section_, max_capsules_);
+        urdf_approx_geom::CapsuleFitOptions fit_options;
+        fit_options.n_sections = n_sections_;
+        fit_options.coa_threshold = coa_threshold_;
+        fit_options.max_circles_per_section = max_circles_per_section_;
+        fit_options.max_capsules = max_capsules_;
+        fit_options.max_radius_bin_ratio = max_radius_bin_ratio_;
+        fit_options.adaptive_circle_count = adaptive_circle_count_;
+
+        auto caps = urdf_approx_geom::fitCapsulesByCrossSection(Vlf, OUT_F, fit_options);
 
         // The fit ran on the watertight (Manifold) mesh, which may differ from
         // the original; grow again against the ORIGINAL mesh vertices so the
