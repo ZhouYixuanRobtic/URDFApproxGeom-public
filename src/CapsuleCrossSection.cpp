@@ -508,7 +508,10 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
     options.max_circles_per_section = max_circles_per_section;
     options.max_capsules = max_capsules;
     // Preserve existing fixed-count behavior for backward compatibility.
-    options.adaptive_circle_count = false;
+    // When max_circles_per_section > 1 the adaptive path is needed so that
+    // per-section circles can actually capture multiple cross-section lobes;
+    // with max_circles_per_section == 1 there is nothing to adapt.
+    options.adaptive_circle_count = max_circles_per_section > 1;
     return fitCapsulesByCrossSection(V, F, options);
 }
 
@@ -616,9 +619,6 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         }
         caps.erase(caps.begin() + worst);
     }
-    // Re-grow remaining capsules after pruning so vertices that were only
-    // covered by the dropped capsule are still covered.
-    growCapsulesToCover(caps, V);
     return caps;
 }
 
