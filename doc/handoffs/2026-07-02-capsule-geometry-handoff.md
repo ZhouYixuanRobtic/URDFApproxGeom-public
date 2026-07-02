@@ -37,7 +37,7 @@ MaxCirclesPerSection: 4   # not currently used
 MaxCapsulesPerLink: 12
 ```
 
-**Active algorithm (final landing point):** Wu2018 cross-section decomposition with one MEC circle per plane, chain-merged.
+**Active algorithm:** Wu2018 cross-section decomposition with configurable uniform circle count per section plane. Sparse config uses 1 circle/section for low primitive count. Tight config uses up to 4 circles/section and stable adjacent-plane matching for better fit on flanged robot links.
 
 ---
 
@@ -163,7 +163,10 @@ scripts/
 Edit `config/capsule/capsuleConfig.yml`:
 
 - **`NSections`** (default 4): More cross-sections = tighter for tapered links but more capsules. The merge step collapses truly collinear chains, so increasing N doesn't over-segment uniform links but does split tapered ones.
-- **`CoaThreshold`** and **`MaxCirclesPerSection`**: Currently unused (1 circle/plane forced). To re-enable multi-circle COA-Lloyd, set `CoaThreshold: 0.005` and `MaxCirclesPerSection: 4`, then restore the per-contour Lloyd call in `fitCapsulesByCrossSection` (the code is there, just bypassed). Warning: re-enables over-segmentation.
+- **`MaxCirclesPerSection`** controls the number of section circles. `1` gives sparse output. Values above `1` enable multi-circle fitting.
+- **`CoaThreshold`** enables/disables circle splitting behavior. Values `<= 0` force sparse one-circle fitting.
+- **`config/capsule/capsuleConfig.yml`** is the sparse default.
+- **`config/capsule/capsuleConfig_tight.yml`** is the tighter FR3-oriented preset.
 - **`MaxCapsulesPerLink`**: Soft cap; drops shortest capsules if exceeded.
 
 ---
@@ -204,4 +207,11 @@ docker exec spherized-development bash -lc 'cd /workspace && ./build/app/capsule
 # Visualize (host)
 python3 scripts/make_mjcf.py    # generates resources/fr3/urdf/fr3_capsules.xml -> open in robot-viewer
 python3 scripts/viz_capsules.py # pybullet GUI overlay
+```
+
+## 9. Verification
+
+```bash
+# Coverage and tightness gate
+docker exec spherized-development bash -lc 'cd /workspace && python3 scripts/check_capsule_tightness.py'
 ```
