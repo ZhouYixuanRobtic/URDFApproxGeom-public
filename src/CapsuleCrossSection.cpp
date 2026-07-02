@@ -834,38 +834,50 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         caps.push_back(cap);
     };
 
-    if (N == 1) {
-        for (const auto& circle : planeCircles[0]) {
-            emit_pair(circle, planeT[0], circle, planeT[0]);
-        }
-    } else {
-        for (int section = 0; section < N - 1; ++section) {
-            const auto& A = planeCircles[section];
-            const auto& B = planeCircles[section + 1];
-            std::vector<char> usedB(B.size(), 0);
+    struct ActiveChain {
+        Circle2D circle;
+        double t = 0.0;
+        bool matched = false;
+    };
 
-            for (const auto& a : A) {
+    if (N == 1) {
+        for (const auto& circle : planeCircles[0]) emit_degenerate(circle, planeT[0]);
+    } else {
+        std::vector<ActiveChain> active;
+        for (const auto& c : planeCircles.front()) active.push_back({c, planeT.front(), false});
+
+        for (int section = 1; section < N; ++section) {
+            for (auto& chain : active) chain.matched = false;
+            std::vector<char> used(planeCircles[section].size(), 0);
+
+            for (auto& chain : active) {
                 int best = -1;
                 double best_dist = std::numeric_limits<double>::max();
-                for (int j = 0; j < static_cast<int>(B.size()); ++j) {
-                    if (usedB[j]) continue;
-                    double d = (a.center - B[j].center).squaredNorm();
+                for (int j = 0; j < static_cast<int>(planeCircles[section].size()); ++j) {
+                    if (used[j]) continue;
+                    double d = (chain.circle.center - planeCircles[section][j].center).squaredNorm();
                     if (d < best_dist) {
                         best_dist = d;
                         best = j;
                     }
                 }
                 if (best >= 0) {
-                    usedB[best] = 1;
-                    emit_pair(a, planeT[section], B[best], planeT[section + 1]);
-                } else {
-                    emit_degenerate(a, planeT[section]);
+                    emit_pair(chain.circle, chain.t, planeCircles[section][best], planeT[section]);
+                    chain.circle = planeCircles[section][best];
+                    chain.t = planeT[section];
+                    chain.matched = true;
+                    used[best] = 1;
                 }
             }
 
-            for (int j = 0; j < static_cast<int>(B.size()); ++j) {
-                if (!usedB[j]) emit_degenerate(B[j], planeT[section + 1]);
+            std::vector<ActiveChain> next_active;
+            for (const auto& chain : active) {
+                if (chain.matched) next_active.push_back(chain);
             }
+            for (int j = 0; j < static_cast<int>(planeCircles[section].size()); ++j) {
+                if (!used[j]) next_active.push_back({planeCircles[section][j], planeT[section], true});
+            }
+            active = std::move(next_active);
         }
     }
 
