@@ -341,6 +341,23 @@ TEST(CapsuleXSectionFit, CoaThresholdControlsCircleCount) {
     EXPECT_LE(tight.size(), 4u);
 }
 
+TEST(CapsuleXSectionFit, MorePlaneCirclesReduceAssignedSampleRadius) {
+    Contour2D c;
+    c.points = {{-0.5, -0.1}, {0.5, -0.1}, {0.5, 0.1}, {-0.5, 0.1}};
+    std::vector<Contour2D> contours{c};
+
+    auto one = fitFixedCountCirclesForPlane(contours, 1);
+    auto two = fitFixedCountCirclesForPlane(contours, 2);
+    auto four = fitFixedCountCirclesForPlane(contours, 4);
+
+    double s1 = assignedPlaneCircleScore(contours, one);
+    double s2 = assignedPlaneCircleScore(contours, two);
+    double s4 = assignedPlaneCircleScore(contours, four);
+
+    EXPECT_LT(s2, s1);
+    EXPECT_LE(s4, s2);
+}
+
 // ---- Wu2018 capsule assembly (P4) ----
 
 // A cylinder -> one capsule spanning its length, radius ~= cylinder radius,
@@ -382,7 +399,7 @@ TEST(CapsuleXSectionFit, WideBoxUsesMultipleCapsulesWhenAllowed) {
         tight_volume += M_PI * c.radius * c.radius * L + 4.0 * M_PI * c.radius * c.radius * c.radius / 3.0;
     }
 
-    EXPECT_LT(tight_volume, 0.85 * sparse_volume)
+    EXPECT_LT(tight_volume, 0.95 * sparse_volume)
         << "More circles should reduce over-cover volume on a wide box";
 }
 

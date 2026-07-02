@@ -700,6 +700,35 @@ double normalizedPlaneOutsideArea(const std::vector<Circle2D>& circles,
     return outside / area;
 }
 
+double assignedPlaneCircleScore(const std::vector<Contour2D>& contours,
+                                const std::vector<Circle2D>& circles) {
+    std::vector<Eigen::Vector2d> pts;
+    for (const auto& contour : contours) {
+        auto sampled = sampleContour(contour);
+        pts.insert(pts.end(), sampled.begin(), sampled.end());
+    }
+    if (pts.empty() || circles.empty()) return std::numeric_limits<double>::infinity();
+
+    double max_assigned_radius = 0.0;
+    double mean_positive_slack = 0.0;
+    for (const auto& p : pts) {
+        double best_signed = std::numeric_limits<double>::max();
+        double best_raw = std::numeric_limits<double>::max();
+        for (const auto& circle : circles) {
+            double raw = (p - circle.center).norm();
+            double signed_dist = raw - circle.radius;
+            if (signed_dist < best_signed) {
+                best_signed = signed_dist;
+                best_raw = raw;
+            }
+        }
+        max_assigned_radius = std::max(max_assigned_radius, best_raw);
+        mean_positive_slack += std::max(0.0, -best_signed);
+    }
+    mean_positive_slack /= double(pts.size());
+    return max_assigned_radius + 0.05 * mean_positive_slack;
+}
+
 std::vector<Circle2D> fitAdaptiveCirclesForPlane(const std::vector<Contour2D>& contours,
                                                  double coa_threshold,
                                                  int max_circles) {
@@ -707,17 +736,18 @@ std::vector<Circle2D> fitAdaptiveCirclesForPlane(const std::vector<Contour2D>& c
     if (coa_threshold <= 0.0) return fitFixedCountCirclesForPlane(contours, 1);
 
     std::vector<Circle2D> best = fitFixedCountCirclesForPlane(contours, 1);
-    double best_score = normalizedPlaneOutsideArea(best, contours);
+    double best_score = assignedPlaneCircleScore(contours, best);
     if (best_score <= coa_threshold) return best;
 
     for (int k = 2; k <= cap; ++k) {
         auto candidate = fitFixedCountCirclesForPlane(contours, k);
-        double score = normalizedPlaneOutsideArea(candidate, contours);
+        double score = assignedPlaneCircleScore(contours, candidate);
+        double relative_improvement = (best_score - score) / std::max(best_score, 1e-12);
         if (score < best_score) {
             best = candidate;
             best_score = score;
         }
-        if (score <= coa_threshold) return candidate;
+        if (relative_improvement < coa_threshold) break;
     }
     return best;
 }

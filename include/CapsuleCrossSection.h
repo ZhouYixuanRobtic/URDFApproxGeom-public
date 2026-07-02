@@ -99,6 +99,9 @@ CapsuleVertexAssignment assignVerticesToCapsules(const Eigen::MatrixXd& V,
 CapsuleTightnessMetrics evaluateCapsuleTightness(const Eigen::MatrixXd& V,
                                                  const std::vector<Capsule>& caps);
 
+double assignedPlaneCircleScore(const std::vector<Contour2D>& contours,
+                                const std::vector<Circle2D>& circles);
+
 std::vector<Circle2D> fitAdaptiveCirclesForPlane(const std::vector<Contour2D>& contours,
                                                  double coa_threshold,
                                                  int max_circles);
