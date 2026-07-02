@@ -202,6 +202,22 @@ static void makeBox(double x, double y, double z, Eigen::MatrixXd& V, Eigen::Mat
          3, 7, 4, 3, 4, 0;
 }
 
+// Two small boxes separated by a narrow neck: the bulge should stay local.
+static void makeTwoBoxLink(Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
+    Eigen::MatrixXd A, B;
+    Eigen::MatrixXi FA, FB;
+    makeBox(0.20, 0.20, 0.20, A, FA);
+    makeBox(0.20, 0.60, 0.20, B, FB);
+    for (int i = 0; i < A.rows(); ++i) A(i, 0) -= 0.20;
+    for (int i = 0; i < B.rows(); ++i) B(i, 0) += 0.20;
+
+    V.resize(A.rows() + B.rows(), 3);
+    V << A, B;
+    F.resize(FA.rows() + FB.rows(), 3);
+    F.topRows(FA.rows()) = FA;
+    F.bottomRows(FB.rows()) = FB.array() + A.rows();
+}
+
 // Slicing a cylinder perpendicular to its axis yields circular contours whose
 // radius == the cylinder radius, centered on the axis (2D origin).
 TEST(CapsuleXSection, CylinderSectionsAreCircles) {
@@ -326,6 +342,24 @@ TEST(CapsuleXSectionFit, WideBoxUsesMultipleCapsulesWhenAllowed) {
 
     EXPECT_LT(tight_volume, 0.93 * sparse_volume)
         << "More circles should reduce over-cover volume on a wide box";
+}
+
+TEST(CapsuleXSectionFit, LocalBulgeDoesNotInflateWholeLink) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeTwoBoxLink(V, F);
+
+    auto caps = fitCapsulesByCrossSection(V, F, 6, 0.005, 2, 12);
+    ASSERT_GE(caps.size(), 2u);
+
+    double smallest_radius = std::numeric_limits<double>::max();
+    double largest_radius = 0.0;
+    for (const auto& cap : caps) {
+        smallest_radius = std::min(smallest_radius, cap.radius);
+        largest_radius = std::max(largest_radius, cap.radius);
+    }
+    EXPECT_LT(smallest_radius, 0.75 * largest_radius)
+        << "A narrow section should keep a smaller capsule instead of inheriting the bulge radius";
 }
 
 // End-to-end: run CapsuleURDFGenerator on FR3. Verify (a) the JSON sidecar

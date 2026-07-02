@@ -122,14 +122,17 @@ std::vector<Capsule> mergeCollinearCapsules(std::vector<Capsule> caps) {
                 double la = (A.p1 - A.p0).norm();
                 double lb = (B.p1 - B.p0).norm();
                 if (la < 1e-9 || lb < 1e-9) continue;            // skip degenerate
-                if (std::abs(A.radius - B.radius) > 0.30 * std::max(A.radius, B.radius)) continue;
+                if (std::abs(A.radius - B.radius) > 0.15 * std::max(A.radius, B.radius)) continue;
                 double gap = (A.p1 - B.p0).norm();               // end-to-end adjacency
                 if (gap > 0.3 * std::max(la, lb)) continue;
                 Eigen::Vector3d axa = (A.p1 - A.p0) / la;
                 Eigen::Vector3d axb = (B.p1 - B.p0) / lb;
                 if (axa.dot(axb) < 0.3) continue;                // grossly non-collinear (L-joint)
                 // orient B to follow A
-                Capsule merged{A.p0, B.p1, std::max(A.radius, B.radius)};
+                double merged_radius = std::max(A.radius, B.radius);
+                double min_radius = std::min(A.radius, B.radius);
+                if (min_radius > 1e-12 && merged_radius / min_radius > 1.35) continue;
+                Capsule merged{A.p0, B.p1, merged_radius};
                 caps[i] = merged;
                 caps.erase(caps.begin() + j);
                 changed = true;
