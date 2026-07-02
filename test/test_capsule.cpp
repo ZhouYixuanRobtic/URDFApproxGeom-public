@@ -239,6 +239,58 @@ TEST(CapsuleXSection, CylinderSectionsAreCircles) {
     }
 }
 
+static double capsuleVolume(const Capsule& c) {
+    const double L = (c.p1 - c.p0).norm();
+    return M_PI * c.radius * c.radius * L + 4.0 * M_PI * c.radius * c.radius * c.radius / 3.0;
+}
+
+static double capsuleSetVolume(const std::vector<Capsule>& caps) {
+    double v = 0.0;
+    for (const auto& c : caps) v += capsuleVolume(c);
+    return v;
+}
+
+static bool allVerticesCoveredByAnyCapsule(const Eigen::MatrixXd& V,
+                                           const std::vector<Capsule>& caps,
+                                           double eps = 1e-9) {
+    for (int i = 0; i < V.rows(); ++i) {
+        bool covered = false;
+        Eigen::Vector3d p = V.row(i).transpose();
+        for (const auto& c : caps) {
+            if (pointToSegmentDistance(p, c.p0, c.p1) <= c.radius + eps) {
+                covered = true;
+                break;
+            }
+        }
+        if (!covered) return false;
+    }
+    return true;
+}
+
+static double maxRadiusToMedianBinRatio(const Eigen::MatrixXd& V,
+                                        const std::vector<Capsule>& caps) {
+    double worst = 0.0;
+    for (const auto& cap : caps) {
+        Eigen::Vector3d axis = cap.p1 - cap.p0;
+        double denom = axis.squaredNorm();
+        std::vector<double> bins(10, 0.0);
+        for (int i = 0; i < V.rows(); ++i) {
+            Eigen::Vector3d p = V.row(i).transpose();
+            double t = denom < 1e-12 ? 0.0 : std::clamp((p - cap.p0).dot(axis) / denom, 0.0, 1.0);
+            int slot = std::min(9, std::max(0, static_cast<int>(t * 10.0)));
+            bins[slot] = std::max(bins[slot], pointToSegmentDistance(p, cap.p0, cap.p1));
+        }
+        std::vector<double> nonzero;
+        for (double b : bins)
+            if (b > 1e-12) nonzero.push_back(b);
+        if (nonzero.empty()) continue;
+        std::sort(nonzero.begin(), nonzero.end());
+        double median = nonzero[nonzero.size() / 2];
+        worst = std::max(worst, cap.radius / median);
+    }
+    return worst;
+}
+
 // ---- Wu2018 COA metric (P2) ----
 
 // Unit square (CCW), side 1 centered at origin.
@@ -299,6 +351,19 @@ TEST(CapsuleLloyd, WideRectangleSplits) {
     }
 }
 
+TEST(CapsuleXSectionFit, CoaThresholdControlsCircleCount) {
+    Contour2D c;
+    c.points = {{-0.5, -0.1}, {0.5, -0.1}, {0.5, 0.1}, {-0.5, 0.1}};
+    std::vector<Contour2D> contours{c};
+
+    auto sparse = fitAdaptiveCirclesForPlane(contours, 10.0, 4);
+    auto tight = fitAdaptiveCirclesForPlane(contours, 0.005, 4);
+
+    ASSERT_EQ(sparse.size(), 1u);
+    EXPECT_GT(tight.size(), sparse.size());
+    EXPECT_LE(tight.size(), 4u);
+}
+
 // ---- Wu2018 capsule assembly (P4) ----
 
 // A cylinder -> one capsule spanning its length, radius ~= cylinder radius,
@@ -340,10 +405,7 @@ TEST(CapsuleXSectionFit, WideBoxUsesMultipleCapsulesWhenAllowed) {
         tight_volume += M_PI * c.radius * c.radius * L + 4.0 * M_PI * c.radius * c.radius * c.radius / 3.0;
     }
 
-    // ponytail: 0.915 is the observed ceiling (ratio = 0.914). 0.85 would require
-    // cross-plane circle matching to better partition the wide box's cross-section
-    // rather than just per-plane k-means convergence, which is a future improvement.
-    EXPECT_LT(tight_volume, 0.915 * sparse_volume)
+    EXPECT_LT(tight_volume, 0.85 * sparse_volume)
         << "More circles should reduce over-cover volume on a wide box";
 }
 
@@ -363,6 +425,42 @@ TEST(CapsuleXSectionFit, LocalBulgeDoesNotInflateWholeLink) {
     }
     EXPECT_LT(smallest_radius, 0.75 * largest_radius)
         << "A narrow section should keep a smaller capsule instead of inheriting the bulge radius";
+}
+
+TEST(CapsuleXSectionFit, LocalSplitReducesRadiusBinInflation) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeTwoBoxLink(V, F);
+
+    CapsuleFitOptions opts;
+    opts.n_sections = 6;
+    opts.coa_threshold = 0.005;
+    opts.max_circles_per_section = 3;
+    opts.max_capsules = 12;
+    opts.max_radius_bin_ratio = 1.45;
+    opts.adaptive_circle_count = true;
+
+    auto caps = fitCapsulesByCrossSection(V, F, opts);
+    ASSERT_TRUE(allVerticesCoveredByAnyCapsule(V, caps));
+    EXPECT_LE(maxRadiusToMedianBinRatio(V, caps), 1.45);
+}
+
+TEST(CapsuleXSectionFit, BudgetPruningPreservesCoverage) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeTwoBoxLink(V, F);
+
+    CapsuleFitOptions opts;
+    opts.n_sections = 6;
+    opts.coa_threshold = 0.005;
+    opts.max_circles_per_section = 4;
+    opts.max_capsules = 2;
+    opts.max_radius_bin_ratio = 1.45;
+    opts.adaptive_circle_count = true;
+
+    auto caps = fitCapsulesByCrossSection(V, F, opts);
+    ASSERT_LE(caps.size(), 2u);
+    EXPECT_TRUE(allVerticesCoveredByAnyCapsule(V, caps));
 }
 
 // End-to-end: run CapsuleURDFGenerator on FR3. Verify (a) the JSON sidecar
