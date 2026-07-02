@@ -393,7 +393,7 @@ TEST(CapsuleXSectionFit, WideBoxUsesMultipleCapsulesWhenAllowed) {
     ASSERT_TRUE(tight_metrics.covered);
     EXPECT_LT(tight_metrics.capV_aabb, sparse_metrics.capV_aabb)
         << "More circles should reduce gate volume metric on a wide box";
-    EXPECT_LE(tight_metrics.max_radius_bin_ratio, sparse_metrics.max_radius_bin_ratio * 1.05)
+    EXPECT_LE(tight_metrics.max_radius_bin_ratio, sparse_metrics.max_radius_bin_ratio)
         << "More circles should not meaningfully worsen axial radius inflation";
 }
 
