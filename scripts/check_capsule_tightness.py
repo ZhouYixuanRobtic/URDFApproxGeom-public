@@ -1,44 +1,55 @@
 #!/usr/bin/env python3
 import argparse
+import json
+import os
 import subprocess
 import sys
 
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--caps-json", default="resources/fr3/urdf/fr3_capsuleized.json")
+    parser.add_argument("--urdf", default="resources/fr3/urdf/fr3.urdf")
     parser.add_argument("--max-capv-aabb", type=float, default=2.10)
     parser.add_argument("--max-r-binmed", type=float, default=1.45)
+    parser.add_argument("--max-capsules", type=int, default=24)
     args = parser.parse_args()
 
+    if not os.path.exists(args.caps_json):
+        print(f"capsule json does not exist: {args.caps_json}", file=sys.stderr)
+        return 2
+
     proc = subprocess.run(
-        [sys.executable, "scripts/check_capsule_coverage.py"],
+        [
+            sys.executable,
+            "scripts/check_capsule_coverage.py",
+            "--caps-json", args.caps_json,
+            "--urdf", args.urdf,
+            "--json",
+        ],
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         check=False,
     )
-    print(proc.stdout)
     if proc.returncode != 0:
+        print(proc.stdout)
         return proc.returncode
-    if "ALL COVERED: True" not in proc.stdout:
-        print("coverage gate failed: ALL COVERED was not True", file=sys.stderr)
+
+    result = json.loads(proc.stdout)
+    print(json.dumps(result, indent=2, sort_keys=True))
+    if not result["all_covered"]:
+        print("coverage gate failed: not all links are covered", file=sys.stderr)
         return 1
 
     failures = []
-    for line in proc.stdout.splitlines():
-        parts = line.split()
-        if len(parts) < 8 or parts[0] in {"link", "ALL"}:
-            continue
-        link = parts[0]
-        try:
-            capv_aabb = float(parts[6])
-            r_binmed = float(parts[7])
-        except ValueError:
-            continue
-        if capv_aabb > args.max_capv_aabb:
-            failures.append(f"{link}: capV/aabb {capv_aabb:.2f} > {args.max_capv_aabb:.2f}")
-        if r_binmed > args.max_r_binmed:
-            failures.append(f"{link}: r/binMed {r_binmed:.2f} > {args.max_r_binmed:.2f}")
+    for row in result["links"]:
+        if row["capsules"] > args.max_capsules:
+            failures.append(f"{row['link']}: capsules {row['capsules']} > {args.max_capsules}")
+        if row["capV_aabb"] > args.max_capv_aabb:
+            failures.append(f"{row['link']}: capV/aabb {row['capV_aabb']:.2f} > {args.max_capv_aabb:.2f}")
+        if row["r_binMed"] > args.max_r_binmed:
+            failures.append(f"{row['link']}: r/binMed {row['r_binMed']:.2f} > {args.max_r_binmed:.2f}")
 
     if failures:
         print("tightness gate failed:", file=sys.stderr)

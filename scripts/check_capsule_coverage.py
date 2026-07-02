@@ -117,23 +117,19 @@ def best_capsule_distance(vertex, capsules):
     return best_signed, best_raw, best_index
 
 
-def main():
-    caps = json.load(open(CAPS_JSON))
-    cols = parse_collisions(FR3_URDF)
-    print(f"{'link':16} {'caps':>4} {'covered':8} {'worst':>9} {'radius':>8} "
-          f"{'maxd':>8} {'capV/aabb':>9} {'r/binMed':>8} | "
-          f"{'PCA axis (link)':26} {'bbox long axis':26}")
+def evaluate_capsules(caps_json, urdf_path):
+    caps = json.load(open(caps_json))
+    cols = parse_collisions(urdf_path)
+    rows = []
     all_ok = True
     for link, body in caps.items():
-        if link not in cols:
-            print(f"{link:16} (no collision parsed)")
+        if link not in cols or "capsules" not in body:
             continue
         T, R, fn = cols[link]
         if fn is None:
             continue
         stl = fn.replace(MESH_PREFIX, os.path.join(REPO, "resources/fr3"))
         V = trimesh.load(stl).vertices
-
         capsules = [capsule_to_mesh_frame(cp, T, R) for cp in body["capsules"]]
         signed = []
         raw = []
@@ -148,26 +144,62 @@ def main():
         assigned = np.array(assigned, dtype=int)
         worst = float(signed.max())
         covered = worst <= 1e-6
-        maxd = float(raw.max())
-
         all_ok &= covered
-
         inflation, radius_ratio = tightness_metrics(V, capsules, assigned)
 
-        # Pick the FIRST capsule for axis / bbox comparison
-        p0L = np.array(body["capsules"][0]["p0"]); p1L = np.array(body["capsules"][0]["p1"])
-        cap_axis = (p1L - p0L)
-        cap_axis = cap_axis / np.linalg.norm(cap_axis) if np.linalg.norm(cap_axis) > 1e-12 else np.zeros(3)
-        seg_len = float(np.linalg.norm(p1L - p0L))
+        p0L = np.array(body["capsules"][0]["p0"], dtype=float)
+        p1L = np.array(body["capsules"][0]["p1"], dtype=float)
+        cap_axis = p1L - p0L
+        seg_len = float(np.linalg.norm(cap_axis))
+        cap_axis = cap_axis / seg_len if seg_len > 1e-12 else np.zeros(3)
         ext = V.max(axis=0) - V.min(axis=0)
-        long_axis = np.zeros(3); long_axis[int(np.argmax(ext))] = 1.0
+        long_axis = np.zeros(3)
+        long_axis[int(np.argmax(ext))] = 1.0
         align = abs(float(cap_axis @ long_axis))
-        ncaps = len(body["capsules"])
-        print(f"{link:16} {ncaps:4} {str(covered):8} {worst:9.6f} {capsules[0][2]:8.4f} "
-              f"{maxd:8.4f} {inflation:9.4f} {radius_ratio:8.2f} | "
-              f"axis=[{cap_axis[0]:+.2f} {cap_axis[1]:+.2f} {cap_axis[2]:+.2f}] "
-              f"len={seg_len:.3f} bbox_long=[{int(long_axis[0])} {int(long_axis[1])} {int(long_axis[2])}] align={align:.2f}")
-    print(f"\nALL COVERED: {all_ok}")
+
+        rows.append({
+            "link": link,
+            "capsules": len(body["capsules"]),
+            "covered": bool(covered),
+            "worst": worst,
+            "radius": float(max(c[2] for c in capsules)),
+            "maxd": float(raw.max()),
+            "capV_aabb": float(inflation),
+            "r_binMed": float(radius_ratio),
+            "axis": [float(cap_axis[0]), float(cap_axis[1]), float(cap_axis[2])],
+            "axis_length": seg_len,
+            "bbox_long_axis": [int(long_axis[0]), int(long_axis[1]), int(long_axis[2])],
+            "axis_bbox_align": align,
+        })
+    return {"all_covered": bool(all_ok), "links": rows}
+
+
+def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--caps-json", default=CAPS_JSON)
+    ap.add_argument("--urdf", default=FR3_URDF)
+    ap.add_argument("--json", action="store_true", help="emit machine-readable metrics")
+    args = ap.parse_args()
+
+    result = evaluate_capsules(args.caps_json, args.urdf)
+    if args.json:
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return
+
+    print(f"{'link':16} {'caps':>4} {'covered':8} {'worst':>9} {'radius':>8} "
+          f"{'maxd':>8} {'capV/aabb':>9} {'r/binMed':>8} | "
+          f"{'PCA axis (link)':26} {'bbox long axis':26}")
+    for row in result["links"]:
+        axis = row["axis"]
+        bbox = row["bbox_long_axis"]
+        print(f"{row['link']:16} {row['capsules']:4} {str(row['covered']):8} "
+              f"{row['worst']:9.6f} {row['radius']:8.4f} {row['maxd']:8.4f} "
+              f"{row['capV_aabb']:9.4f} {row['r_binMed']:8.2f} | "
+              f"axis=[{axis[0]:+.2f} {axis[1]:+.2f} {axis[2]:+.2f}] "
+              f"len={row['axis_length']:.3f} bbox_long=[{bbox[0]} {bbox[1]} {bbox[2]}] "
+              f"align={row['axis_bbox_align']:.2f}")
+    print(f"\nALL COVERED: {result['all_covered']}")
 
 
 if __name__ == "__main__":
