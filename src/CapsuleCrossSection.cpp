@@ -141,6 +141,78 @@ std::vector<Capsule> mergeCollinearCapsules(std::vector<Capsule> caps) {
     return caps;
 }
 
+struct CapsuleBinProfile {
+    std::vector<double> bin_max;
+    double median_nonzero = 0.0;
+    double ratio = 0.0;
+};
+
+CapsuleBinProfile profileCapsuleBins(const Capsule& cap, const Eigen::MatrixXd& V, int bins = 10) {
+    CapsuleBinProfile out;
+    out.bin_max.assign(bins, 0.0);
+    Eigen::Vector3d axis = cap.p1 - cap.p0;
+    double denom = axis.squaredNorm();
+    for (int i = 0; i < V.rows(); ++i) {
+        Eigen::Vector3d p = V.row(i).transpose();
+        double t = denom < 1e-12 ? 0.0 : std::clamp((p - cap.p0).dot(axis) / denom, 0.0, 1.0);
+        int slot = std::min(bins - 1, std::max(0, static_cast<int>(t * bins)));
+        out.bin_max[slot] = std::max(out.bin_max[slot], pointToSegmentDistance(p, cap.p0, cap.p1));
+    }
+    std::vector<double> nonzero;
+    for (double v : out.bin_max)
+        if (v > 1e-12) nonzero.push_back(v);
+    if (!nonzero.empty()) {
+        std::sort(nonzero.begin(), nonzero.end());
+        out.median_nonzero = nonzero[nonzero.size() / 2];
+        out.ratio = cap.radius / out.median_nonzero;
+    }
+    return out;
+}
+
+bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
+                              const Eigen::MatrixXd& V,
+                              double max_ratio,
+                              int max_capsules) {
+    if (static_cast<int>(caps.size()) >= max_capsules) return false;
+
+    int worst_index = -1;
+    CapsuleBinProfile worst_profile;
+    double worst_ratio = max_ratio;
+    for (int i = 0; i < static_cast<int>(caps.size()); ++i) {
+        double length = (caps[i].p1 - caps[i].p0).norm();
+        if (length < 1e-9) continue;
+        auto profile = profileCapsuleBins(caps[i], V);
+        if (profile.ratio > worst_ratio) {
+            worst_ratio = profile.ratio;
+            worst_profile = profile;
+            worst_index = i;
+        }
+    }
+    if (worst_index < 0) return false;
+
+    Capsule original = caps[worst_index];
+    int split_bin = 5;
+    double best_drop = -1.0;
+    for (int i = 1; i < static_cast<int>(worst_profile.bin_max.size()); ++i) {
+        double left = worst_profile.bin_max[i - 1];
+        double right = worst_profile.bin_max[i];
+        double drop = original.radius - std::max(left, right);
+        if (drop > best_drop) {
+            best_drop = drop;
+            split_bin = i;
+        }
+    }
+
+    double t = std::clamp(split_bin / double(worst_profile.bin_max.size()), 0.15, 0.85);
+    Eigen::Vector3d mid = original.p0 + t * (original.p1 - original.p0);
+    Capsule left{original.p0, mid, original.radius};
+    Capsule right{mid, original.p1, original.radius};
+    caps[worst_index] = left;
+    caps.push_back(right);
+    growCapsulesToCover(caps, V);
+    return true;
+}
+
 bool allCovered(const std::vector<Capsule>& caps, const Eigen::MatrixXd& V, double eps = 1e-9) {
     if (caps.empty()) return V.rows() == 0;
     for (int i = 0; i < V.rows(); ++i) {
@@ -539,6 +611,7 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
     // per-section circles can actually capture multiple cross-section lobes;
     // with max_circles_per_section == 1 there is nothing to adapt.
     options.adaptive_circle_count = max_circles_per_section > 1;
+    options.max_radius_bin_ratio = -1;  // disable split for backward compatibility
     return fitCapsulesByCrossSection(V, F, options);
 }
 
@@ -651,6 +724,11 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
 
     caps = mergeCollinearCapsules(caps);
     growCapsulesToCover(caps, V);
+    if (options.max_radius_bin_ratio > 0) {
+        while (splitMostInflatedCapsule(caps, V, options.max_radius_bin_ratio, options.max_capsules)) {
+        }
+        growCapsulesToCover(caps, V);
+    }
     caps = dedupeNestedCapsules(caps);
 
     while (static_cast<int>(caps.size()) > options.max_capsules && caps.size() > 1) {
