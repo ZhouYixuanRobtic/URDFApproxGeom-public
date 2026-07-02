@@ -78,13 +78,26 @@ struct CapsuleFitOptions {
     bool adaptive_circle_count = true;
 };
 
-struct CapsuleFitStats {
-    double cap_volume = 0.0;
+struct CapsuleTightnessMetrics {
+    bool covered = false;
+    double worst_signed_distance = 0.0;
+    double capsule_volume = 0.0;
     double aabb_volume = 0.0;
     double capV_aabb = 0.0;
     double max_radius_bin_ratio = 0.0;
-    bool covered = false;
 };
+
+struct CapsuleVertexAssignment {
+    std::vector<int> capsule_index;
+    std::vector<double> raw_distance;
+    std::vector<double> signed_distance;
+};
+
+CapsuleVertexAssignment assignVerticesToCapsules(const Eigen::MatrixXd& V,
+                                                 const std::vector<Capsule>& caps);
+
+CapsuleTightnessMetrics evaluateCapsuleTightness(const Eigen::MatrixXd& V,
+                                                 const std::vector<Capsule>& caps);
 
 std::vector<Circle2D> fitAdaptiveCirclesForPlane(const std::vector<Contour2D>& contours,
                                                  double coa_threshold,

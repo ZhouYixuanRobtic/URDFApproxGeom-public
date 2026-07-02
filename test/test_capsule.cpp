@@ -267,29 +267,6 @@ static bool allVerticesCoveredByAnyCapsule(const Eigen::MatrixXd& V,
     return true;
 }
 
-static double maxRadiusToMedianBinRatio(const Eigen::MatrixXd& V,
-                                        const std::vector<Capsule>& caps) {
-    double worst = 0.0;
-    for (const auto& cap : caps) {
-        Eigen::Vector3d axis = cap.p1 - cap.p0;
-        double denom = axis.squaredNorm();
-        std::vector<double> bins(10, 0.0);
-        for (int i = 0; i < V.rows(); ++i) {
-            Eigen::Vector3d p = V.row(i).transpose();
-            double t = denom < 1e-12 ? 0.0 : std::clamp((p - cap.p0).dot(axis) / denom, 0.0, 1.0);
-            int slot = std::min(9, std::max(0, static_cast<int>(t * 10.0)));
-            bins[slot] = std::max(bins[slot], pointToSegmentDistance(p, cap.p0, cap.p1));
-        }
-        std::vector<double> nonzero;
-        for (double b : bins)
-            if (b > 1e-12) nonzero.push_back(b);
-        if (nonzero.empty()) continue;
-        std::sort(nonzero.begin(), nonzero.end());
-        double median = nonzero[nonzero.size() / 2];
-        worst = std::max(worst, cap.radius / median);
-    }
-    return worst;
-}
 
 // ---- Wu2018 COA metric (P2) ----
 
@@ -441,8 +418,9 @@ TEST(CapsuleXSectionFit, LocalSplitReducesRadiusBinInflation) {
     opts.adaptive_circle_count = true;
 
     auto caps = fitCapsulesByCrossSection(V, F, opts);
-    ASSERT_TRUE(allVerticesCoveredByAnyCapsule(V, caps));
-    EXPECT_LE(maxRadiusToMedianBinRatio(V, caps), 1.45);
+    auto metrics = evaluateCapsuleTightness(V, caps);
+    ASSERT_TRUE(metrics.covered);
+    EXPECT_LE(metrics.max_radius_bin_ratio, 1.45);
 }
 
 TEST(CapsuleXSectionFit, BudgetPruningPreservesCoverage) {
@@ -460,7 +438,7 @@ TEST(CapsuleXSectionFit, BudgetPruningPreservesCoverage) {
 
     auto caps = fitCapsulesByCrossSection(V, F, opts);
     ASSERT_LE(caps.size(), 2u);
-    EXPECT_TRUE(allVerticesCoveredByAnyCapsule(V, caps));
+    EXPECT_TRUE(evaluateCapsuleTightness(V, caps).covered);
 }
 
 // End-to-end: run CapsuleURDFGenerator on FR3. Verify (a) the JSON sidecar

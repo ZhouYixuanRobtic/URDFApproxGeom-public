@@ -240,6 +240,88 @@ double capsuleSetVolume(const std::vector<Capsule>& caps) {
     return total;
 }
 
+}  // namespace
+
+CapsuleVertexAssignment assignVerticesToCapsules(const Eigen::MatrixXd& V,
+                                                 const std::vector<Capsule>& caps) {
+    CapsuleVertexAssignment out;
+    out.capsule_index.assign(V.rows(), -1);
+    out.raw_distance.assign(V.rows(), std::numeric_limits<double>::max());
+    out.signed_distance.assign(V.rows(), std::numeric_limits<double>::max());
+    for (int i = 0; i < V.rows(); ++i) {
+        Eigen::Vector3d p = V.row(i).transpose();
+        for (int c = 0; c < static_cast<int>(caps.size()); ++c) {
+            double raw = pointToSegmentDistance(p, caps[c].p0, caps[c].p1);
+            double signed_dist = raw - caps[c].radius;
+            if (signed_dist < out.signed_distance[i]) {
+                out.signed_distance[i] = signed_dist;
+                out.raw_distance[i] = raw;
+                out.capsule_index[i] = c;
+            }
+        }
+    }
+    return out;
+}
+
+static double aabbVolume(const Eigen::MatrixXd& V) {
+    if (V.rows() == 0) return 0.0;
+    Eigen::Vector3d lo = V.row(0).transpose();
+    Eigen::Vector3d hi = lo;
+    for (int i = 1; i < V.rows(); ++i) {
+        Eigen::Vector3d p = V.row(i).transpose();
+        lo = lo.cwiseMin(p);
+        hi = hi.cwiseMax(p);
+    }
+    Eigen::Vector3d ext = (hi - lo).cwiseMax(Eigen::Vector3d::Constant(1e-12));
+    return ext.x() * ext.y() * ext.z();
+}
+
+static double assignedRadiusBinRatio(const Eigen::MatrixXd& V,
+                                     const std::vector<Capsule>& caps,
+                                     const CapsuleVertexAssignment& assignment,
+                                     int bins = 10) {
+    double worst = 0.0;
+    for (int c = 0; c < static_cast<int>(caps.size()); ++c) {
+        std::vector<double> bin_max(bins, 0.0);
+        Eigen::Vector3d axis = caps[c].p1 - caps[c].p0;
+        double denom = axis.squaredNorm();
+        for (int i = 0; i < V.rows(); ++i) {
+            if (assignment.capsule_index[i] != c) continue;
+            Eigen::Vector3d p = V.row(i).transpose();
+            double t = denom < 1e-12 ? 0.0 : std::clamp((p - caps[c].p0).dot(axis) / denom, 0.0, 1.0);
+            int slot = std::min(bins - 1, std::max(0, static_cast<int>(t * bins)));
+            bin_max[slot] = std::max(bin_max[slot], pointToSegmentDistance(p, caps[c].p0, caps[c].p1));
+        }
+        std::vector<double> nonzero;
+        for (double v : bin_max)
+            if (v > 1e-12) nonzero.push_back(v);
+        if (nonzero.empty()) continue;
+        std::sort(nonzero.begin(), nonzero.end());
+        double median = nonzero[nonzero.size() / 2];
+        worst = std::max(worst, caps[c].radius / median);
+    }
+    return worst;
+}
+
+CapsuleTightnessMetrics evaluateCapsuleTightness(const Eigen::MatrixXd& V,
+                                                 const std::vector<Capsule>& caps) {
+    CapsuleTightnessMetrics out;
+    if (V.rows() == 0 || caps.empty()) {
+        out.covered = V.rows() == 0;
+        return out;
+    }
+    auto assignment = assignVerticesToCapsules(V, caps);
+    out.worst_signed_distance = *std::max_element(assignment.signed_distance.begin(),
+                                                  assignment.signed_distance.end());
+    out.covered = out.worst_signed_distance <= 1e-9;
+    out.capsule_volume = capsuleSetVolume(caps);
+    out.aabb_volume = aabbVolume(V);
+    out.capV_aabb = out.aabb_volume > 1e-12 ? out.capsule_volume / out.aabb_volume : 0.0;
+    out.max_radius_bin_ratio = assignedRadiusBinRatio(V, caps, assignment);
+    return out;
+}
+
+namespace {
 // Sample a polygon: subdivided boundary edges + interior grid points.
 std::vector<Eigen::Vector2d> sampleContour(const Contour2D& c, int edgeN = 24, int grid = 24) {
     std::vector<Eigen::Vector2d> pts;
