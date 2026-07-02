@@ -387,20 +387,14 @@ TEST(CapsuleXSectionFit, WideBoxUsesMultipleCapsulesWhenAllowed) {
     EXPECT_GT(tight.size(), sparse.size())
         << "MaxCirclesPerSection must affect the fitter for wide sections";
 
-    double sparse_volume = 0.0;
-    for (const auto& c : sparse) {
-        const double L = (c.p1 - c.p0).norm();
-        sparse_volume += M_PI * c.radius * c.radius * L + 4.0 * M_PI * c.radius * c.radius * c.radius / 3.0;
-    }
-
-    double tight_volume = 0.0;
-    for (const auto& c : tight) {
-        const double L = (c.p1 - c.p0).norm();
-        tight_volume += M_PI * c.radius * c.radius * L + 4.0 * M_PI * c.radius * c.radius * c.radius / 3.0;
-    }
-
-    EXPECT_LT(tight_volume, 0.95 * sparse_volume)
-        << "More circles should reduce over-cover volume on a wide box";
+    auto sparse_metrics = evaluateCapsuleTightness(V, sparse);
+    auto tight_metrics = evaluateCapsuleTightness(V, tight);
+    ASSERT_TRUE(sparse_metrics.covered);
+    ASSERT_TRUE(tight_metrics.covered);
+    EXPECT_LT(tight_metrics.capV_aabb, sparse_metrics.capV_aabb)
+        << "More circles should reduce gate volume metric on a wide box";
+    EXPECT_LE(tight_metrics.max_radius_bin_ratio, sparse_metrics.max_radius_bin_ratio)
+        << "More circles should not worsen axial radius inflation";
 }
 
 TEST(CapsuleXSectionFit, LocalBulgeDoesNotInflateWholeLink) {
@@ -520,6 +514,31 @@ TEST(CapsuleRun, EmitsNativeCylinderSphere) {
     std::string urdf_txt((std::istreambuf_iterator<char>(uf)), std::istreambuf_iterator<char>());
     EXPECT_NE(urdf_txt.find("<cylinder"), std::string::npos) << "no <cylinder> in URDF";
     EXPECT_NE(urdf_txt.find("<sphere"), std::string::npos) << "no <sphere> in URDF";
+}
+
+static int countDegenerateCapsules(const std::vector<Capsule>& caps) {
+    int n = 0;
+    for (const auto& cap : caps)
+        if ((cap.p1 - cap.p0).norm() < 1e-9) ++n;
+    return n;
+}
+
+TEST(CapsuleXSectionFit, VariableCircleCountsDoNotCreateManyDegenerateCapsules) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeTwoBoxLink(V, F);
+
+    CapsuleFitOptions opts;
+    opts.n_sections = 8;
+    opts.coa_threshold = 0.005;
+    opts.max_circles_per_section = 4;
+    opts.max_capsules = 16;
+    opts.max_radius_bin_ratio = 1.45;
+    opts.adaptive_circle_count = true;
+
+    auto caps = fitCapsulesByCrossSection(V, F, opts);
+    EXPECT_LE(countDegenerateCapsules(caps), 2);
+    EXPECT_TRUE(evaluateCapsuleTightness(V, caps).covered);
 }
 
 int main(int argc, char** argv) {
