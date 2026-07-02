@@ -1,0 +1,7 @@
+# Tight capsule approximation preset.
+# More section circles and more retained capsules reduce visual over-cover.
+
+NSections: 6
+CoaThreshold: 0.005
+MaxCirclesPerSection: 4
+MaxCapsulesPerLink: 24

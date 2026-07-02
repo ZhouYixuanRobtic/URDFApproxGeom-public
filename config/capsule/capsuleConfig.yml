@@ -1,11 +1,8 @@
-# Capsule approximation config (Wu2018 cross-section method).
-# Pipeline: watertight mesh -> slice into cross-sections perpendicular to the
-# link's PCA axis -> fit COA-minimized circles per section (Lloyd) -> link
-# adjacent-section circles into capsules -> grow to cover -> emit
-# <cylinder>+<sphere> URDF + JSON sidecar.
+# Capsule approximation config.
+# Sparse default: few URDF-native primitives, collision-safe outer cover.
+# Set MaxCirclesPerSection > 1 to enable tighter multi-circle sections.
 
-NSections: 4              # cross-section planes per link (more = tighter + more capsules).
-CoaThreshold: 0.005       # Circle-Outside-Area (over-cover) target per section; a section
-                          # splits into more circles until COA < this (lower = tighter/split).
-MaxCirclesPerSection: 4   # ceiling on circles per section (wide links -> several capsules).
-MaxCapsulesPerLink: 12    # soft ceiling on capsules per link (drops shortest if exceeded).
+NSections: 4
+CoaThreshold: 0.005
+MaxCirclesPerSection: 1
+MaxCapsulesPerLink: 12
