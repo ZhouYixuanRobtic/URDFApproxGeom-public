@@ -63,6 +63,12 @@ double circleOutsideArea(const Circle2D& circle, const Contour2D& contour);
 std::vector<Circle2D> fitCirclesLloyd(const Contour2D& contour, double coa_threshold,
                                       int max_circles);
 
+/// Fit a fixed number of covering circles to all contours in one section plane.
+/// k==1 is the MEC fallback. k>1 uses deterministic k-means seeds followed by
+/// MEC refits per cluster so every sampled contour point remains covered.
+std::vector<Circle2D> fitFixedCountCirclesForPlane(const std::vector<Contour2D>& contours,
+                                                   int k);
+
 /// Wu2018 sphere+capsule fit (§III-C..E): slice `V,F` along its PCA axis,
 /// fit circles per section, link adjacent-section circles into capsules, drop
 /// capsules covered by others, grow to cover every vertex. Returns capsules in
