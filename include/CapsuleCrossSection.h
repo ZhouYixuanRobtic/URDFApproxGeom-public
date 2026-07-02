@@ -69,6 +69,27 @@ std::vector<Circle2D> fitCirclesLloyd(const Contour2D& contour, double coa_thres
 std::vector<Circle2D> fitFixedCountCirclesForPlane(const std::vector<Contour2D>& contours,
                                                    int k);
 
+struct CapsuleFitOptions {
+    int n_sections = 10;
+    double coa_threshold = 1e-4;
+    int max_circles_per_section = 4;
+    int max_capsules = 6;
+    double max_radius_bin_ratio = 1.45;
+    bool adaptive_circle_count = true;
+};
+
+struct CapsuleFitStats {
+    double cap_volume = 0.0;
+    double aabb_volume = 0.0;
+    double capV_aabb = 0.0;
+    double max_radius_bin_ratio = 0.0;
+    bool covered = false;
+};
+
+std::vector<Circle2D> fitAdaptiveCirclesForPlane(const std::vector<Contour2D>& contours,
+                                                 double coa_threshold,
+                                                 int max_circles);
+
 /// Wu2018 sphere+capsule fit (§III-C..E): slice `V,F` along its PCA axis,
 /// fit circles per section, link adjacent-section circles into capsules, drop
 /// capsules covered by others, grow to cover every vertex. Returns capsules in
@@ -77,6 +98,9 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
                                                int n_sections = 10, double coa_threshold = 1e-4,
                                                int max_circles_per_section = 4,
                                                int max_capsules = 6);
+
+std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F,
+                                               const CapsuleFitOptions& options);
 
 /// Grow capsule radii so every vertex is within its nearest capsule
 /// (collision-safe outer fit). Call against the ORIGINAL mesh vertices when the

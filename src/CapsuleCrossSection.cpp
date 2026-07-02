@@ -163,6 +163,18 @@ std::vector<Eigen::Vector2d> sampleContour(const Contour2D& c, int edgeN = 24, i
         }
     return pts;
 }
+
+double contourAreaAbs(const Contour2D& c) {
+    if (c.points.size() < 3) return 0.0;
+    double area = 0.0;
+    int n = static_cast<int>(c.points.size());
+    for (int i = 0; i < n; ++i) {
+        const auto& a = c.points[i];
+        const auto& b = c.points[(i + 1) % n];
+        area += a.x() * b.y() - b.x() * a.y();
+    }
+    return 0.5 * std::abs(area);
+}
 }  // namespace
 
 // Wu2018 §III-A: slice the mesh with planes perpendicular to axis u, chain the
@@ -448,14 +460,62 @@ std::vector<Circle2D> fitFixedCountCirclesForPlane(const std::vector<Contour2D>&
     return circles;
 }
 
+double normalizedPlaneOutsideArea(const std::vector<Circle2D>& circles,
+                                  const std::vector<Contour2D>& contours) {
+    double outside = 0.0;
+    double area = 0.0;
+    for (const auto& contour : contours) {
+        area += contourAreaAbs(contour);
+        for (const auto& circle : circles) {
+            outside += circleOutsideArea(circle, contour);
+        }
+    }
+    if (area < 1e-12) return outside;
+    return outside / area;
+}
+
+std::vector<Circle2D> fitAdaptiveCirclesForPlane(const std::vector<Contour2D>& contours,
+                                                 double coa_threshold,
+                                                 int max_circles) {
+    int cap = std::max(1, max_circles);
+    if (coa_threshold <= 0.0) return fitFixedCountCirclesForPlane(contours, 1);
+
+    std::vector<Circle2D> best = fitFixedCountCirclesForPlane(contours, 1);
+    double best_score = normalizedPlaneOutsideArea(best, contours);
+    if (best_score <= coa_threshold) return best;
+
+    for (int k = 2; k <= cap; ++k) {
+        auto candidate = fitFixedCountCirclesForPlane(contours, k);
+        double score = normalizedPlaneOutsideArea(candidate, contours);
+        if (score < best_score) {
+            best = candidate;
+            best_score = score;
+        }
+        if (score <= coa_threshold) return candidate;
+    }
+    return best;
+}
+
 // Wu2018 §III-C..E: section circles -> capsules -> dedupe -> grow to cover.
 // Capsule endpoints sit at circle centers (axial t of consecutive sections),
 // radius = max of the two end radii (constant-radius for <cylinder>+<sphere>).
 std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F,
                                                int n_sections, double coa_threshold,
                                                int max_circles_per_section, int max_capsules) {
+    CapsuleFitOptions options;
+    options.n_sections = n_sections;
+    options.coa_threshold = coa_threshold;
+    options.max_circles_per_section = max_circles_per_section;
+    options.max_capsules = max_capsules;
+    // Preserve existing fixed-count behavior for backward compatibility.
+    options.adaptive_circle_count = false;
+    return fitCapsulesByCrossSection(V, F, options);
+}
+
+std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F,
+                                               const CapsuleFitOptions& options) {
     std::vector<Capsule> caps;
-    if (V.rows() < 4 || F.rows() == 0 || n_sections < 1) return caps;
+    if (V.rows() < 4 || F.rows() == 0 || options.n_sections < 1) return caps;
 
     // PCA axis (longest dimension = "bone direction").
     Eigen::Vector3d origin = V.colwise().mean();
@@ -467,21 +527,18 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
     Eigen::Vector3d e1 = u.cross(ref).normalized();
     Eigen::Vector3d e2 = u.cross(e1).normalized();
 
-    auto rawSections = extractSections(V, F, u, origin, n_sections);
+    auto rawSections = extractSections(V, F, u, origin, options.n_sections);
     if (rawSections.empty()) return caps;
 
-    // Group contours by plane (axial t): one plane can cut multiple loops. Fit
-    // a configurable number of circles per section plane (uniform across planes)
-    // so consecutive planes share a circle count and can be matched into chains.
     std::map<double, std::vector<Contour2D>> planes;
     for (auto& s : rawSections) planes[s.t].push_back(std::move(s.contour));
     std::vector<double> planeT;
     std::vector<std::vector<Circle2D>> planeCircles;
-    int requested_k = std::max(1, max_circles_per_section);
-    if (coa_threshold <= 0.0) requested_k = 1;
 
     for (auto& kv : planes) {
-        auto circles = fitFixedCountCirclesForPlane(kv.second, requested_k);
+        auto circles = options.adaptive_circle_count
+            ? fitAdaptiveCirclesForPlane(kv.second, options.coa_threshold, options.max_circles_per_section)
+            : fitFixedCountCirclesForPlane(kv.second, std::max(1, options.max_circles_per_section));
         if (circles.empty()) continue;
         planeT.push_back(kv.first);
         planeCircles.push_back(std::move(circles));
@@ -493,7 +550,6 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         return origin + t * u + c.center.x() * e1 + c.center.y() * e2;
     };
 
-    // Mesh axial extremes (capsule chain endpoints get extended to these).
     double amin = std::numeric_limits<double>::max();
     double amax = std::numeric_limits<double>::lowest();
     for (int i = 0; i < V.rows(); ++i) {
@@ -502,8 +558,6 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         amax = std::max(amax, t);
     }
 
-    // Chain capsules per consecutive plane pair, matching circles between
-    // planes by nearest-center so chains stay stable. N==1 -> single sphere-cap.
     auto emit_pair = [&](const Circle2D& a, double ta, const Circle2D& b, double tb) {
         Capsule cap;
         cap.p0 = to3d(a, ta);
@@ -532,7 +586,6 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
                         best = j;
                     }
                 }
-                // ponytail: uniform k makes this path unreachable; defensive fallback only.
                 if (best < 0) best = 0;
                 used[best] = 1;
                 emit_pair(a, planeT[section], B[best], planeT[section + 1]);
@@ -540,9 +593,6 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         }
     }
 
-    // Extend the chain's end capsules to the mesh axial extremes so the ends
-    // (outside the midpoint sections) are covered axially (else grow balloons
-    // the radius to reach them). Keep each endpoint's lateral offset.
     double t0 = planeT.front(), tN = planeT.back();
     for (auto& cap : caps) {
         double a0 = (cap.p0 - origin).dot(u);
@@ -553,17 +603,11 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         if (std::abs(a1 - tN) < 1e-9) cap.p1 += (amax - tN) * u;
     }
 
-    // Merge collinear chains (a tube's section capsules -> one long capsule).
     caps = mergeCollinearCapsules(caps);
-
-    // Grow to cover: every vertex within its nearest capsule (collision-safe).
     growCapsulesToCover(caps, V);
-
-    // Drop capsules fully nested in another.
     caps = dedupeNestedCapsules(caps);
 
-    // Soft budget: if over max_capsules, drop the shortest (least axial cover).
-    while (static_cast<int>(caps.size()) > max_capsules && caps.size() > 1) {
+    while (static_cast<int>(caps.size()) > options.max_capsules && caps.size() > 1) {
         int worst = 0;
         double wl = std::numeric_limits<double>::max();
         for (int c = 0; c < static_cast<int>(caps.size()); ++c) {
@@ -572,6 +616,9 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         }
         caps.erase(caps.begin() + worst);
     }
+    // Re-grow remaining capsules after pruning so vertices that were only
+    // covered by the dropped capsule are still covered.
+    growCapsulesToCover(caps, V);
     return caps;
 }
 
