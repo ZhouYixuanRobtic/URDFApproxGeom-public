@@ -25,19 +25,23 @@
 
 ## 2. Current State
 
-**FR3 result:** 13 capsules (1 per link, 2 for fingers), all mesh vertices covered (verified `worst ≤ 0`), zero nested capsules, MJCF xml generated at `resources/fr3/urdf/fr3_capsules.xml`.
+**FR3 sparse result:** generated with `config/capsule/capsuleConfig.yml`; optimized for low primitive count.
+
+**FR3 tight result:** generated with `config/capsule/capsuleConfig_tight.yml`; must pass `scripts/check_capsule_tightness.py --caps-json <tight-json>`.
 
 **Test suite:** 15 C++ unit tests + 1 integration test + 1 Python round-trip test — all green.
 
 **Config:** `config/capsule/capsuleConfig.yml`
 ```yaml
-NSections: 4              # cross-section planes per link
-CoaThreshold: 0.005       # not currently used (1 circle/plane forced)
-MaxCirclesPerSection: 4   # not currently used
-MaxCapsulesPerLink: 12
+NSections: 6
+CoaThreshold: 0.005
+MaxCirclesPerSection: 4
+MaxCapsulesPerLink: 24
+AdaptiveCircleCount: true
+MaxRadiusBinRatio: 1.45
 ```
 
-**Active algorithm:** Wu2018 cross-section decomposition with configurable uniform circle count per section plane. Sparse config uses 1 circle/section for low primitive count. Tight config uses up to 4 circles/section and stable adjacent-plane matching for better fit on flanged robot links.
+**Active algorithm:** Wu2018 cross-section decomposition with AdaptiveCircleCount: each section plane adaptively chooses the smallest circle count whose normalized COA proxy is below `CoaThreshold`, capped by `MaxCirclesPerSection`. Sparse config (`capsuleConfig.yml`) uses relaxed tuning for low primitive count. Tight config (`capsuleConfig_tight.yml`) requests tighter coverage and passes the capsule tightness gate.
 
 ---
 
@@ -160,14 +164,12 @@ scripts/
 
 ## 6. How to tune (no code changes needed)
 
-Edit `config/capsule/capsuleConfig.yml`:
+Edit `config/capsule/capsuleConfig.yml` or `config/capsule/capsuleConfig_tight.yml`:
 
-- **`NSections`** (default 4): More cross-sections = tighter for tapered links but more capsules. The merge step collapses truly collinear chains, so increasing N doesn't over-segment uniform links but does split tapered ones.
-- **`MaxCirclesPerSection`** controls the number of section circles. `1` gives sparse output. Values above `1` enable multi-circle fitting.
-- **`CoaThreshold`** enables/disables circle splitting behavior. Values `<= 0` force sparse one-circle fitting.
-- **`config/capsule/capsuleConfig.yml`** is the sparse default.
-- **`config/capsule/capsuleConfig_tight.yml`** is the tighter FR3-oriented preset.
-- **`MaxCapsulesPerLink`**: Soft cap; drops shortest capsules if exceeded.
+- **`AdaptiveCircleCount`**: when `true`, each section plane chooses the smallest circle count whose normalized COA proxy is below `CoaThreshold`, capped by `MaxCirclesPerSection`.
+- **`CoaThreshold`**: lower values request tighter section coverage and may increase capsule count. Values `<= 0` force one circle per section.
+- **`MaxRadiusBinRatio`**: local axial split threshold. If one capsule radius is much larger than the median axial bin radius, the fitter splits that capsule before final pruning.
+- **`MaxCapsulesPerLink`**: hard output budget. Pruning must re-grow and preserve coverage.
 
 ---
 
@@ -201,8 +203,11 @@ docker exec spherized-development bash -lc 'cd /workspace && ./build/test/test_c
 # Tests (Python)
 docker exec spherized-development bash -lc 'cd /workspace && cp build/python/urdf_approx_geom/*.so python/urdf_approx_geom/ && PYTHONPATH=/workspace/python python3 -m pytest python/tests -q'
 
-# Generate FR3 capsules
-docker exec spherized-development bash -lc 'cd /workspace && ./build/app/capsuleized -i resources/fr3/urdf/fr3.urdf -o resources/fr3/urdf/fr3_capsuleized.urdf'
+# Generate FR3 capsules (sparse)
+docker exec spherized-development bash -lc 'cd /workspace && ./build/app/capsuleized -i resources/fr3/urdf/fr3.urdf -o /tmp/fr3_sparse_capsuleized.urdf --config config/capsule/capsuleConfig.yml'
+
+# Generate FR3 capsules (tight)
+docker exec spherized-development bash -lc 'cd /workspace && ./build/app/capsuleized -i resources/fr3/urdf/fr3.urdf -o /tmp/fr3_tight_capsuleized.urdf --config config/capsule/capsuleConfig_tight.yml'
 
 # Visualize (host)
 python3 scripts/make_mjcf.py    # generates resources/fr3/urdf/fr3_capsules.xml -> open in robot-viewer
@@ -212,6 +217,9 @@ python3 scripts/viz_capsules.py # pybullet GUI overlay
 ## 9. Verification
 
 ```bash
-# Coverage and tightness gate
-docker exec spherized-development bash -lc 'cd /workspace && python3 scripts/check_capsule_tightness.py'
+# Tightness gate (tight config only)
+docker exec spherized-development bash -lc 'cd /workspace && python3 scripts/check_capsule_tightness.py --caps-json /tmp/fr3_tight_capsuleized.json'
+
+# Compare sparse vs tight presets
+docker exec spherized-development bash -lc 'cd /workspace && python3 scripts/compare_capsule_presets.py --sparse-json /tmp/fr3_sparse_capsuleized.json --tight-json /tmp/fr3_tight_capsuleized.json'
 ```
