@@ -30,5 +30,6 @@ jobs:
             cmake -B build -DCMAKE_BUILD_TYPE=Release -DCOMPILE_URDFApproxGeom_PYBINDING=ON
             cmake --build build -j$(nproc)
             ./build/test/test_capsule --gtest_color=no
+            ./build/test/test_spheretree --gtest_color=no
             PYTHONPATH=/workspace/python:/workspace/build/python python3 -m pytest python/tests -q
           '

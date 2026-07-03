@@ -90,6 +90,15 @@ public:
         return false;
     }
 
+    static std::string requireFirstObjOrSkip(const std::string& meshPath) {
+        std::vector<std::string> allOBJFiles;
+        fetchAllFilesWith(meshPath, ".obj", allOBJFiles);
+        if (allOBJFiles.empty()) {
+            return "";
+        }
+        return allOBJFiles.front();
+    }
+
 
 protected:
     std::string resourcePath =  URDFApproxGeom_RESOURCE_PATH;
@@ -99,22 +108,20 @@ protected:
 
 TEST_F(SphereTreeTest, MedialTest) {
     std::string meshPath = "/home/zyx/path_ws/src/ningde/simulation/rm_dcr_description/meshes/collision/collision/collision/YOUSHOU.obj";
-    std::vector<std::string> allOBJFiles;
-    fetchAllFilesWith(meshPath, ".obj", allOBJFiles);
+    const std::string test_obj = requireFirstObjOrSkip(meshPath);
+    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
     m_method = SphereTreeMethod::SphereTreeMethodMedial::create(configPath + "/sphereTree/sphereTreeConfig.yml");
-    const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
-    auto ret = m_method->constructTree(meshPath, tree);
+    auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
     ASSERT_TRUE(ret.isOk());
 }
 
 TEST_F(SphereTreeTest, GridTest) {
     std::string meshPath = resourcePath + "/robots/panda/meshes/collision/simple";
-    std::vector<std::string> allOBJFiles;
-    fetchAllFilesWith(meshPath, ".obj", allOBJFiles);
+    const std::string test_obj = requireFirstObjOrSkip(meshPath);
+    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
     m_method = SphereTreeMethod::SphereTreeMethodGrid::create(configPath + "/sphereTree/sphereTreeConfig.yml");
-    const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
@@ -123,10 +130,9 @@ TEST_F(SphereTreeTest, GridTest) {
 
 TEST_F(SphereTreeTest, SpawnTest) {
     std::string meshPath = resourcePath + "/robots/panda/meshes/collision/simple";
-    std::vector<std::string> allOBJFiles;
-    fetchAllFilesWith(meshPath, ".obj", allOBJFiles);
+    const std::string test_obj = requireFirstObjOrSkip(meshPath);
+    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
     m_method = SphereTreeMethod::SphereTreeMethodSpawn::create(configPath + "/sphereTree/sphereTreeConfig.yml");
-    const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
@@ -136,10 +142,9 @@ TEST_F(SphereTreeTest, SpawnTest) {
 
 TEST_F(SphereTreeTest, HubbardTest) {
     std::string meshPath = resourcePath + "/robots/panda/meshes/collision/simple";
-    std::vector<std::string> allOBJFiles;
-    fetchAllFilesWith(meshPath, ".obj", allOBJFiles);
+    const std::string test_obj = requireFirstObjOrSkip(meshPath);
+    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
     m_method = SphereTreeMethod::SphereTreeMethodHubbard::create(configPath + "/sphereTree/sphereTreeConfig.yml");
-    const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
@@ -148,10 +153,9 @@ TEST_F(SphereTreeTest, HubbardTest) {
 
 TEST_F(SphereTreeTest, OctreeTest) {
     std::string meshPath = resourcePath + "/robots/panda/meshes/collision/simple";
-    std::vector<std::string> allOBJFiles;
-    fetchAllFilesWith(meshPath, ".obj", allOBJFiles);
+    const std::string test_obj = requireFirstObjOrSkip(meshPath);
+    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
     m_method = SphereTreeMethod::SphereTreeMethodOctree::create(configPath + "/sphereTree/sphereTreeConfig.yml");
-    const std::string& test_obj = allOBJFiles.front();
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
