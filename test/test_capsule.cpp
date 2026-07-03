@@ -591,14 +591,14 @@ TEST(CapsuleXSectionFit, BudgetPruningPreservesCoverage) {
 // NATIVE <cylinder> + <sphere> primitives (capsule = cylinder + 2 end spheres),
 // not meshes.
 TEST(CapsuleRun, EmitsNativeCylinderSphere) {
-    const std::string out_urdf = "/workspace/resources/fr3/urdf/fr3_capsuleized.urdf";
+    const std::string out_urdf = "/tmp/fr3_sparse_capsule_emit_test.urdf";
     CapsuleURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) +
                            "/capsule/capsuleConfig.yml");
     auto ret = g.run("/workspace/resources/fr3/urdf/fr3.urdf", out_urdf, {});
     ASSERT_TRUE(ret.isOk()) << ret.message();
 
     // JSON sidecar: capsules carry p0, p1, radius > 0.
-    std::ifstream f("/workspace/resources/fr3/urdf/fr3_capsuleized.json");
+    std::ifstream f("/tmp/fr3_sparse_capsule_emit_test.json");
     ASSERT_TRUE(f.good()) << "JSON sidecar not written";
     nlohmann::json j;
     f >> j;
