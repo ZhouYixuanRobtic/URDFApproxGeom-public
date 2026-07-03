@@ -178,22 +178,22 @@ list(APPEND _IMPORT_CHECK_FILES_FOR_URDFApproxGeom::Export "${_IMPORT_PREFIX}/li
 # Import target "URDFApproxGeom::ManifoldPlus" for configuration "Release"
 set_property(TARGET URDFApproxGeom::ManifoldPlus APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(URDFApproxGeom::ManifoldPlus PROPERTIES
-  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libManifoldPlus.so.1.4"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libManifoldPlus.so.1.5"
   IMPORTED_SONAME_RELEASE "libManifoldPlus.so.1"
   )
 
 list(APPEND _IMPORT_CHECK_TARGETS URDFApproxGeom::ManifoldPlus )
-list(APPEND _IMPORT_CHECK_FILES_FOR_URDFApproxGeom::ManifoldPlus "${_IMPORT_PREFIX}/lib/libManifoldPlus.so.1.4" )
+list(APPEND _IMPORT_CHECK_FILES_FOR_URDFApproxGeom::ManifoldPlus "${_IMPORT_PREFIX}/lib/libManifoldPlus.so.1.5" )
 
 # Import target "URDFApproxGeom::sphereTreeWrapper" for configuration "Release"
 set_property(TARGET URDFApproxGeom::sphereTreeWrapper APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(URDFApproxGeom::sphereTreeWrapper PROPERTIES
-  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libsphereTreeWrapper.so.1.4"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libsphereTreeWrapper.so.1.5"
   IMPORTED_SONAME_RELEASE "libsphereTreeWrapper.so.1"
   )
 
 list(APPEND _IMPORT_CHECK_TARGETS URDFApproxGeom::sphereTreeWrapper )
-list(APPEND _IMPORT_CHECK_FILES_FOR_URDFApproxGeom::sphereTreeWrapper "${_IMPORT_PREFIX}/lib/libsphereTreeWrapper.so.1.4" )
+list(APPEND _IMPORT_CHECK_FILES_FOR_URDFApproxGeom::sphereTreeWrapper "${_IMPORT_PREFIX}/lib/libsphereTreeWrapper.so.1.5" )
 
 # Import target "URDFApproxGeom::URDFApproxGeom" for configuration "Release"
 set_property(TARGET URDFApproxGeom::URDFApproxGeom APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)

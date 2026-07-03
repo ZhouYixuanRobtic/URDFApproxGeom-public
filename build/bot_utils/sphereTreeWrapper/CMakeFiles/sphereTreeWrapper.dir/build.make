@@ -165,43 +165,43 @@ sphereTreeWrapper_OBJECTS = \
 # External object files for target sphereTreeWrapper
 sphereTreeWrapper_EXTERNAL_OBJECTS =
 
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeBase.cpp.o
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeGrid.cpp.o
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeHubbard.cpp.o
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeMedial.cpp.o
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeOctree.cpp.o
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeSpawn.cpp.o
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/build.make
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/libSTG.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: /usr/lib/x86_64-linux-gnu/libyaml-cpp.so.0.7.0
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: /usr/lib/libirmv_core.so
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/API/libAPI.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/API/SFWhite/libSFWhite.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/BBox/libBBox.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/BBox/MVBB/libMVBB.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/BBox/qHull/libqHull.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/Exceptions/libExceptions.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/MedialAxis/libMedialAxis.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/MinMax/libMinMax.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/SphereTree/libSphereTree.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/Surface/libSurface.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/Base/libBase.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/Geometry/libGeometry.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/Geometry/pcube/libpcube.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/LinearAlgebra/libMatrix.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/Storage/libStorage.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: third_party/sphere_tree/src/Export/libExport.a
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: /usr/lib/x86_64-linux-gnu/libspdlog.so.1.9.2
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: /usr/lib/x86_64-linux-gnu/libfmt.so.8.1.1
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/link.txt
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeBase.cpp.o
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeGrid.cpp.o
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeHubbard.cpp.o
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeMedial.cpp.o
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeOctree.cpp.o
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/src/sphereTreeSpawn.cpp.o
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/build.make
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/libSTG.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: /usr/lib/x86_64-linux-gnu/libyaml-cpp.so.0.7.0
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: /usr/lib/libirmv_core.so
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/API/libAPI.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/API/SFWhite/libSFWhite.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/BBox/libBBox.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/BBox/MVBB/libMVBB.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/BBox/qHull/libqHull.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/Exceptions/libExceptions.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/MedialAxis/libMedialAxis.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/MinMax/libMinMax.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/SphereTree/libSphereTree.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/Surface/libSurface.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/Base/libBase.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/Geometry/libGeometry.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/Geometry/pcube/libpcube.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/LinearAlgebra/libMatrix.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/Storage/libStorage.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: third_party/sphere_tree/src/Export/libExport.a
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: /usr/lib/x86_64-linux-gnu/libspdlog.so.1.9.2
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: /usr/lib/x86_64-linux-gnu/libfmt.so.8.1.1
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/workspace/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX shared library libsphereTreeWrapper.so"
 	cd /workspace/build/bot_utils/sphereTreeWrapper && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sphereTreeWrapper.dir/link.txt --verbose=$(VERBOSE)
-	cd /workspace/build/bot_utils/sphereTreeWrapper && $(CMAKE_COMMAND) -E cmake_symlink_library libsphereTreeWrapper.so.1.4 libsphereTreeWrapper.so.1 libsphereTreeWrapper.so
+	cd /workspace/build/bot_utils/sphereTreeWrapper && $(CMAKE_COMMAND) -E cmake_symlink_library libsphereTreeWrapper.so.1.5 libsphereTreeWrapper.so.1 libsphereTreeWrapper.so
 
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 	@$(CMAKE_COMMAND) -E touch_nocreate bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1
 
-bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 	@$(CMAKE_COMMAND) -E touch_nocreate bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so
 
 # Rule to build all files generated by this target.

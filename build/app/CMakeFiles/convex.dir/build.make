@@ -93,8 +93,8 @@ convex_EXTERNAL_OBJECTS =
 app/convex: app/CMakeFiles/convex.dir/Convex.cpp.o
 app/convex: app/CMakeFiles/convex.dir/build.make
 app/convex: libURDFApproxGeom.so
-app/convex: third_party/ManifoldPlus/libManifoldPlus.so.1.4
-app/convex: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+app/convex: third_party/ManifoldPlus/libManifoldPlus.so.1.5
+app/convex: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 app/convex: third_party/sphere_tree/libSTG.a
 app/convex: third_party/sphere_tree/src/API/libAPI.a
 app/convex: third_party/sphere_tree/src/API/SFWhite/libSFWhite.a

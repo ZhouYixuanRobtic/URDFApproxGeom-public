@@ -92,7 +92,7 @@ test_spheretree_EXTERNAL_OBJECTS =
 
 test/test_spheretree: test/CMakeFiles/test_spheretree.dir/test_spheretree.cpp.o
 test/test_spheretree: test/CMakeFiles/test_spheretree.dir/build.make
-test/test_spheretree: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+test/test_spheretree: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 test/test_spheretree: /usr/lib/libirmv_core.so
 test/test_spheretree: /usr/lib/x86_64-linux-gnu/libgtest_main.a
 test/test_spheretree: /usr/lib/x86_64-linux-gnu/libgtest.a

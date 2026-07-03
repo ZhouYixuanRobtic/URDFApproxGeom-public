@@ -265,14 +265,14 @@ set_target_properties(URDFApproxGeom::Export PROPERTIES
 # Import target "URDFApproxGeom::ManifoldPlus" for configuration "Release"
 set_property(TARGET URDFApproxGeom::ManifoldPlus APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(URDFApproxGeom::ManifoldPlus PROPERTIES
-  IMPORTED_LOCATION_RELEASE "/workspace/build/third_party/ManifoldPlus/libManifoldPlus.so.1.4"
+  IMPORTED_LOCATION_RELEASE "/workspace/build/third_party/ManifoldPlus/libManifoldPlus.so.1.5"
   IMPORTED_SONAME_RELEASE "libManifoldPlus.so.1"
   )
 
 # Import target "URDFApproxGeom::sphereTreeWrapper" for configuration "Release"
 set_property(TARGET URDFApproxGeom::sphereTreeWrapper APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(URDFApproxGeom::sphereTreeWrapper PROPERTIES
-  IMPORTED_LOCATION_RELEASE "/workspace/build/bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4"
+  IMPORTED_LOCATION_RELEASE "/workspace/build/bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5"
   IMPORTED_SONAME_RELEASE "libsphereTreeWrapper.so.1"
   )
 

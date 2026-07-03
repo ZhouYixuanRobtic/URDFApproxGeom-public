@@ -92,7 +92,7 @@ manifold_EXTERNAL_OBJECTS =
 
 third_party/ManifoldPlus/manifold: third_party/ManifoldPlus/CMakeFiles/manifold.dir/main.cc.o
 third_party/ManifoldPlus/manifold: third_party/ManifoldPlus/CMakeFiles/manifold.dir/build.make
-third_party/ManifoldPlus/manifold: third_party/ManifoldPlus/libManifoldPlus.so.1.4
+third_party/ManifoldPlus/manifold: third_party/ManifoldPlus/libManifoldPlus.so.1.5
 third_party/ManifoldPlus/manifold: third_party/ManifoldPlus/CMakeFiles/manifold.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/workspace/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable manifold"
 	cd /workspace/build/third_party/ManifoldPlus && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/manifold.dir/link.txt --verbose=$(VERBOSE)

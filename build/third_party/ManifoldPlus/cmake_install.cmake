@@ -44,7 +44,7 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   foreach(file
-      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libManifoldPlus.so.1.4"
+      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libManifoldPlus.so.1.5"
       "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libManifoldPlus.so.1"
       )
     if(EXISTS "${file}" AND
@@ -55,11 +55,11 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
     endif()
   endforeach()
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
-    "/workspace/build/third_party/ManifoldPlus/libManifoldPlus.so.1.4"
+    "/workspace/build/third_party/ManifoldPlus/libManifoldPlus.so.1.5"
     "/workspace/build/third_party/ManifoldPlus/libManifoldPlus.so.1"
     )
   foreach(file
-      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libManifoldPlus.so.1.4"
+      "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libManifoldPlus.so.1.5"
       "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libManifoldPlus.so.1"
       )
     if(EXISTS "${file}" AND

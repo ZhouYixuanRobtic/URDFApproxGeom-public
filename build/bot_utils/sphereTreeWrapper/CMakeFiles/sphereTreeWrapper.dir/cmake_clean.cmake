@@ -14,7 +14,7 @@ file(REMOVE_RECURSE
   "libsphereTreeWrapper.pdb"
   "libsphereTreeWrapper.so"
   "libsphereTreeWrapper.so.1"
-  "libsphereTreeWrapper.so.1.4"
+  "libsphereTreeWrapper.so.1.5"
 )
 
 # Per-language clean rules from dependency scanning.

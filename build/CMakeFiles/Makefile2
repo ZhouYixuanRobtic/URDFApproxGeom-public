@@ -145,7 +145,7 @@ bot_utils/sphereTreeWrapper/clean: bot_utils/sphereTreeWrapper/CMakeFiles/sphere
 # Directory level rules for directory interface
 
 # Recursive "all" directory target.
-interface/all: interface/CMakeFiles/urdf_approx_geom.dir/all
+interface/all: interface/CMakeFiles/_urdf_approx_geom.dir/all
 .PHONY : interface/all
 
 # Recursive "preinstall" directory target.
@@ -153,7 +153,7 @@ interface/preinstall:
 .PHONY : interface/preinstall
 
 # Recursive "clean" directory target.
-interface/clean: interface/CMakeFiles/urdf_approx_geom.dir/clean
+interface/clean: interface/CMakeFiles/_urdf_approx_geom.dir/clean
 .PHONY : interface/clean
 
 #=============================================================================
@@ -608,7 +608,7 @@ third_party/ManifoldPlus/CMakeFiles/ManifoldPlus.dir/clean:
 third_party/ManifoldPlus/CMakeFiles/manifold.dir/all: third_party/ManifoldPlus/CMakeFiles/ManifoldPlus.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/ManifoldPlus/CMakeFiles/manifold.dir/build.make third_party/ManifoldPlus/CMakeFiles/manifold.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/ManifoldPlus/CMakeFiles/manifold.dir/build.make third_party/ManifoldPlus/CMakeFiles/manifold.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=78 "Built target manifold"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=79 "Built target manifold"
 .PHONY : third_party/ManifoldPlus/CMakeFiles/manifold.dir/all
 
 # Build rule for subdir invocation for target.
@@ -691,12 +691,12 @@ third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/all: third_party/sphere_tr
 third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/Export.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=74,75 "Built target makeTreeMedial"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=76 "Built target makeTreeMedial"
 .PHONY : third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/all
 
 # Build rule for subdir invocation for target.
 third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 72
+	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 71
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 0
 .PHONY : third_party/sphere_tree/CMakeFiles/makeTreeMedial.dir/rule
@@ -733,12 +733,12 @@ third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/all: third_party/sphere_t
 third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/Export.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=73 "Built target makeTreeHubbard"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=74,75 "Built target makeTreeHubbard"
 .PHONY : third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/all
 
 # Build rule for subdir invocation for target.
 third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 71
+	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 72
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 0
 .PHONY : third_party/sphere_tree/CMakeFiles/makeTreeHubbard.dir/rule
@@ -775,7 +775,7 @@ third_party/sphere_tree/CMakeFiles/makeTreeOctree.dir/all: third_party/sphere_tr
 third_party/sphere_tree/CMakeFiles/makeTreeOctree.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/Export.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeOctree.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeOctree.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeOctree.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeOctree.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=76 "Built target makeTreeOctree"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=77 "Built target makeTreeOctree"
 .PHONY : third_party/sphere_tree/CMakeFiles/makeTreeOctree.dir/all
 
 # Build rule for subdir invocation for target.
@@ -817,7 +817,7 @@ third_party/sphere_tree/CMakeFiles/makeTreeGrid.dir/all: third_party/sphere_tree
 third_party/sphere_tree/CMakeFiles/makeTreeGrid.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/Export.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeGrid.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeGrid.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeGrid.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeGrid.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=72 "Built target makeTreeGrid"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=73 "Built target makeTreeGrid"
 .PHONY : third_party/sphere_tree/CMakeFiles/makeTreeGrid.dir/all
 
 # Build rule for subdir invocation for target.
@@ -859,7 +859,7 @@ third_party/sphere_tree/CMakeFiles/makeTreeSpawn.dir/all: third_party/sphere_tre
 third_party/sphere_tree/CMakeFiles/makeTreeSpawn.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/Export.dir/all
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeSpawn.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeSpawn.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/CMakeFiles/makeTreeSpawn.dir/build.make third_party/sphere_tree/CMakeFiles/makeTreeSpawn.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=77 "Built target makeTreeSpawn"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=78 "Built target makeTreeSpawn"
 .PHONY : third_party/sphere_tree/CMakeFiles/makeTreeSpawn.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1016,7 +1016,7 @@ third_party/sphere_tree/src/BBox/MVBB/CMakeFiles/MVBB.dir/clean:
 third_party/sphere_tree/src/BBox/qHull/CMakeFiles/qHull.dir/all:
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/src/BBox/qHull/CMakeFiles/qHull.dir/build.make third_party/sphere_tree/src/BBox/qHull/CMakeFiles/qHull.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/src/BBox/qHull/CMakeFiles/qHull.dir/build.make third_party/sphere_tree/src/BBox/qHull/CMakeFiles/qHull.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=81,82,83,84,85,86,87 "Built target qHull"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=82,83,84,85,86,87,88 "Built target qHull"
 .PHONY : third_party/sphere_tree/src/BBox/qHull/CMakeFiles/qHull.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1095,7 +1095,7 @@ third_party/sphere_tree/src/Geometry/CMakeFiles/Geometry.dir/clean:
 third_party/sphere_tree/src/Geometry/pcube/CMakeFiles/pcube.dir/all:
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/src/Geometry/pcube/CMakeFiles/pcube.dir/build.make third_party/sphere_tree/src/Geometry/pcube/CMakeFiles/pcube.dir/depend
 	$(MAKE) $(MAKESILENT) -f third_party/sphere_tree/src/Geometry/pcube/CMakeFiles/pcube.dir/build.make third_party/sphere_tree/src/Geometry/pcube/CMakeFiles/pcube.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=79,80 "Built target pcube"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=80,81 "Built target pcube"
 .PHONY : third_party/sphere_tree/src/Geometry/pcube/CMakeFiles/pcube.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1326,7 +1326,7 @@ bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all: third_party/sp
 bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/Export.dir/all
 	$(MAKE) $(MAKESILENT) -f bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/build.make bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/depend
 	$(MAKE) $(MAKESILENT) -f bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/build.make bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=88,89,90,91 "Built target sphereTreeWrapper"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=89,90,91,92 "Built target sphereTreeWrapper"
 .PHONY : bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1371,12 +1371,12 @@ app/CMakeFiles/spherized.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/
 app/CMakeFiles/spherized.dir/all: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/spherized.dir/build.make app/CMakeFiles/spherized.dir/depend
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/spherized.dir/build.make app/CMakeFiles/spherized.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=92 "Built target spherized"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=93,94 "Built target spherized"
 .PHONY : app/CMakeFiles/spherized.dir/all
 
 # Build rule for subdir invocation for target.
 app/CMakeFiles/spherized.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 83
+	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 84
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/spherized.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 0
 .PHONY : app/CMakeFiles/spherized.dir/rule
@@ -1416,7 +1416,7 @@ app/CMakeFiles/convex.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/Exp
 app/CMakeFiles/convex.dir/all: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/convex.dir/build.make app/CMakeFiles/convex.dir/depend
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/convex.dir/build.make app/CMakeFiles/convex.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=71 "Built target convex"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=72 "Built target convex"
 .PHONY : app/CMakeFiles/convex.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1461,7 +1461,7 @@ app/CMakeFiles/capsuleized.dir/all: third_party/sphere_tree/src/Export/CMakeFile
 app/CMakeFiles/capsuleized.dir/all: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/capsuleized.dir/build.make app/CMakeFiles/capsuleized.dir/depend
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/capsuleized.dir/build.make app/CMakeFiles/capsuleized.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=70 "Built target capsuleized"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=71 "Built target capsuleized"
 .PHONY : app/CMakeFiles/capsuleized.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1487,7 +1487,7 @@ app/CMakeFiles/capsuleized.dir/clean:
 test/CMakeFiles/test_manifoldplus.dir/all: third_party/ManifoldPlus/CMakeFiles/ManifoldPlus.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_manifoldplus.dir/build.make test/CMakeFiles/test_manifoldplus.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_manifoldplus.dir/build.make test/CMakeFiles/test_manifoldplus.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=95 "Built target test_manifoldplus"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=96 "Built target test_manifoldplus"
 .PHONY : test/CMakeFiles/test_manifoldplus.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1513,7 +1513,7 @@ test/CMakeFiles/test_manifoldplus.dir/clean:
 test/CMakeFiles/test_simplify.dir/all:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_simplify.dir/build.make test/CMakeFiles/test_simplify.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_simplify.dir/build.make test/CMakeFiles/test_simplify.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=96 "Built target test_simplify"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=97 "Built target test_simplify"
 .PHONY : test/CMakeFiles/test_simplify.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1556,7 +1556,7 @@ test/CMakeFiles/test_spheretree.dir/all: third_party/sphere_tree/src/Export/CMak
 test/CMakeFiles/test_spheretree.dir/all: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_spheretree.dir/build.make test/CMakeFiles/test_spheretree.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_spheretree.dir/build.make test/CMakeFiles/test_spheretree.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=97 "Built target test_spheretree"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=98 "Built target test_spheretree"
 .PHONY : test/CMakeFiles/test_spheretree.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1601,12 +1601,12 @@ test/CMakeFiles/test_urdf_genderator.dir/all: third_party/sphere_tree/src/Export
 test/CMakeFiles/test_urdf_genderator.dir/all: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_urdf_genderator.dir/build.make test/CMakeFiles/test_urdf_genderator.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_urdf_genderator.dir/build.make test/CMakeFiles/test_urdf_genderator.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=98 "Built target test_urdf_genderator"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=99,100 "Built target test_urdf_genderator"
 .PHONY : test/CMakeFiles/test_urdf_genderator.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_urdf_genderator.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 83
+	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 84
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_urdf_genderator.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_urdf_genderator.dir/rule
@@ -1646,12 +1646,12 @@ test/CMakeFiles/test_capsule.dir/all: third_party/sphere_tree/src/Export/CMakeFi
 test/CMakeFiles/test_capsule.dir/all: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_capsule.dir/build.make test/CMakeFiles/test_capsule.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_capsule.dir/build.make test/CMakeFiles/test_capsule.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=93,94 "Built target test_capsule"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=95 "Built target test_capsule"
 .PHONY : test/CMakeFiles/test_capsule.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_capsule.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 84
+	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 83
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_capsule.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_capsule.dir/rule
@@ -1666,49 +1666,49 @@ test/CMakeFiles/test_capsule.dir/clean:
 .PHONY : test/CMakeFiles/test_capsule.dir/clean
 
 #=============================================================================
-# Target rules for target interface/CMakeFiles/urdf_approx_geom.dir
+# Target rules for target interface/CMakeFiles/_urdf_approx_geom.dir
 
 # All Build rule for target.
-interface/CMakeFiles/urdf_approx_geom.dir/all: CMakeFiles/URDFApproxGeom.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/ManifoldPlus/CMakeFiles/ManifoldPlus.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/CMakeFiles/STG.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/API/CMakeFiles/API.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/API/SFWhite/CMakeFiles/SFWhite.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/Base/CMakeFiles/Base.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/BBox/CMakeFiles/BBox.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/BBox/MVBB/CMakeFiles/MVBB.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/BBox/qHull/CMakeFiles/qHull.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/Exceptions/CMakeFiles/Exceptions.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/Geometry/CMakeFiles/Geometry.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/Geometry/pcube/CMakeFiles/pcube.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/LinearAlgebra/CMakeFiles/Matrix.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/MedialAxis/CMakeFiles/MedialAxis.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/MinMax/CMakeFiles/MinMax.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/SphereTree/CMakeFiles/SphereTree.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/Storage/CMakeFiles/Storage.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/Surface/CMakeFiles/Surface.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/Export.dir/all
-interface/CMakeFiles/urdf_approx_geom.dir/all: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all
-	$(MAKE) $(MAKESILENT) -f interface/CMakeFiles/urdf_approx_geom.dir/build.make interface/CMakeFiles/urdf_approx_geom.dir/depend
-	$(MAKE) $(MAKESILENT) -f interface/CMakeFiles/urdf_approx_geom.dir/build.make interface/CMakeFiles/urdf_approx_geom.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=99,100 "Built target urdf_approx_geom"
-.PHONY : interface/CMakeFiles/urdf_approx_geom.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: CMakeFiles/URDFApproxGeom.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/ManifoldPlus/CMakeFiles/ManifoldPlus.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/CMakeFiles/STG.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/API/CMakeFiles/API.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/API/SFWhite/CMakeFiles/SFWhite.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/Base/CMakeFiles/Base.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/BBox/CMakeFiles/BBox.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/BBox/MVBB/CMakeFiles/MVBB.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/BBox/qHull/CMakeFiles/qHull.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/Exceptions/CMakeFiles/Exceptions.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/Geometry/CMakeFiles/Geometry.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/Geometry/pcube/CMakeFiles/pcube.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/LinearAlgebra/CMakeFiles/Matrix.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/MedialAxis/CMakeFiles/MedialAxis.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/MinMax/CMakeFiles/MinMax.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/SphereTree/CMakeFiles/SphereTree.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/Storage/CMakeFiles/Storage.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/Surface/CMakeFiles/Surface.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: third_party/sphere_tree/src/Export/CMakeFiles/Export.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/all: bot_utils/sphereTreeWrapper/CMakeFiles/sphereTreeWrapper.dir/all
+	$(MAKE) $(MAKESILENT) -f interface/CMakeFiles/_urdf_approx_geom.dir/build.make interface/CMakeFiles/_urdf_approx_geom.dir/depend
+	$(MAKE) $(MAKESILENT) -f interface/CMakeFiles/_urdf_approx_geom.dir/build.make interface/CMakeFiles/_urdf_approx_geom.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/workspace/build/CMakeFiles --progress-num=70 "Built target _urdf_approx_geom"
+.PHONY : interface/CMakeFiles/_urdf_approx_geom.dir/all
 
 # Build rule for subdir invocation for target.
-interface/CMakeFiles/urdf_approx_geom.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 84
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 interface/CMakeFiles/urdf_approx_geom.dir/all
+interface/CMakeFiles/_urdf_approx_geom.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 83
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 interface/CMakeFiles/_urdf_approx_geom.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /workspace/build/CMakeFiles 0
-.PHONY : interface/CMakeFiles/urdf_approx_geom.dir/rule
+.PHONY : interface/CMakeFiles/_urdf_approx_geom.dir/rule
 
 # Convenience name for target.
-urdf_approx_geom: interface/CMakeFiles/urdf_approx_geom.dir/rule
-.PHONY : urdf_approx_geom
+_urdf_approx_geom: interface/CMakeFiles/_urdf_approx_geom.dir/rule
+.PHONY : _urdf_approx_geom
 
 # clean rule for target.
-interface/CMakeFiles/urdf_approx_geom.dir/clean:
-	$(MAKE) $(MAKESILENT) -f interface/CMakeFiles/urdf_approx_geom.dir/build.make interface/CMakeFiles/urdf_approx_geom.dir/clean
-.PHONY : interface/CMakeFiles/urdf_approx_geom.dir/clean
+interface/CMakeFiles/_urdf_approx_geom.dir/clean:
+	$(MAKE) $(MAKESILENT) -f interface/CMakeFiles/_urdf_approx_geom.dir/build.make interface/CMakeFiles/_urdf_approx_geom.dir/clean
+.PHONY : interface/CMakeFiles/_urdf_approx_geom.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

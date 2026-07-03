@@ -14,7 +14,7 @@ file(REMOVE_RECURSE
   "libManifoldPlus.pdb"
   "libManifoldPlus.so"
   "libManifoldPlus.so.1"
-  "libManifoldPlus.so.1.4"
+  "libManifoldPlus.so.1.5"
 )
 
 # Per-language clean rules from dependency scanning.

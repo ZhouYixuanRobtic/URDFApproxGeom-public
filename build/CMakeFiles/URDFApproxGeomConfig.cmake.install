@@ -1,4 +1,4 @@
-set(URDFApproxGeom_VERSION 1.4)
+set(URDFApproxGeom_VERSION 1.5)
 
 
 ####### Expanded from @PACKAGE_INIT@ by configure_package_config_file() #######

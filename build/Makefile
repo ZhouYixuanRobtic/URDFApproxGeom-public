@@ -647,17 +647,17 @@ test_capsule/fast:
 .PHONY : test_capsule/fast
 
 #=============================================================================
-# Target rules for targets named urdf_approx_geom
+# Target rules for targets named _urdf_approx_geom
 
 # Build rule for target.
-urdf_approx_geom: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 urdf_approx_geom
-.PHONY : urdf_approx_geom
+_urdf_approx_geom: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _urdf_approx_geom
+.PHONY : _urdf_approx_geom
 
 # fast build rule for target.
-urdf_approx_geom/fast:
-	$(MAKE) $(MAKESILENT) -f interface/CMakeFiles/urdf_approx_geom.dir/build.make interface/CMakeFiles/urdf_approx_geom.dir/build
-.PHONY : urdf_approx_geom/fast
+_urdf_approx_geom/fast:
+	$(MAKE) $(MAKESILENT) -f interface/CMakeFiles/_urdf_approx_geom.dir/build.make interface/CMakeFiles/_urdf_approx_geom.dir/build
+.PHONY : _urdf_approx_geom/fast
 
 src/CapsuleCrossSection.o: src/CapsuleCrossSection.cpp.o
 .PHONY : src/CapsuleCrossSection.o
@@ -836,6 +836,7 @@ help:
 	@echo "... Storage"
 	@echo "... Surface"
 	@echo "... URDFApproxGeom"
+	@echo "... _urdf_approx_geom"
 	@echo "... capsuleized"
 	@echo "... convex"
 	@echo "... makeTreeGrid"
@@ -853,7 +854,6 @@ help:
 	@echo "... test_simplify"
 	@echo "... test_spheretree"
 	@echo "... test_urdf_genderator"
-	@echo "... urdf_approx_geom"
 	@echo "... src/CapsuleCrossSection.o"
 	@echo "... src/CapsuleCrossSection.i"
 	@echo "... src/CapsuleCrossSection.s"

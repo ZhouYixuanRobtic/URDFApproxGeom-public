@@ -95,8 +95,8 @@ test/test_capsule: test/CMakeFiles/test_capsule.dir/build.make
 test/test_capsule: libURDFApproxGeom.so
 test/test_capsule: /usr/lib/x86_64-linux-gnu/libgtest_main.a
 test/test_capsule: /usr/lib/x86_64-linux-gnu/libgtest.a
-test/test_capsule: third_party/ManifoldPlus/libManifoldPlus.so.1.4
-test/test_capsule: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+test/test_capsule: third_party/ManifoldPlus/libManifoldPlus.so.1.5
+test/test_capsule: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 test/test_capsule: /usr/lib/libirmv_core.so
 test/test_capsule: /usr/lib/x86_64-linux-gnu/libspdlog.so.1.9.2
 test/test_capsule: /usr/lib/x86_64-linux-gnu/libfmt.so.8.1.1

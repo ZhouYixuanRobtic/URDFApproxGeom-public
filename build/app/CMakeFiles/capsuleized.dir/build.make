@@ -93,8 +93,8 @@ capsuleized_EXTERNAL_OBJECTS =
 app/capsuleized: app/CMakeFiles/capsuleized.dir/Capsuleized.cpp.o
 app/capsuleized: app/CMakeFiles/capsuleized.dir/build.make
 app/capsuleized: libURDFApproxGeom.so
-app/capsuleized: third_party/ManifoldPlus/libManifoldPlus.so.1.4
-app/capsuleized: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+app/capsuleized: third_party/ManifoldPlus/libManifoldPlus.so.1.5
+app/capsuleized: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 app/capsuleized: third_party/sphere_tree/libSTG.a
 app/capsuleized: third_party/sphere_tree/src/API/libAPI.a
 app/capsuleized: third_party/sphere_tree/src/API/SFWhite/libSFWhite.a

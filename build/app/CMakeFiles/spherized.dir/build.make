@@ -93,8 +93,8 @@ spherized_EXTERNAL_OBJECTS =
 app/spherized: app/CMakeFiles/spherized.dir/Sphereized.cpp.o
 app/spherized: app/CMakeFiles/spherized.dir/build.make
 app/spherized: libURDFApproxGeom.so
-app/spherized: third_party/ManifoldPlus/libManifoldPlus.so.1.4
-app/spherized: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+app/spherized: third_party/ManifoldPlus/libManifoldPlus.so.1.5
+app/spherized: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 app/spherized: third_party/sphere_tree/libSTG.a
 app/spherized: third_party/sphere_tree/src/API/libAPI.a
 app/spherized: third_party/sphere_tree/src/API/SFWhite/libSFWhite.a

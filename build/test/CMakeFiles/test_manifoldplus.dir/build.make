@@ -92,7 +92,7 @@ test_manifoldplus_EXTERNAL_OBJECTS =
 
 test/test_manifoldplus: test/CMakeFiles/test_manifoldplus.dir/test_manifoldplus.cpp.o
 test/test_manifoldplus: test/CMakeFiles/test_manifoldplus.dir/build.make
-test/test_manifoldplus: third_party/ManifoldPlus/libManifoldPlus.so.1.4
+test/test_manifoldplus: third_party/ManifoldPlus/libManifoldPlus.so.1.5
 test/test_manifoldplus: /usr/lib/libirmv_core.so
 test/test_manifoldplus: /usr/lib/x86_64-linux-gnu/libgtest_main.a
 test/test_manifoldplus: /usr/lib/x86_64-linux-gnu/libgtest.a

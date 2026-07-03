@@ -25,8 +25,7 @@ jobs:
 
       - name: Build and test
         run: |
-          docker run --rm -v $PWD:/workspace spherized-dev
-          bash -lc '
+          docker run --rm -v $PWD:/workspace spherized-dev bash -lc '
             set -e
             cmake -B build -DCMAKE_BUILD_TYPE=Release -DCOMPILE_URDFApproxGeom_PYBINDING=ON
             cmake --build build -j$(nproc)

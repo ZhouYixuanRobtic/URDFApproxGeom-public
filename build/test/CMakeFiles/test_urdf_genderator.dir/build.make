@@ -93,7 +93,7 @@ test_urdf_genderator_EXTERNAL_OBJECTS =
 test/test_urdf_genderator: test/CMakeFiles/test_urdf_genderator.dir/test_urdf_genderator.cpp.o
 test/test_urdf_genderator: test/CMakeFiles/test_urdf_genderator.dir/build.make
 test/test_urdf_genderator: libURDFApproxGeom.so
-test/test_urdf_genderator: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+test/test_urdf_genderator: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 test/test_urdf_genderator: /usr/lib/libirmv_core.so
 test/test_urdf_genderator: /usr/lib/x86_64-linux-gnu/libgtest_main.a
 test/test_urdf_genderator: /usr/lib/x86_64-linux-gnu/libgtest.a
@@ -117,7 +117,7 @@ test/test_urdf_genderator: third_party/sphere_tree/src/Geometry/pcube/libpcube.a
 test/test_urdf_genderator: third_party/sphere_tree/src/LinearAlgebra/libMatrix.a
 test/test_urdf_genderator: third_party/sphere_tree/src/Storage/libStorage.a
 test/test_urdf_genderator: third_party/sphere_tree/src/Export/libExport.a
-test/test_urdf_genderator: third_party/ManifoldPlus/libManifoldPlus.so.1.4
+test/test_urdf_genderator: third_party/ManifoldPlus/libManifoldPlus.so.1.5
 test/test_urdf_genderator: test/CMakeFiles/test_urdf_genderator.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/workspace/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable test_urdf_genderator"
 	cd /workspace/build/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_urdf_genderator.dir/link.txt --verbose=$(VERBOSE)

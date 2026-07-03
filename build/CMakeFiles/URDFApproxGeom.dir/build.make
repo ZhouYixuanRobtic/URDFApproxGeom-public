@@ -189,8 +189,8 @@ libURDFApproxGeom.so: third_party/sphere_tree/src/SphereTree/libSphereTree.a
 libURDFApproxGeom.so: third_party/sphere_tree/src/Storage/libStorage.a
 libURDFApproxGeom.so: third_party/sphere_tree/src/Surface/libSurface.a
 libURDFApproxGeom.so: third_party/sphere_tree/src/Export/libExport.a
-libURDFApproxGeom.so: third_party/ManifoldPlus/libManifoldPlus.so.1.4
-libURDFApproxGeom.so: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+libURDFApproxGeom.so: third_party/ManifoldPlus/libManifoldPlus.so.1.5
+libURDFApproxGeom.so: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 libURDFApproxGeom.so: /usr/lib/libirmv_core.so
 libURDFApproxGeom.so: third_party/sphere_tree/libSTG.a
 libURDFApproxGeom.so: third_party/sphere_tree/src/API/libAPI.a

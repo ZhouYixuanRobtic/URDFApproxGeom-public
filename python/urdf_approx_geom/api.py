@@ -90,7 +90,7 @@ def generate(
         mode=normal,
         input_urdf=input_path,
         output_urdf=output_path,
-        json_path=json_path if json_path and json_path.exists() else json_path,
+        json_path=json_path,
         config_path=config_path,
         message=message,
         primitive_count=primitive_count,

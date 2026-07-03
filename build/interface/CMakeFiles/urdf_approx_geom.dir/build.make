@@ -93,8 +93,8 @@ urdf_approx_geom_EXTERNAL_OBJECTS =
 python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: interface/CMakeFiles/urdf_approx_geom.dir/urdf_approx_geom.cpp.o
 python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: interface/CMakeFiles/urdf_approx_geom.dir/build.make
 python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: libURDFApproxGeom.so
-python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: third_party/ManifoldPlus/libManifoldPlus.so.1.4
-python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.4
+python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: third_party/ManifoldPlus/libManifoldPlus.so.1.5
+python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: bot_utils/sphereTreeWrapper/libsphereTreeWrapper.so.1.5
 python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: third_party/sphere_tree/libSTG.a
 python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: third_party/sphere_tree/src/API/libAPI.a
 python/urdf_approx_geom.cpython-310-x86_64-linux-gnu.so: third_party/sphere_tree/src/API/SFWhite/libSFWhite.a
