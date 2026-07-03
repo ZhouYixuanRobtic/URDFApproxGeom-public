@@ -198,6 +198,9 @@ static void resizeCapsulesFromAssignedVertices(std::vector<Capsule>& caps,
     }
 }
 
+static bool shrinkCapsuleEndpointSpans(std::vector<Capsule>& caps,
+                                       const Eigen::MatrixXd& V);
+
 bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
                               const Eigen::MatrixXd& V,
                               double max_ratio,
@@ -240,6 +243,8 @@ bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
             resizeCapsulesFromAssignedVertices(candidate, V);
             growCapsulesToCover(candidate, V);
             candidate = dedupeNestedCapsules(candidate);
+            while (shrinkCapsuleEndpointSpans(candidate, V)) {
+            }
 
             auto after_metrics = evaluateCapsuleTightness(V, candidate);
             if (!after_metrics.covered) continue;
@@ -317,6 +322,102 @@ double capsuleSetVolume(const std::vector<Capsule>& caps) {
     double total = 0.0;
     for (const auto& cap : caps) total += capsuleVolume(cap);
     return total;
+}
+
+static Capsule capsuleWithSpan(const Capsule& cap, double lo, double hi, double radius) {
+    Eigen::Vector3d axis = cap.p1 - cap.p0;
+    double length = axis.norm();
+    if (length < 1e-12) return cap;
+    Eigen::Vector3d u = axis / length;
+    Capsule out;
+    out.p0 = cap.p0 + lo * u;
+    out.p1 = cap.p0 + hi * u;
+    out.radius = radius;
+    return out;
+}
+
+static double requiredRadiusForSpan(const Capsule& cap,
+                                    const Eigen::MatrixXd& V,
+                                    double lo,
+                                    double hi) {
+    Eigen::Vector3d axis = cap.p1 - cap.p0;
+    double length = axis.norm();
+    if (length < 1e-12 || lo >= hi) return std::numeric_limits<double>::infinity();
+    Eigen::Vector3d u = axis / length;
+    double radius = 0.0;
+    for (int i = 0; i < V.rows(); ++i) {
+        Eigen::Vector3d p = V.row(i).transpose();
+        double t = (p - cap.p0).dot(u);
+        double clamped = std::clamp(t, lo, hi);
+        Eigen::Vector3d q = cap.p0 + clamped * u;
+        radius = std::max(radius, (p - q).norm());
+    }
+    return radius;
+}
+
+static Capsule optimizeEndpointSpanForAssignedVertices(const Capsule& cap,
+                                                       const Eigen::MatrixXd& V) {
+    Eigen::Vector3d axis = cap.p1 - cap.p0;
+    double length = axis.norm();
+    if (length < 1e-12 || V.rows() == 0) return cap;
+    Eigen::Vector3d u = axis / length;
+
+    double tmin = std::numeric_limits<double>::max();
+    double tmax = std::numeric_limits<double>::lowest();
+    for (int i = 0; i < V.rows(); ++i) {
+        double t = (V.row(i).transpose() - cap.p0).dot(u);
+        tmin = std::min(tmin, t);
+        tmax = std::max(tmax, t);
+    }
+    if (tmax - tmin < 1e-12) return cap;
+
+    std::vector<double> lows;
+    std::vector<double> highs;
+    lows.push_back(0.0);
+    highs.push_back(length);
+    for (int k = 0; k <= 20; ++k) {
+        double f = 0.35 * double(k) / 20.0;
+        lows.push_back(tmin + f * (tmax - tmin));
+        highs.push_back(tmax - f * (tmax - tmin));
+    }
+
+    Capsule best = cap;
+    double best_volume = capsuleVolume(cap);
+    for (double lo : lows) {
+        for (double hi : highs) {
+            if (hi - lo < 1e-9) continue;
+            double radius = requiredRadiusForSpan(cap, V, lo, hi);
+            if (!std::isfinite(radius) || radius <= 0.0) continue;
+            Capsule candidate = capsuleWithSpan(cap, lo, hi, radius);
+            double volume = capsuleVolume(candidate);
+            if (volume < best_volume) {
+                best = candidate;
+                best_volume = volume;
+            }
+        }
+    }
+    return best;
+}
+
+static bool shrinkCapsuleEndpointSpans(std::vector<Capsule>& caps,
+                                       const Eigen::MatrixXd& V) {
+    if (caps.empty() || V.rows() == 0) return false;
+    auto before = evaluateCapsuleTightness(V, caps);
+    auto assignment = assignVerticesToCapsules(V, caps);
+
+    std::vector<Capsule> candidate = caps;
+    for (int i = 0; i < static_cast<int>(caps.size()); ++i) {
+        Eigen::MatrixXd local = assignedVerticesForCapsule(V, assignment, i);
+        if (local.rows() == 0) continue;
+        candidate[i] = optimizeEndpointSpanForAssignedVertices(caps[i], local);
+    }
+    growCapsulesToCover(candidate, V);
+    candidate = dedupeNestedCapsules(candidate);
+    auto after = evaluateCapsuleTightness(V, candidate);
+    if (!after.covered) return false;
+    if (after.capsule_volume >= before.capsule_volume * 0.999) return false;
+    caps = std::move(candidate);
+    return true;
 }
 
 }  // namespace
@@ -927,6 +1028,8 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
 
     caps = mergeCollinearCapsules(caps);
     growCapsulesToCover(caps, V);
+    while (shrinkCapsuleEndpointSpans(caps, V)) {
+    }
     if (options.max_radius_bin_ratio > 0 || options.max_capv_aabb_ratio > 0) {
         while (splitMostInflatedCapsule(caps,
                                         V,
@@ -936,6 +1039,8 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
                                         options.max_capsules)) {
         }
         growCapsulesToCover(caps, V);
+        while (shrinkCapsuleEndpointSpans(caps, V)) {
+        }
     }
     caps = dedupeNestedCapsules(caps);
 
@@ -962,6 +1067,8 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         caps = std::move(best_candidate);
     }
     growCapsulesToCover(caps, V);
+    while (shrinkCapsuleEndpointSpans(caps, V)) {
+    }
     caps = dedupeNestedCapsules(caps);
     return caps;
 }
