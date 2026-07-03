@@ -55,13 +55,14 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
     // Sphere tree -> spherized collision URDF + JSON sidecar.
     m.def(
         "spherized",
-        [](const std::string& input, const std::string& output, replace_pairs_t replace_pairs,
-           bool simplify) {
-            SphereTreeURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) +
-                                          "/sphereTree/sphereTreeConfig.yml",
-                                      simplify);
+        [](const std::string& input, const std::string& output, const std::string& config,
+           replace_pairs_t replace_pairs, bool simplify) {
+            std::string cfg = config.empty()
+                                  ? std::string(URDFApproxGeom_CONFIG_PATH) + "/sphereTree/sphereTreeConfig.yml"
+                                  : config;
+            SphereTreeURDFGenerator g(cfg, simplify);
             return g.run(input, output, replace_pairs).message();
         },
-        py::arg("input"), py::arg("output"), py::arg("replace_pairs") = replace_pairs_t{},
-        py::arg("simplify") = true);
+        py::arg("input"), py::arg("output"), py::arg("config") = std::string(""),
+        py::arg("replace_pairs") = replace_pairs_t{}, py::arg("simplify") = true);
 }

@@ -158,6 +158,14 @@ TEST_F(SphereTreeTest, OctreeTest) {
     ASSERT_TRUE(ret.isOk());
 }
 
+#include <yaml-cpp/yaml.h>
+
+TEST(SphereTreeConfig, SingleSpherePresetHasExplicitFlag) {
+    YAML::Node config = YAML::LoadFile("/workspace/config/sphereTree/single.yml");
+    ASSERT_TRUE(config["SingleSphere"]);
+    EXPECT_TRUE(config["SingleSphere"].as<bool>());
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

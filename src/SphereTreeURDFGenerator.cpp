@@ -64,10 +64,18 @@
 SphereTreeURDFGenerator::SphereTreeURDFGenerator(const std::string &st_config_path, bool simplify) {
     YAML::Node doc = YAML::LoadFile(st_config_path);
     config_path_ = st_config_path;
-    type_ = static_cast<SphereTreeMethod::STMethodType>(doc["Method"].as<int>());
     doSimplify = simplify;
-    simplify_ratio = doc["SimplifyRatio"].as<double>();
-    simplify_ratio = std::max(0.001, std::min(1., simplify_ratio)); //clamp to [0.001, 1]
+    if (doc["Method"]) {
+        type_ = static_cast<SphereTreeMethod::STMethodType>(doc["Method"].as<int>());
+    } else {
+        type_ = SphereTreeMethod::Medial;  // default method
+    }
+    if (doc["SimplifyRatio"]) {
+        simplify_ratio = doc["SimplifyRatio"].as<double>();
+        simplify_ratio = std::max(0.001, std::min(1., simplify_ratio)); //clamp to [0.001, 1]
+    } else {
+        simplify_ratio = 1.0;
+    }
 }
 
 SphereTreeURDFGenerator::~SphereTreeURDFGenerator() {
@@ -251,9 +259,145 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(const
     return {irmv_core::bot_common::ErrorCode::OK, ""};
 }
 
+irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSingleSphereModel(
+    const std::string& urdf_path,
+    const std::vector<std::pair<std::string, std::string>>& replace_pairs) {
+
+    auto ret = loadURDF(urdf_path, m_model);
+    if (!ret.isOk()) {
+        IRMV_ERROR("{}", ret.message());
+        return ret;
+    }
+    IRMV_INFO("Got {} links to process", m_model->links_.size());
+    loadURDF(urdf_path, m_biggest_model);
+
+    nlohmann::json json;
+    for (auto &link_pair: m_model->links_) {
+        auto& link_json = json[link_pair.first];
+
+        if (link_pair.second->collision_array.size() > 1) {
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "We only accept one collision mesh"};
+        }
+
+        auto &collision = link_pair.second->collision;
+        if (collision != nullptr) {
+            switch (collision->geometry->type) {
+                case urdf::Geometry::MESH: {
+                    auto *mesh = dynamic_cast<urdf::Mesh *>(collision->geometry.get());
+                    std::string filename_raw = mesh->filename;
+                    for (const auto &replace_pair: replace_pairs) {
+                        replaceWith(filename_raw, replace_pair.first, replace_pair.second);
+                    }
+                    std::filesystem::path filename = filename_raw;
+                    Eigen::MatrixXd V;
+                    MatrixD OUT_V;
+                    Eigen::MatrixXi F, N;
+                    MatrixI OUT_F;
+                    bool alreadyOBJ = false;
+                    ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
+                    if (!ret.isOk()) {
+                        IRMV_ERROR("{}", ret.message());
+                        return ret;
+                    }
+
+                    // watertight manifold processing
+                    IRMV_INFO("-------------------Start Processing Watertight Manifold----------------");
+                    auto m_manifold = std::make_unique<Manifold>();
+                    m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
+                    IRMV_INFO("Got {} faces after watertight manifold processing", OUT_F.rows());
+                    IRMV_INFO("-------------------End Processing Watertight Manifold----------------");
+
+                    if (doSimplify) {
+                        IRMV_INFO("-------------------Start Simplify----------------");
+                        Eigen::VectorXi J;
+                        igl::decimate(OUT_V, OUT_F, static_cast<size_t>(simplify_ratio * (double)OUT_F.rows()), V, F, J);
+                        IRMV_INFO("Simplify from {} to {}", OUT_F.rows(), F.rows());
+                        IRMV_INFO("-------------------End Simplify----------------");
+                    } else {
+                        V = OUT_V;
+                        F = OUT_F;
+                    }
+
+                    // compute single bounding sphere: center = mean of vertices
+                    Eigen::Vector3d center = V.colwise().mean();
+                    double radius = 0.0;
+                    for (int i = 0; i < V.rows(); ++i) {
+                        radius = std::max(radius, (V.row(i).transpose() - center).norm());
+                    }
+
+                    // collision origin transform
+                    Eigen::Matrix3d original_rotation = Eigen::Quaterniond(collision->origin.rotation.w,
+                                                                           collision->origin.rotation.x,
+                                                                           collision->origin.rotation.y,
+                                                                           collision->origin.rotation.z).toRotationMatrix();
+                    Eigen::Vector3d origin_trans(collision->origin.position.x, collision->origin.position.y, collision->origin.position.z);
+
+                    long i = std::find(link_pair.second->collision_array.begin(),
+                                       link_pair.second->collision_array.end(), collision) -
+                             link_pair.second->collision_array.begin();
+
+                    // biggest model gets the same single sphere
+                    auto biggest_collision = m_biggest_model->links_[link_pair.first]->collision_array[i];
+                    Eigen::Vector3d rotated_center = original_rotation * center;
+                    biggest_collision->origin.position.x = origin_trans.x() + rotated_center.x();
+                    biggest_collision->origin.position.y = origin_trans.y() + rotated_center.y();
+                    biggest_collision->origin.position.z = origin_trans.z() + rotated_center.z();
+                    biggest_collision->origin.rotation.clear();
+                    auto sphere = std::make_shared<urdf::Sphere>();
+                    sphere->radius = radius;
+                    biggest_collision->geometry = sphere;
+
+                    // main model gets the same single sphere
+                    link_pair.second->collision_array.clear();
+                    link_json["spheres"] = nlohmann::json::array();
+                    auto sphere_collision = std::make_shared<urdf::Collision>();
+                    rotated_center = original_rotation * center;
+                    sphere_collision->origin.position.x = origin_trans.x() + rotated_center.x();
+                    sphere_collision->origin.position.y = origin_trans.y() + rotated_center.y();
+                    sphere_collision->origin.position.z = origin_trans.z() + rotated_center.z();
+                    sphere_collision->origin.rotation.clear();
+                    sphere = std::make_shared<urdf::Sphere>();
+                    sphere->radius = radius;
+                    sphere_collision->geometry = sphere;
+                    link_pair.second->collision_array.emplace_back(sphere_collision);
+                    link_pair.second->collision = link_pair.second->collision_array[0];
+                    {
+                        nlohmann::json entry;
+                        entry["center"] = {sphere_collision->origin.position.x,
+                                           sphere_collision->origin.position.y,
+                                           sphere_collision->origin.position.z};
+                        entry["radius"] = sphere->radius;
+                        link_json["spheres"].push_back(entry);
+                    }
+
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
+    // Remove links that have no spheres (no mesh collision geometry)
+    for (auto it = json.begin(); it != json.end(); ) {
+        if (it->is_null() || !it->contains("spheres")) {
+            it = json.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    spheres_json_ = std::move(json);
+    return {irmv_core::bot_common::ErrorCode::OK, ""};
+}
+
 irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::run(const std::string &urdf_path, const std::string &output_path,
                                                    const std::vector<std::pair<std::string, std::string>> &replace_pairs) {
-    auto ret = buildSphereModel(urdf_path, replace_pairs);
+    YAML::Node config = YAML::LoadFile(config_path_);
+    irmv_core::bot_common::ErrorInfo ret;
+    if (config["SingleSphere"] && config["SingleSphere"].as<bool>()) {
+        ret = buildSingleSphereModel(urdf_path, replace_pairs);
+    } else {
+        ret = buildSphereModel(urdf_path, replace_pairs);
+    }
     if (!ret.isOk()) {
         IRMV_ERROR("{}", ret.message());
         return ret;

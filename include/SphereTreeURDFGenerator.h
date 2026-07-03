@@ -74,6 +74,13 @@ protected:
     /// their own representation.
     irmv_core::bot_common::ErrorInfo buildSphereModel(const std::string& urdf_path,
                                        const std::vector<std::pair<std::string, std::string>>& replace_pairs);
+
+    /// Single-sphere baseline: one conservative bounding sphere per mesh link.
+    /// Fills m_model, m_biggest_model, and spheres_json_ the same way as
+    /// buildSphereModel, but each link gets exactly one sphere instead of a tree.
+    irmv_core::bot_common::ErrorInfo buildSingleSphereModel(
+        const std::string& urdf_path,
+        const std::vector<std::pair<std::string, std::string>>& replace_pairs);
 public:
     irmv_core::bot_common::ErrorInfo run(const std::string &urdf_path, const std::string &output_path,
                               const std::vector<std::pair<std::string, std::string>> &replace_pairs) override;

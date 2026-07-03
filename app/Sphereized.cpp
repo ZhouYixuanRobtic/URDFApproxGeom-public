@@ -53,13 +53,14 @@ int main(int argc, char *argv[]) {
     // Initialize logger
     irmv_core::logging::SingletonLogger::getInstance().initialize("URDFApproxGeom");
     if (argc < 4) {
-        IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [--simplify <0|1>]", argv[0]);
+        IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [-c <sphere_config.yml>] [--simplify <0|1>]", argv[0]);
         return 1;
     }
 
     std::string configPath = URDFApproxGeom_CONFIG_PATH;
     std::string inputPath;
     std::string outputPath;
+    std::string sphereConfig;
     std::vector<std::pair<std::string, std::string>> replacements;
     bool simplify = true;
 
@@ -77,6 +78,8 @@ int main(int argc, char *argv[]) {
             replacements.emplace_back(key, value);
         }else if (arg == "--simplify" && i + 1 < argc) {
             simplify = std::stoi(argv[++i]);
+        } else if ((arg == "-c" || arg == "--config") && i + 1 < argc) {
+            sphereConfig = argv[++i];
         } else {
             IRMV_ERROR("Unknown argument: {}", arg);
             return 1;
@@ -89,9 +92,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    if (sphereConfig.empty()) {
+        sphereConfig = configPath + "/sphereTree/sphereTreeConfig.yml";
+    }
+
     // Create the SphereTreeURDFGenerator instance
-    auto spherized_generator = std::make_shared<SphereTreeURDFGenerator>(
-            configPath + "/sphereTree/sphereTreeConfig.yml", simplify);
+    auto spherized_generator = std::make_shared<SphereTreeURDFGenerator>(sphereConfig, simplify);
 
     // Run the generator with the input, output, and replacement pairs
     auto ret = spherized_generator->run(inputPath, outputPath, replacements);
