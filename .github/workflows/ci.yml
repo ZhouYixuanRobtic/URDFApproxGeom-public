@@ -12,6 +12,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: false
+          fetch-depth: 0
 
       - name: Reject generated artifacts
         run: |
@@ -22,7 +23,17 @@ jobs:
           fi
 
       - name: Whitespace check
-        run: git diff --check HEAD~1..HEAD || git diff --check
+        run: |
+          set -e
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="${{ github.event.before }}"
+          fi
+          if git rev-parse --verify "$BASE_SHA^{commit}" >/dev/null 2>&1; then
+            git diff --check "$BASE_SHA"..HEAD
+          else
+            git diff --check
+          fi
 
   # GitHub forbids `secrets.*` directly in job `if:` conditionals. Read the
   # secrets in a step `env:` (allowed) and expose the boolean via job outputs,

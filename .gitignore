@@ -68,4 +68,3 @@ check_json2.py
 *.egg-info/
 *.egg-link
 dist/
-
