@@ -10,9 +10,11 @@ from typing import Iterable, Mapping, Sequence
 from ._extension import load_extension
 from .presets import resolve_preset
 
-_ext = load_extension()
-
 Mode = str
+
+
+def _extension():
+    return load_extension()
 
 
 @dataclass(frozen=True)
@@ -90,15 +92,15 @@ def generate(
     config_path = pathlib.Path(config) if config else resolve_preset(normal, preset)
 
     if normal == "capsule":
-        message = _ext.capsuleized(str(input_path), str(output_path), str(config_path), pairs)
+        message = _extension().capsuleized(str(input_path), str(output_path), str(config_path), pairs)
         json_path = _sidecar_json(output_path)
         primitive_count = _count_json_primitives(json_path, "capsules")
     elif normal == "sphere":
-        message = _ext.spherized(str(input_path), str(output_path), str(config_path), pairs, bool(simplify))
+        message = _extension().spherized(str(input_path), str(output_path), str(config_path), pairs, bool(simplify))
         json_path = _sidecar_json(output_path)
         primitive_count = _count_json_primitives(json_path, "spheres")
     else:
-        message = _ext.convex(str(input_path), str(output_path), pairs)
+        message = _extension().convex(str(input_path), str(output_path), pairs)
         json_path = None
         primitive_count = 0
 
