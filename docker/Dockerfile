@@ -20,7 +20,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Python test runner for the urdf_approx_geom bindings (pybind11 already in base).
-RUN pip3 install --no-cache-dir pytest
+# Upgrade pip/setuptools first: PEP 621 [project] + PEP 660 editable installs
+# need setuptools>=64 and a pip newer than the base image's 22.x.
+RUN pip3 install --no-cache-dir --upgrade pip setuptools && \
+    pip3 install --no-cache-dir pytest
 
 USER irmv
 WORKDIR /workspace
