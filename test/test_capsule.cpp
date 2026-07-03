@@ -517,6 +517,24 @@ TEST(CapsuleRun, EmitsNativeCylinderSphere) {
     EXPECT_NE(urdf_txt.find("<sphere"), std::string::npos) << "no <sphere> in URDF";
 }
 
+TEST(CapsuleRun, TightPresetAddsBaseLinkDetail) {
+    const std::string out_urdf = "/tmp/fr3_tight_link0_detail_test.urdf";
+    CapsuleURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) +
+                           "/capsule/capsuleConfig_tight.yml");
+    auto ret = g.run("/workspace/resources/fr3/urdf/fr3.urdf", out_urdf, {});
+    ASSERT_TRUE(ret.isOk()) << ret.message();
+
+    std::ifstream f("/tmp/fr3_tight_link0_detail_test.json");
+    ASSERT_TRUE(f.good()) << "JSON sidecar not written";
+    nlohmann::json j;
+    f >> j;
+
+    ASSERT_TRUE(j.contains("fr3_link0")) << "fr3_link0 missing from tight capsule JSON";
+    ASSERT_TRUE(j["fr3_link0"].contains("capsules")) << "fr3_link0 capsules missing";
+    EXPECT_GE(j["fr3_link0"]["capsules"].size(), 2u)
+        << "The tight preset should not leave the base link as one near-threshold capsule";
+}
+
 static int countDegenerateCapsules(const std::vector<Capsule>& caps) {
     int n = 0;
     for (const auto& cap : caps)
