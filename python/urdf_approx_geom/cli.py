@@ -43,6 +43,9 @@ def build_parser() -> argparse.ArgumentParser:
     gen.add_argument("-o", "--output", help="output URDF for a single mode")
     gen.add_argument("--output-dir", help="output directory when --mode all is used")
     gen.add_argument("--preset", default="default", help="named preset for sphere/capsule")
+    gen.add_argument("--convex-preset", default=None, help="convex preset for --mode all")
+    gen.add_argument("--sphere-preset", default=None, help="sphere preset for --mode all")
+    gen.add_argument("--capsule-preset", default=None, help="capsule preset for --mode all")
     gen.add_argument("--config", default=None, help="explicit config path for a single mode")
     gen.add_argument("--simplify", type=int, default=1, help="sphere mode mesh simplification flag 0/1")
     _add_replace_arg(gen)
@@ -86,10 +89,20 @@ def main(argv: list[str] | None = None) -> int:
         if args.mode == "all":
             if not args.output_dir:
                 parser.error("--output-dir is required when --mode all is used")
+            per_mode_presets = {
+                mode: value
+                for mode, value in {
+                    "convex": args.convex_preset,
+                    "sphere": args.sphere_preset,
+                    "capsule": args.capsule_preset,
+                }.items()
+                if value is not None
+            }
             results = generate_all(
                 args.input,
                 args.output_dir,
                 preset=args.preset,
+                presets=per_mode_presets,
                 replace_pairs=args.replace,
                 simplify=bool(args.simplify),
             )

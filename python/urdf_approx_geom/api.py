@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import pathlib
-from typing import Iterable, Sequence
+from typing import Iterable, Mapping, Sequence
 
 from ._extension import load_extension
 from .presets import resolve_preset
@@ -35,6 +35,16 @@ def _normal_mode(mode: Mode) -> str:
     if value in {"convex", "convex-mesh", "convex_mesh"}:
         return "convex"
     raise ValueError(f"unknown mode {mode!r}; expected convex, sphere, or capsule")
+
+
+def _preset_for_mode(mode: str, common_preset: str, presets: Mapping[str, str] | None) -> str:
+    if presets:
+        for key, value in presets.items():
+            if _normal_mode(key) == mode:
+                return value
+    if mode == "convex" and common_preset != "default":
+        return "default"
+    return common_preset
 
 
 def _sidecar_json(output_urdf: pathlib.Path) -> pathlib.Path:
@@ -109,6 +119,7 @@ def generate_all(
     *,
     modes: Sequence[str] = ("convex", "sphere", "capsule"),
     preset: str = "default",
+    presets: Mapping[str, str] | None = None,
     replace_pairs: Iterable[tuple[str, str]] | None = None,
     simplify: bool = True,
 ) -> list[GenerateResult]:
@@ -125,7 +136,7 @@ def generate_all(
                 normal,
                 input_path,
                 out,
-                preset=preset,
+                preset=_preset_for_mode(normal, preset, presets),
                 replace_pairs=replace_pairs,
                 simplify=simplify,
             )
