@@ -49,10 +49,16 @@ def _count_json_primitives(json_path: pathlib.Path | None, key: str) -> int:
     data = json.loads(json_path.read_text())
     count = 0
     for body in data.values():
-        if body is None:
+        if body is None or not isinstance(body, dict):
             continue
-        values = body.get(key, [])
-        count += len(values)
+        values = body.get(key)
+        if isinstance(values, list):
+            count += len(values)
+            continue
+        if key == "spheres":
+            legacy = body.get("SubSpheres")
+            if isinstance(legacy, dict):
+                count += len(legacy)
     return count
 
 

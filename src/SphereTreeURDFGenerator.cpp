@@ -215,7 +215,9 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(const
                                     // do spheres approximation
                                     link_pair.second->collision_array.clear();
                                     link_json["SubSpheres"] = nlohmann::json();
-                                    auto& spheres_json = link_json["SubSpheres"];
+                                    link_json["spheres"] = nlohmann::json::array();
+                                    auto& legacy_spheres_json = link_json["SubSpheres"];
+                                    auto& canonical_spheres_json = link_json["spheres"];
                                     for (const SphereTreeMethod::Sphere &sub_sphere: tree.sub_spheres) {
                                         auto sphere_collision = std::make_shared<urdf::Collision>();
                                         rotated_vec = original_rotation * (centroid + sub_sphere.getData().head(3));
@@ -227,10 +229,21 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(const
                                         sphere->radius = std::abs(sub_sphere.R());
                                         sphere_collision->geometry = sphere;
                                         if (sphere->radius > 0.005){
-                                            spheres_json[("r" + std::to_string(i++))] = std::vector<double>{sphere_collision->origin.position.x,
-                                                                                                      sphere_collision->origin.position.y,
-                                                                                                      sphere_collision->origin.position.z,
-                                                                                                      sphere->radius};
+                                            std::vector<double> legacy_entry{
+                                                sphere_collision->origin.position.x,
+                                                sphere_collision->origin.position.y,
+                                                sphere_collision->origin.position.z,
+                                                sphere->radius};
+                                            legacy_spheres_json[("r" + std::to_string(i++))] = legacy_entry;
+
+                                            nlohmann::json canonical_entry;
+                                            canonical_entry["center"] = {
+                                                sphere_collision->origin.position.x,
+                                                sphere_collision->origin.position.y,
+                                                sphere_collision->origin.position.z};
+                                            canonical_entry["radius"] = sphere->radius;
+                                            canonical_spheres_json.push_back(canonical_entry);
+
                                             link_pair.second->collision_array.emplace_back(sphere_collision);
                                         }
                                     }
