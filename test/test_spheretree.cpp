@@ -63,42 +63,21 @@ protected:
     }
 
 public:
-    static void
-    fetchAllFilesWith(const std::string &directory_path, const std::string &suffix, std::vector<std::string> &results) {
+    // ponytail: returns the first existing public FR3 OBJ; empty string if none found.
+    std::string publicFr3Obj(const std::string& name = "finger.obj") const {
         namespace fs = std::filesystem;
-        try {
-            if (fs::exists(directory_path) && fs::is_directory(directory_path)) {
-                for (fs::recursive_directory_iterator iter(directory_path), end; iter != end; ++iter) {
-                    if (fs::is_regular_file(*iter) && iter->path().extension() == suffix) {
-                        results.push_back(fs::absolute(iter->path()).string());
-                    }
-                }
+        const std::vector<std::string> candidates = {
+            resourcePath + "/fr3/meshes/franka_hand/collision/collision/" + name,
+            resourcePath + "/fr3/meshes/fr3/collision/collision/link7.obj",
+            resourcePath + "/fr3/meshes/plate/collision/collision/flex_griper_connect.obj",
+        };
+        for (const auto& candidate : candidates) {
+            if (fs::exists(candidate) && fs::is_regular_file(candidate)) {
+                return fs::absolute(candidate).string();
             }
-        } catch (const fs::filesystem_error &e) {
-            IRMV_ERROR("Filesystem error: {}", e.what());
-        } catch (const std::exception &e) {
-            IRMV_ERROR("General error: {}", e.what());
         }
+        return "";
     }
-
-    static bool replaceWith(std::string &src, const std::string &original, const std::string &now) {
-        size_t pos = src.find(original);
-        if (pos != std::string::npos) {
-            src.replace(pos, original.length(), now);
-            return true;
-        }
-        return false;
-    }
-
-    static std::string requireFirstObjOrSkip(const std::string& meshPath) {
-        std::vector<std::string> allOBJFiles;
-        fetchAllFilesWith(meshPath, ".obj", allOBJFiles);
-        if (allOBJFiles.empty()) {
-            return "";
-        }
-        return allOBJFiles.front();
-    }
-
 
 protected:
     std::string resourcePath =  URDFApproxGeom_RESOURCE_PATH;
@@ -107,9 +86,8 @@ protected:
 };
 
 TEST_F(SphereTreeTest, MedialTest) {
-    std::string meshPath = "/home/zyx/path_ws/src/ningde/simulation/rm_dcr_description/meshes/collision/collision/collision/YOUSHOU.obj";
-    const std::string test_obj = requireFirstObjOrSkip(meshPath);
-    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
+    const std::string test_obj = publicFr3Obj();
+    ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
     m_method = SphereTreeMethod::SphereTreeMethodMedial::create(configPath + "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
@@ -118,9 +96,8 @@ TEST_F(SphereTreeTest, MedialTest) {
 }
 
 TEST_F(SphereTreeTest, GridTest) {
-    std::string meshPath = resourcePath + "/robots/panda/meshes/collision/simple";
-    const std::string test_obj = requireFirstObjOrSkip(meshPath);
-    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
+    const std::string test_obj = publicFr3Obj();
+    ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
     m_method = SphereTreeMethod::SphereTreeMethodGrid::create(configPath + "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
@@ -129,9 +106,8 @@ TEST_F(SphereTreeTest, GridTest) {
 }
 
 TEST_F(SphereTreeTest, SpawnTest) {
-    std::string meshPath = resourcePath + "/robots/panda/meshes/collision/simple";
-    const std::string test_obj = requireFirstObjOrSkip(meshPath);
-    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
+    const std::string test_obj = publicFr3Obj();
+    ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
     m_method = SphereTreeMethod::SphereTreeMethodSpawn::create(configPath + "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
@@ -141,9 +117,8 @@ TEST_F(SphereTreeTest, SpawnTest) {
 
 
 TEST_F(SphereTreeTest, HubbardTest) {
-    std::string meshPath = resourcePath + "/robots/panda/meshes/collision/simple";
-    const std::string test_obj = requireFirstObjOrSkip(meshPath);
-    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
+    const std::string test_obj = publicFr3Obj();
+    ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
     m_method = SphereTreeMethod::SphereTreeMethodHubbard::create(configPath + "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
@@ -152,9 +127,8 @@ TEST_F(SphereTreeTest, HubbardTest) {
 }
 
 TEST_F(SphereTreeTest, OctreeTest) {
-    std::string meshPath = resourcePath + "/robots/panda/meshes/collision/simple";
-    const std::string test_obj = requireFirstObjOrSkip(meshPath);
-    if (test_obj.empty()) GTEST_SKIP() << "No .obj test assets found under " << meshPath;
+    const std::string test_obj = publicFr3Obj();
+    ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
     m_method = SphereTreeMethod::SphereTreeMethodOctree::create(configPath + "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
