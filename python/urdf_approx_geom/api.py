@@ -49,6 +49,8 @@ def _count_json_primitives(json_path: pathlib.Path | None, key: str) -> int:
     data = json.loads(json_path.read_text())
     count = 0
     for body in data.values():
+        if body is None:
+            continue
         values = body.get(key, [])
         count += len(values)
     return count
