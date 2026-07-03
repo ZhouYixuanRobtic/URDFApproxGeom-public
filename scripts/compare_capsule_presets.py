@@ -31,7 +31,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sparse-json", required=True)
     ap.add_argument("--tight-json", required=True)
-    ap.add_argument("--max-capv-aabb", type=float, default=2.50,
+    ap.add_argument("--max-capv-aabb", type=float, default=2.35,
                     help="absolute capV/aabb ceiling for tight preset")
     ap.add_argument("--max-r-binmed", type=float, default=1.45,
                     help="absolute r/binMed ceiling for tight preset")

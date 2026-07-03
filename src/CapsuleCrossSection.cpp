@@ -218,12 +218,9 @@ bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
 
     auto assignment = assignVerticesToCapsules(V, caps);
 
-    bool found = false;
     bool found_improving = false;
     double best_score = std::numeric_limits<double>::max();
-    double best_managing_score = std::numeric_limits<double>::max();
     std::vector<Capsule> best_candidate;
-    std::vector<Capsule> best_managing_candidate;
 
     for (int i = 0; i < static_cast<int>(caps.size()); ++i) {
         if ((caps[i].p1 - caps[i].p0).norm() < 1e-9) continue;
@@ -270,31 +267,14 @@ bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
                     best_score = score;
                     best_candidate = std::move(candidate);
                     found_improving = true;
-                    found = true;
-                }
-            } else if (volume_pressure &&
-                       after_metrics.capV_aabb <= max_capv_aabb_ratio * 1.10) {
-                // ponytail: no candidate improves capV (common for near-uniform links
-                // where splitting adds spherical endcap volume). Accept the least-bad
-                // split capped at max_capv_aabb_ratio*1.10 to prevent cascade splits.
-                if (!found_improving && (!found || score < best_managing_score)) {
-                    best_managing_score = score;
-                    best_managing_candidate = std::move(candidate);
-                    found = true;
                 }
             }
         }
     }
 
-    if (found_improving) {
-        caps = std::move(best_candidate);
-        return true;
-    }
-    if (found) {
-        caps = std::move(best_managing_candidate);
-        return true;
-    }
-    return false;
+    if (!found_improving) return false;
+    caps = std::move(best_candidate);
+    return true;
 }
 
 bool allCovered(const std::vector<Capsule>& caps, const Eigen::MatrixXd& V, double eps = 1e-9) {
