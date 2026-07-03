@@ -202,6 +202,66 @@ static void makeBox(double x, double y, double z, Eigen::MatrixXd& V, Eigen::Mat
          3, 7, 4, 3, 4, 0;
 }
 
+// Closed capsule surface with sphere centers at x=0 and x=center_distance.
+// Mesh axial extrema are [-radius, center_distance + radius]; fitted capsule
+// sphere centers should recover the center span, not the extrema.
+static void makeCapsuleSurface(double radius,
+                               double center_distance,
+                               int radial_segments,
+                               int hemi_segments,
+                               Eigen::MatrixXd& V,
+                               Eigen::MatrixXi& F) {
+    std::vector<Eigen::Vector3d> verts;
+    std::vector<std::vector<int>> rings;
+
+    auto add_ring = [&](double x, double ring_radius) {
+        std::vector<int> ring;
+        ring.reserve(radial_segments);
+        for (int i = 0; i < radial_segments; ++i) {
+            double a = 2.0 * M_PI * i / radial_segments;
+            ring.push_back(static_cast<int>(verts.size()));
+            verts.emplace_back(x, ring_radius * std::cos(a), ring_radius * std::sin(a));
+        }
+        rings.push_back(ring);
+    };
+
+    int left_pole = static_cast<int>(verts.size());
+    verts.emplace_back(-radius, 0.0, 0.0);
+    for (int h = 1; h <= hemi_segments; ++h) {
+        double phi = -0.5 * M_PI + h * (0.5 * M_PI / hemi_segments);
+        add_ring(radius * std::sin(phi), radius * std::cos(phi));
+    }
+    add_ring(center_distance, radius);
+    for (int h = 1; h < hemi_segments; ++h) {
+        double phi = h * (0.5 * M_PI / hemi_segments);
+        add_ring(center_distance + radius * std::sin(phi), radius * std::cos(phi));
+    }
+    int right_pole = static_cast<int>(verts.size());
+    verts.emplace_back(center_distance + radius, 0.0, 0.0);
+
+    std::vector<Eigen::Vector3i> faces;
+    for (int i = 0; i < radial_segments; ++i) {
+        int ni = (i + 1) % radial_segments;
+        faces.push_back({left_pole, rings.front()[ni], rings.front()[i]});
+    }
+    for (size_t r = 0; r + 1 < rings.size(); ++r) {
+        for (int i = 0; i < radial_segments; ++i) {
+            int ni = (i + 1) % radial_segments;
+            faces.push_back({rings[r][i], rings[r][ni], rings[r + 1][i]});
+            faces.push_back({rings[r][ni], rings[r + 1][ni], rings[r + 1][i]});
+        }
+    }
+    for (int i = 0; i < radial_segments; ++i) {
+        int ni = (i + 1) % radial_segments;
+        faces.push_back({rings.back()[i], rings.back()[ni], right_pole});
+    }
+
+    V.resize(static_cast<int>(verts.size()), 3);
+    for (int i = 0; i < static_cast<int>(verts.size()); ++i) V.row(i) = verts[i].transpose();
+    F.resize(static_cast<int>(faces.size()), 3);
+    for (int i = 0; i < static_cast<int>(faces.size()); ++i) F.row(i) = faces[i];
+}
+
 // Two small boxes separated by a narrow neck: the bulge should stay local.
 static void makeTwoBoxLink(Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
     Eigen::MatrixXd A, B;
@@ -373,6 +433,52 @@ TEST(CapsuleXSectionFit, CylinderToOneCoveringCapsule) {
     for (int i = 0; i < V.rows(); ++i)
         EXPECT_LE(pointToSegmentDistance(V.row(i).transpose(), caps[0].p0, caps[0].p1),
                   caps[0].radius + 1e-9);
+}
+
+TEST(CapsuleXSectionFit, CapsuleSurfaceCentersDoNotUseMeshExtrema) {
+    constexpr double radius = 0.05;
+    constexpr double center_distance = 0.40;
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeCapsuleSurface(radius, center_distance, 32, 6, V, F);
+
+    CapsuleFitOptions opts;
+    opts.n_sections = 8;
+    opts.coa_threshold = 0.005;
+    opts.max_circles_per_section = 1;
+    opts.max_capsules = 4;
+    opts.max_radius_bin_ratio = -1.0;
+    opts.max_capv_aabb_ratio = -1.0;
+    opts.adaptive_circle_count = false;
+
+    auto caps = fitCapsulesByCrossSection(V, F, opts);
+    ASSERT_EQ(caps.size(), 1u);
+    auto metrics = evaluateCapsuleTightness(V, caps);
+    ASSERT_TRUE(metrics.covered);
+
+    Eigen::Vector3d axis = caps[0].p1 - caps[0].p0;
+    double length = axis.norm();
+    ASSERT_GT(length, 1e-9);
+    axis /= length;
+
+    double mesh_min = std::numeric_limits<double>::max();
+    double mesh_max = std::numeric_limits<double>::lowest();
+    for (int i = 0; i < V.rows(); ++i) {
+        double t = V.row(i).transpose().dot(axis);
+        mesh_min = std::min(mesh_min, t);
+        mesh_max = std::max(mesh_max, t);
+    }
+    double end0 = caps[0].p0.dot(axis);
+    double end1 = caps[0].p1.dot(axis);
+    double cap_min = std::min(end0, end1);
+    double cap_max = std::max(end0, end1);
+
+    EXPECT_GT(cap_min - mesh_min, 0.50 * radius)
+        << "p0/p1 are sphere centers and should not sit on the mesh axial extrema";
+    EXPECT_GT(mesh_max - cap_max, 0.50 * radius)
+        << "p0/p1 are sphere centers and should not sit on the mesh axial extrema";
+    EXPECT_NEAR(length, center_distance, 0.08);
+    EXPECT_LT(metrics.capV_aabb, 1.80);
 }
 
 TEST(CapsuleXSectionFit, WideBoxMultiCircleCoverageSafe) {
