@@ -1,2 +1,0 @@
-/usr/bin/ar qc libSurface.a CMakeFiles/Surface.dir/Surface.cpp.o CMakeFiles/Surface.dir/SpacialHash.cpp.o CMakeFiles/Surface.dir/Internal.cpp.o CMakeFiles/Surface.dir/Voxel.cpp.o CMakeFiles/Surface.dir/SurfaceTester.cpp.o CMakeFiles/Surface.dir/VolInt.cpp.o CMakeFiles/Surface.dir/SurfaceRep.cpp.o CMakeFiles/Surface.dir/InternalGem.cpp.o CMakeFiles/Surface.dir/OBJLoader.cpp.o
-/usr/bin/ranlib libSurface.a

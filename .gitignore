@@ -53,3 +53,13 @@ scripts/__pycache__/
 *_capsuleized.json
 *_capsuleized.urdf
 *_capsules.xml
+
+# Local CodeGraph index
+.codegraph/
+
+# Python caches (additional)
+python/urdf_approx_geom/__pycache__/
+
+# Local review/debug scripts
+check_json.py
+check_json2.py

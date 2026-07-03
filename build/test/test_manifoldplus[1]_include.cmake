@@ -1,5 +1,0 @@
-if(EXISTS "/workspace/build/test/test_manifoldplus[1]_tests.cmake")
-  include("/workspace/build/test/test_manifoldplus[1]_tests.cmake")
-else()
-  add_test(test_manifoldplus_NOT_BUILT test_manifoldplus_NOT_BUILT)
-endif()

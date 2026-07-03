@@ -1,1 +1,0 @@
-/usr/bin/g++ -O3 -DNDEBUG CMakeFiles/manifold.dir/main.cc.o -o manifold  -Wl,-rpath,/workspace/build_dkr/third_party/ManifoldPlus libManifoldPlus.so.1.4 -lpthread 

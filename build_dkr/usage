@@ -1,5 +1,0 @@
-The package SpherizedURDFGenerator provides CMake targets:
-
-    find_package(SpherizedURDFGenerator CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE  SpherizedURDFGenerator::STG SpherizedURDFGenerator::SFWhite SpherizedURDFGenerator::API SpherizedURDFGenerator::Base SpherizedURDFGenerator::MVBB SpherizedURDFGenerator::qHull SpherizedURDFGenerator::BBox SpherizedURDFGenerator::Exceptions SpherizedURDFGenerator::pcube SpherizedURDFGenerator::Geometry SpherizedURDFGenerator::Matrix SpherizedURDFGenerator::MedialAxis SpherizedURDFGenerator::MinMax SpherizedURDFGenerator::SphereTree SpherizedURDFGenerator::Storage SpherizedURDFGenerator::Surface SpherizedURDFGenerator::Export SpherizedURDFGenerator::ManifoldPlus SpherizedURDFGenerator::sphereTreeWrapper SpherizedURDFGenerator::SpherizedURDFGenerator SpherizedURDFGenerator::convex SpherizedURDFGenerator::spherized)
-  

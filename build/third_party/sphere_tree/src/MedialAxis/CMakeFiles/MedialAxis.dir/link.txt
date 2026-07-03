@@ -1,2 +1,0 @@
-/usr/bin/ar qc libMedialAxis.a CMakeFiles/MedialAxis.dir/Clusters.cpp.o CMakeFiles/MedialAxis.dir/MedialTester.cpp.o CMakeFiles/MedialAxis.dir/Voronoi3D.cpp.o CMakeFiles/MedialAxis.dir/VoronoiFace.cpp.o
-/usr/bin/ranlib libMedialAxis.a

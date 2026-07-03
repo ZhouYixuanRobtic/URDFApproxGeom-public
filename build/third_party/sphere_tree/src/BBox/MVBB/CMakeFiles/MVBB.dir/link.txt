@@ -1,2 +1,0 @@
-/usr/bin/ar qc libMVBB.a CMakeFiles/MVBB.dir/gdiam.cpp.o
-/usr/bin/ranlib libMVBB.a

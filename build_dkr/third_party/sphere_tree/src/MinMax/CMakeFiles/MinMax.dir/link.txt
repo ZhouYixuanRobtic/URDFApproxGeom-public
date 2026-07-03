@@ -1,2 +1,0 @@
-/usr/bin/ar qc libMinMax.a CMakeFiles/MinMax.dir/Simplex.cpp.o
-/usr/bin/ranlib libMinMax.a

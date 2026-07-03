@@ -1,5 +1,0 @@
-The package URDFApproxGeom provides CMake targets:
-
-    find_package(URDFApproxGeom CONFIG REQUIRED)
-    target_link_libraries(main PRIVATE  URDFApproxGeom::STG URDFApproxGeom::SFWhite URDFApproxGeom::API URDFApproxGeom::Base URDFApproxGeom::MVBB URDFApproxGeom::qHull URDFApproxGeom::BBox URDFApproxGeom::Exceptions URDFApproxGeom::pcube URDFApproxGeom::Geometry URDFApproxGeom::Matrix URDFApproxGeom::MedialAxis URDFApproxGeom::MinMax URDFApproxGeom::SphereTree URDFApproxGeom::Storage URDFApproxGeom::Surface URDFApproxGeom::Export URDFApproxGeom::ManifoldPlus URDFApproxGeom::sphereTreeWrapper URDFApproxGeom::URDFApproxGeom URDFApproxGeom::convex URDFApproxGeom::spherized URDFApproxGeom::capsuleized)
-  

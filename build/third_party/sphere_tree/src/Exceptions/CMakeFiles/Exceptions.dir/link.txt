@@ -1,2 +1,0 @@
-/usr/bin/ar qc libExceptions.a CMakeFiles/Exceptions.dir/ErrorLog.cpp.o CMakeFiles/Exceptions.dir/MemoryException.cpp.o CMakeFiles/Exceptions.dir/Exception.cpp.o
-/usr/bin/ranlib libExceptions.a
