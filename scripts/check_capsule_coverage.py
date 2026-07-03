@@ -95,6 +95,30 @@ def tightness_metrics(V, capsules, assigned):
     return inflation, worst_radius_ratio
 
 
+def axis_overhang_metrics(V, capsules, assigned):
+    worst_ratio = 0.0
+    worst_abs = 0.0
+    for idx, (p0, p1, radius) in enumerate(capsules):
+        mask = assigned == idx
+        if not np.any(mask):
+            continue
+        axis = p1 - p0
+        length = float(np.linalg.norm(axis))
+        if length < 1e-12 or radius <= 1e-12:
+            continue
+        unit = axis / length
+        vertex_projection = V[mask] @ unit
+        endpoint_projection = np.array([p0 @ unit, p1 @ unit], dtype=float)
+        low_gap = float(endpoint_projection.min() - vertex_projection.min())
+        high_gap = float(vertex_projection.max() - endpoint_projection.max())
+        low_overhang = max(0.0, radius - low_gap)
+        high_overhang = max(0.0, radius - high_gap)
+        capsule_worst = max(low_overhang, high_overhang)
+        worst_abs = max(worst_abs, capsule_worst)
+        worst_ratio = max(worst_ratio, capsule_worst / radius)
+    return worst_abs, worst_ratio
+
+
 def capsule_to_mesh_frame(cp, T, R):
     p0L = np.array(cp["p0"], dtype=float)
     p1L = np.array(cp["p1"], dtype=float)
@@ -146,6 +170,7 @@ def evaluate_capsules(caps_json, urdf_path):
         covered = worst <= 1e-6
         all_ok &= covered
         inflation, radius_ratio = tightness_metrics(V, capsules, assigned)
+        axis_overhang, axis_overhang_ratio = axis_overhang_metrics(V, capsules, assigned)
 
         p0L = np.array(body["capsules"][0]["p0"], dtype=float)
         p1L = np.array(body["capsules"][0]["p1"], dtype=float)
@@ -166,6 +191,8 @@ def evaluate_capsules(caps_json, urdf_path):
             "maxd": float(raw.max()),
             "capV_aabb": float(inflation),
             "r_binMed": float(radius_ratio),
+            "axis_overhang": float(axis_overhang),
+            "axis_overhang_r": float(axis_overhang_ratio),
             "axis": [float(cap_axis[0]), float(cap_axis[1]), float(cap_axis[2])],
             "axis_length": seg_len,
             "bbox_long_axis": [int(long_axis[0]), int(long_axis[1]), int(long_axis[2])],
@@ -188,14 +215,14 @@ def main():
         return
 
     print(f"{'link':16} {'caps':>4} {'covered':8} {'worst':>9} {'radius':>8} "
-          f"{'maxd':>8} {'capV/aabb':>9} {'r/binMed':>8} | "
+          f"{'maxd':>8} {'capV/aabb':>9} {'r/binMed':>8} {'over/r':>8} | "
           f"{'PCA axis (link)':26} {'bbox long axis':26}")
     for row in result["links"]:
         axis = row["axis"]
         bbox = row["bbox_long_axis"]
         print(f"{row['link']:16} {row['capsules']:4} {str(row['covered']):8} "
               f"{row['worst']:9.6f} {row['radius']:8.4f} {row['maxd']:8.4f} "
-              f"{row['capV_aabb']:9.4f} {row['r_binMed']:8.2f} | "
+              f"{row['capV_aabb']:9.4f} {row['r_binMed']:8.2f} {row['axis_overhang_r']:8.2f} | "
               f"axis=[{axis[0]:+.2f} {axis[1]:+.2f} {axis[2]:+.2f}] "
               f"len={row['axis_length']:.3f} bbox_long=[{bbox[0]} {bbox[1]} {bbox[2]}] "
               f"align={row['axis_bbox_align']:.2f}")
