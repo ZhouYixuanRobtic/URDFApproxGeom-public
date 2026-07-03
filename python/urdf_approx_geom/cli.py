@@ -111,14 +111,14 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "validate":
-        from scripts.urdf_approx_validate import validate_capsule_file
+        from .validation import validate_capsule_file
 
         if args.mode == "capsule":
             return validate_capsule_file(args.json, args.urdf, args.max_capv_aabb, args.max_r_binmed)
         parser.error("sphere validation is not implemented in this release")
 
     if args.command == "compare":
-        from scripts.urdf_approx_validate import compare_capsule_files
+        from .validation import compare_capsule_files
 
         return compare_capsule_files(
             args.baseline_json,
@@ -128,7 +128,7 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     if args.command == "visualize":
-        from scripts.urdf_approx_visualize import visualize_capsules
+        from .visualization import visualize_capsules
 
         visualize_capsules(args.urdf, args.json, png=args.png, mjcf=args.mjcf)
         return 0
