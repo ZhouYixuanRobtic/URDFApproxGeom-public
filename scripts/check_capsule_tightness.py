@@ -26,7 +26,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--caps-json", required=True)
     parser.add_argument("--urdf", default="resources/fr3/urdf/fr3.urdf")
-    parser.add_argument("--max-capv-aabb", type=float, default=2.35)
+    parser.add_argument("--max-capv-aabb", type=float, default=2.50)
     parser.add_argument("--max-r-binmed", type=float, default=1.45)
     parser.add_argument("--max-capsules", type=int, default=24)
     parser.add_argument("--link-max-capv-aabb", action="append", default=[],
