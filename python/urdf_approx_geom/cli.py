@@ -66,6 +66,11 @@ def build_parser() -> argparse.ArgumentParser:
     cmp_parser.add_argument("--urdf", required=True, help="source URDF the sidecars were generated from")
     cmp_parser.add_argument("--max-capv-aabb", type=float, default=2.50)
     cmp_parser.add_argument("--max-r-binmed", type=float, default=1.45)
+    cmp_parser.add_argument(
+        "--require-improvement",
+        action="store_true",
+        help="fail if candidate worst capV/aabb or r/binMed is worse than baseline",
+    )
 
     viz = sub.add_parser("visualize", help="visualize generated geometry")
     viz.add_argument("--mode", required=True, choices=["capsule"])
@@ -140,6 +145,7 @@ def main(argv: list[str] | None = None) -> int:
             args.urdf,
             args.max_capv_aabb,
             args.max_r_binmed,
+            require_improvement=args.require_improvement,
         )
 
     if args.command == "visualize":

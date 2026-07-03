@@ -59,3 +59,54 @@ def test_compare_capsule_cli_uses_absolute_candidate_contract(tmp_path):
     )
     assert proc.returncode == 0, proc.stdout
     assert "candidate" in proc.stdout
+
+
+def test_compare_capsule_cli_can_require_relative_improvement(tmp_path):
+    out_a = tmp_path / "baseline.urdf"
+    out_b = tmp_path / "candidate.urdf"
+    baseline = generate("capsule", FR3_URDF, out_a, preset="default")
+    candidate = generate("capsule", FR3_URDF, out_b, preset="single")
+    proc = run_cli(
+        "compare",
+        "--mode",
+        "capsule",
+        "--baseline-json",
+        str(baseline.json_path),
+        "--candidate-json",
+        str(candidate.json_path),
+        "--urdf",
+        FR3_URDF,
+        "--max-capv-aabb",
+        "2.50",
+        "--max-r-binmed",
+        "1.50",
+        "--require-improvement",
+    )
+    assert proc.returncode == 0, proc.stdout
+    assert "candidate_worst_capV_aabb" in proc.stdout
+
+
+def test_compare_capsule_cli_fails_when_candidate_worsens_relative_metrics(tmp_path):
+    out_a = tmp_path / "baseline.urdf"
+    out_b = tmp_path / "candidate.urdf"
+    baseline = generate("capsule", FR3_URDF, out_a, preset="single")
+    candidate = generate("capsule", FR3_URDF, out_b, preset="default")
+    proc = run_cli(
+        "compare",
+        "--mode",
+        "capsule",
+        "--baseline-json",
+        str(baseline.json_path),
+        "--candidate-json",
+        str(candidate.json_path),
+        "--urdf",
+        FR3_URDF,
+        "--max-capv-aabb",
+        "2.50",
+        "--max-r-binmed",
+        "1.50",
+        "--require-improvement",
+    )
+    assert proc.returncode == 1, proc.stdout
+    assert "candidate capV/aabb worsened" in proc.stdout
+    assert "candidate r/binMed worsened" in proc.stdout

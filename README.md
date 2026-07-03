@@ -39,6 +39,11 @@ PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli presets
 
 The Python CLI locates repository scripts from the package path, so `validate` and `visualize` work even when invoked from outside the repository root as long as `PYTHONPATH` includes both `python` and `build/python`.
 
+`compare --mode capsule` prints baseline/candidate metrics and validates the
+candidate against absolute ceilings. Add `--require-improvement` when the
+candidate must also be no worse than the baseline on worst capV/aabb and
+r/binMed.
+
 ## Python API
 
 ```python

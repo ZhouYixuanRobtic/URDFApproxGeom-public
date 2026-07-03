@@ -78,19 +78,34 @@ def compare_capsule_files(
     urdf: str,
     max_capv_aabb: float,
     max_r_binmed: float,
+    *,
+    require_improvement: bool = False,
 ) -> int:
     baseline = _capsule_metrics(baseline_json, urdf)
     candidate = _capsule_metrics(candidate_json, urdf)
+    baseline_capv = _worst(baseline, "capV_aabb")
+    candidate_capv = _worst(candidate, "capV_aabb")
+    baseline_r = _worst(baseline, "r_binMed")
+    candidate_r = _worst(candidate, "r_binMed")
     summary = {
         "baseline_count": _count(baseline),
         "candidate_count": _count(candidate),
-        "baseline_worst_capV_aabb": _worst(baseline, "capV_aabb"),
-        "candidate_worst_capV_aabb": _worst(candidate, "capV_aabb"),
-        "baseline_worst_r_binMed": _worst(baseline, "r_binMed"),
-        "candidate_worst_r_binMed": _worst(candidate, "r_binMed"),
+        "baseline_worst_capV_aabb": baseline_capv,
+        "candidate_worst_capV_aabb": candidate_capv,
+        "baseline_worst_r_binMed": baseline_r,
+        "candidate_worst_r_binMed": candidate_r,
     }
     print(json.dumps(summary, indent=2, sort_keys=True))
     failures = validate_capsule_metrics(candidate, max_capv_aabb, max_r_binmed)
+    if require_improvement:
+        if candidate_capv > baseline_capv:
+            failures.append(
+                f"candidate capV/aabb worsened: {candidate_capv:.2f} > {baseline_capv:.2f}"
+            )
+        if candidate_r > baseline_r:
+            failures.append(
+                f"candidate r/binMed worsened: {candidate_r:.2f} > {baseline_r:.2f}"
+            )
     if failures:
         print("candidate validation failed:", file=sys.stderr)
         for failure in failures:
