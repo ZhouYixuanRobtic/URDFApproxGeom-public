@@ -6,8 +6,27 @@ on:
     branches: [main, master]
 
 jobs:
-  build-test:
+  source-hygiene:
     runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Reject generated artifacts
+        run: |
+          set -e
+          if git ls-files build build_dkr .codegraph python/__pycache__ python/tests/__pycache__ python/urdf_approx_geom/__pycache__ scripts/__pycache__ check_json.py check_json2.py | grep .; then
+            echo "Generated artifacts are tracked; remove them from git."
+            exit 1
+          fi
+
+      - name: Whitespace check
+        run: git diff --check HEAD~1..HEAD || git diff --check
+
+  docker-build-test:
+    runs-on: ubuntu-22.04
+    if: ${{ secrets.DOCKER_REGISTRY_USERNAME != '' && secrets.DOCKER_REGISTRY_PASSWORD != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,3 +52,12 @@ jobs:
             ./build/test/test_spheretree --gtest_color=no
             PYTHONPATH=/workspace/python:/workspace/build/python python3 -m pytest python/tests -q
           '
+
+  docker-build-test-skipped:
+    runs-on: ubuntu-22.04
+    if: ${{ secrets.DOCKER_REGISTRY_USERNAME == '' || secrets.DOCKER_REGISTRY_PASSWORD == '' }}
+    steps:
+      - name: Explain skipped full build
+        run: |
+          echo "Skipping full Docker build because private registry credentials are not available."
+          echo "The source-hygiene job still runs on every pull request."
