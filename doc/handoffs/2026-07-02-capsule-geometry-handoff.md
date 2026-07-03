@@ -31,7 +31,7 @@
 
 **FR3 tight result:** generated with `config/capsule/capsuleConfig_tight.yml`. Tightness gate (`check_capsule_tightness.py`) uses `--max-capv-aabb=2.35 --max-r-binmed=1.45` — both sparse and tight pass. Endpoint optimization makes sparse preset competitive with tight; more axial sections (6 vs 4) no longer improve capV after endpoint shrink.
 
-**Test suite:** 24 C++ unit tests + 1 integration test — 24/24 pass. Python round-trip test (`pytest python/tests`) currently crashes with Bus error on `capsuleized()` call — pre-existing, not introduced by this branch.
+**Test suite:** 24 C++ unit tests + 1 integration test — 24/24 pass. The productized Python package now runs the Python test suite through `PYTHONPATH=/workspace/python:/workspace/build/python python3 -m pytest python/tests -q`. If future pybind crashes appear, treat them as release blockers rather than documented expected behavior.
 
 **Config — sparse** (`config/capsule/capsuleConfig.yml`):
 ```yaml

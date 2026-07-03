@@ -37,6 +37,8 @@ List presets:
 PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli presets
 ```
 
+The Python CLI locates repository scripts from the package path, so `validate` and `visualize` work even when invoked from outside the repository root as long as `PYTHONPATH` includes both `python` and `build/python`.
+
 ## Python API
 
 ```python
@@ -68,7 +70,7 @@ Convex presets:
 ## Output Contracts
 
 - `convex`: writes an output URDF whose collision meshes point to generated convex meshes.
-- `sphere`: writes an output URDF and a JSON sidecar with per-link `spheres`.
+- `sphere`: writes an output URDF and a JSON sidecar. The canonical per-link field is `spheres`, where each entry has `center` and `radius`. Some legacy sphere-tree outputs may also include `BiggestSphere` and `SubSpheres`; new consumers should read `spheres`.
 - `capsule`: writes an output URDF and a JSON sidecar with per-link `capsules`.
 
 Capsule JSON entries use link-frame sphere-center endpoints:

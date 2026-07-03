@@ -8,7 +8,7 @@ A URDF file where each link's `<collision>` element references a generated conve
 
 ## Sphere Output
 
-A URDF file with `<sphere>` collision primitives and a JSON sidecar containing per-link sphere parameters:
+`sphere` writes an output URDF and a JSON sidecar. The canonical per-link field is `spheres`, where each entry has `center` and `radius`. Some legacy sphere-tree outputs may also include `BiggestSphere` and `SubSpheres`; new consumers should read `spheres`.
 
 ```json
 {

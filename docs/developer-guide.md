@@ -43,14 +43,14 @@ The `COMPILE_URDFApproxGeom_PYBINDING=ON` flag enables Python bindings. Without 
 C++ tests use GoogleTest:
 
 ```bash
-cd build && ctest --output-on-failure
+./build/test/test_capsule --gtest_color=no
+./build/test/test_spheretree --gtest_color=no
 ```
 
 Python tests use pytest:
 
 ```bash
-cp build/python/urdf_approx_geom/*.so python/urdf_approx_geom/
-PYTHONPATH=/workspace/python python3 -m pytest python/tests -q
+PYTHONPATH=$PWD/python:$PWD/build/python python3 -m pytest python/tests -q
 ```
 
 ## Adding a New Mode
