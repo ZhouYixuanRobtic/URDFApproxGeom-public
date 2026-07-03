@@ -1,6 +1,4 @@
-# Tight capsule approximation preset.
-# More section planes for finer axial decomposition.
-
+# Compatibility alias for config/capsule/high_detail.yml.
 NSections: 6
 CoaThreshold: 0.005
 MaxCirclesPerSection: 1

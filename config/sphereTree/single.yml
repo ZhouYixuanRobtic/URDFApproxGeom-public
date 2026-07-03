@@ -1,0 +1,3 @@
+# Single-sphere baseline: one conservative sphere per mesh link.
+SingleSphere: true
+SimplifyRatio: 1.0

@@ -1,0 +1,9 @@
+# Single-capsule baseline: exactly one conservative capsule per mesh link.
+NSections: 2
+CoaThreshold: 0.0
+MaxCirclesPerSection: 1
+MaxCapsulesPerLink: 1
+AdaptiveCircleCount: false
+MaxRadiusBinRatio: -1.0
+MaxCapVAabbRatio: -1.0
+MinSplitVolumeImprovement: 1.0

@@ -1,4 +1,4 @@
-# Compatibility alias for config/sphereTree/default.yml.
+# Default sphere-tree preset.
 SingleSphere: false
 Method: 2
 Grid:

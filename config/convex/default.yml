@@ -1,0 +1,3 @@
+# Convex mode currently has no tunable runtime parameters.
+# The file exists so the public CLI can expose a uniform preset contract.
+Mode: convex

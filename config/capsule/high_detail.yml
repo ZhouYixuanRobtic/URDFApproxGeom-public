@@ -1,0 +1,11 @@
+# Higher-detail capsule preset: more axial sections and a larger capsule budget.
+# This preset is not allowed to pass by merely increasing count; validation uses
+# absolute coverage and tightness ceilings.
+NSections: 6
+CoaThreshold: 0.005
+MaxCirclesPerSection: 1
+MaxCapsulesPerLink: 16
+AdaptiveCircleCount: false
+MaxRadiusBinRatio: 1.45
+MaxCapVAabbRatio: 2.25
+MinSplitVolumeImprovement: 0.005

@@ -1,4 +1,4 @@
-# Compatibility alias for config/capsule/default.yml.
+# Default capsule preset: conservative coverage with low primitive count.
 NSections: 4
 CoaThreshold: 0.005
 MaxCirclesPerSection: 1
