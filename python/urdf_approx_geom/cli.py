@@ -63,6 +63,7 @@ def build_parser() -> argparse.ArgumentParser:
     cmp_parser.add_argument("--mode", required=True, choices=["capsule"])
     cmp_parser.add_argument("--baseline-json", required=True)
     cmp_parser.add_argument("--candidate-json", required=True)
+    cmp_parser.add_argument("--urdf", required=True, help="source URDF the sidecars were generated from")
     cmp_parser.add_argument("--max-capv-aabb", type=float, default=2.50)
     cmp_parser.add_argument("--max-r-binmed", type=float, default=1.45)
 
@@ -136,6 +137,7 @@ def main(argv: list[str] | None = None) -> int:
         return compare_capsule_files(
             args.baseline_json,
             args.candidate_json,
+            args.urdf,
             args.max_capv_aabb,
             args.max_r_binmed,
         )

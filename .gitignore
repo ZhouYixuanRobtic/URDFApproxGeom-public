@@ -63,3 +63,9 @@ python/urdf_approx_geom/__pycache__/
 # Local review/debug scripts
 check_json.py
 check_json2.py
+
+# Python packaging artifacts
+*.egg-info/
+*.egg-link
+dist/
+

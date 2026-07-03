@@ -50,6 +50,8 @@ def test_compare_capsule_cli_uses_absolute_candidate_contract(tmp_path):
         str(baseline.json_path),
         "--candidate-json",
         str(candidate.json_path),
+        "--urdf",
+        FR3_URDF,
         "--max-capv-aabb",
         "2.50",
         "--max-r-binmed",

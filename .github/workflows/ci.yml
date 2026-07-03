@@ -24,9 +24,29 @@ jobs:
       - name: Whitespace check
         run: git diff --check HEAD~1..HEAD || git diff --check
 
-  docker-build-test:
+  # GitHub forbids `secrets.*` directly in job `if:` conditionals. Read the
+  # secrets in a step `env:` (allowed) and expose the boolean via job outputs,
+  # then gate the downstream jobs on `needs.check-secrets.outputs.*`.
+  check-secrets:
     runs-on: ubuntu-22.04
-    if: ${{ secrets.DOCKER_REGISTRY_USERNAME != '' && secrets.DOCKER_REGISTRY_PASSWORD != '' }}
+    outputs:
+      has_registry: ${{ steps.check.outputs.has_registry }}
+    steps:
+      - id: check
+        env:
+          REGISTRY_USER: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          REGISTRY_PASS: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+        run: |
+          if [ -n "$REGISTRY_USER" ] && [ -n "$REGISTRY_PASS" ]; then
+            echo "has_registry=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_registry=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  docker-build-test:
+    needs: check-secrets
+    if: ${{ needs.check-secrets.outputs.has_registry == 'true' }}
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,8 +74,9 @@ jobs:
           '
 
   docker-build-test-skipped:
+    needs: check-secrets
+    if: ${{ needs.check-secrets.outputs.has_registry != 'true' }}
     runs-on: ubuntu-22.04
-    if: ${{ secrets.DOCKER_REGISTRY_USERNAME == '' || secrets.DOCKER_REGISTRY_PASSWORD == '' }}
     steps:
       - name: Explain skipped full build
         run: |

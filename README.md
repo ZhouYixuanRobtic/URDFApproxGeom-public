@@ -56,7 +56,11 @@ Capsule presets:
 
 - `single`: one conservative capsule per link.
 - `default`: recommended low-count conservative capsule fit.
-- `high_detail`: more axial sections and a larger capsule budget.
+- `high_detail`: more axial sections and a larger capsule budget; raises the
+  detail ceiling but does not guarantee tighter output than `default`. On FR3
+  both emit 17 capsules and `default` has a marginally lower worst capV/aabb
+  (1.77 vs 1.86) while `high_detail` lowers worst r/binMed.
+- `tight`: alias for `high_detail`.
 
 Sphere presets:
 

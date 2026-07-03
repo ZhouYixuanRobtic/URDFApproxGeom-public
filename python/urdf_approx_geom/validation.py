@@ -75,11 +75,12 @@ def validate_capsule_file(caps_json: str, urdf: str, max_capv_aabb: float, max_r
 def compare_capsule_files(
     baseline_json: str,
     candidate_json: str,
+    urdf: str,
     max_capv_aabb: float,
     max_r_binmed: float,
 ) -> int:
-    baseline = _capsule_metrics(baseline_json)
-    candidate = _capsule_metrics(candidate_json)
+    baseline = _capsule_metrics(baseline_json, urdf)
+    candidate = _capsule_metrics(candidate_json, urdf)
     summary = {
         "baseline_count": _count(baseline),
         "candidate_count": _count(candidate),

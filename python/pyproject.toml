@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "urdf-approx-geom"
 version = "1.5.0"
@@ -7,6 +11,12 @@ authors = [{ name = "YX.E.Z", email = "yixuanzhou@sjtu.edu.cn" }]
 
 [project.scripts]
 urdf-approx-geom = "urdf_approx_geom.cli:main"
+
+# The compiled pybind11 extension (_urdf_approx_geom) is built by CMake into
+# build/python and loaded at runtime via urdf_approx_geom/_extension.py. It is
+# not part of the wheel; keep build/python on PYTHONPATH to use the package.
+[tool.setuptools]
+packages = ["urdf_approx_geom"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
