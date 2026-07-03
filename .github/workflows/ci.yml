@@ -24,7 +24,7 @@ jobs:
         run: docker build -t spherized-dev -f docker/Dockerfile .
 
       - name: Build and test
-        run: >
+        run: |
           docker run --rm -v $PWD:/workspace spherized-dev
           bash -lc '
             set -e
