@@ -62,24 +62,25 @@ def quat_align_z(direction):
     return [float(axis[0]), float(axis[1]), float(axis[2]), float(w)]
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--png", default="", help="if set, render to this PNG (headless) instead of GUI")
-    args = ap.parse_args()
+def render_capsule_overlay(urdf_path=FR3_URDF, caps_json=CAPS_JSON, *, png=""):
+    """Load URDF in pybullet and overlay capsule geometry from *caps_json*.
 
+    When *png* is set the scene is rendered headless to that path; otherwise an
+    interactive GUI window is opened.
+    """
     import pybullet as p
     import pybullet_data
 
-    caps = json.load(open(CAPS_JSON))
+    caps = json.load(open(caps_json))
 
     # Rewrite absolute /workspace mesh paths to the host repo path.
-    urdf_txt = open(FR3_URDF).read()
+    urdf_txt = open(urdf_path).read()
     urdf_txt = urdf_txt.replace("/workspace/resources/fr3",
                                 os.path.join(REPO, "resources/fr3"))
     tmp_urdf = "/tmp/fr3_host.urdf"
     open(tmp_urdf, "w").write(urdf_txt)
 
-    if args.png:
+    if png:
         p.connect(p.DIRECT)
     else:
         try:
@@ -87,7 +88,7 @@ def main():
         except Exception as e:
             print(f"GUI failed ({e}); falling back to DIRECT -> /tmp/fr3_capsules.png")
             p.connect(p.DIRECT)
-            args.png = "/tmp/fr3_capsules.png"
+            png = "/tmp/fr3_capsules.png"
 
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
@@ -159,7 +160,7 @@ def main():
 
     print(f"drew {drawn} capsules over {robot=} ({n} joints)")
 
-    if args.png:
+    if png:
         from PIL import Image  # noqa
         view = (1.6, 1.4, 1.2, 0, 0, 0.6)
         p.resetDebugVisualizerCamera(*view) if False else p.resetDebugVisualizerCamera(1.8, 35, -25, [0, 0, 0.5])
@@ -167,8 +168,8 @@ def main():
         import numpy as _np
         arr = _np.array(px, dtype=_np.uint8).reshape(800, 1280, 4)
         from PIL import Image as _I
-        _I.fromarray(arr[:, :, :3]).save(args.png)
-        print(f"rendered -> {args.png}")
+        _I.fromarray(arr[:, :, :3]).save(png)
+        print(f"rendered -> {png}")
         p.disconnect()
     else:
         print("GUI open. Close the window or Ctrl-C to exit.")
@@ -178,6 +179,15 @@ def main():
         except KeyboardInterrupt:
             pass
         p.disconnect()
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--urdf", default=FR3_URDF)
+    ap.add_argument("--json", default=CAPS_JSON)
+    ap.add_argument("--png", default="", help="if set, render to this PNG instead of GUI")
+    args = ap.parse_args()
+    render_capsule_overlay(args.urdf, args.json, png=args.png)
 
 
 if __name__ == "__main__":

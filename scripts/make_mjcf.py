@@ -28,11 +28,12 @@ def fmt_vec(v, ndig=6):
     return " ".join(f"{float(x):.{ndig}f}" for x in v)
 
 
-def main():
+def write_capsule_mjcf(urdf_path=FR3_URDF, caps_json=CAPS_JSON, out_mjcf=OUT_MJCF):
+    """Write an MJCF scene file with capsule primitives read from *caps_json*."""
     import pybullet as p
 
-    caps = json.load(open(CAPS_JSON))
-    urdf_txt = open(FR3_URDF).read().replace(
+    caps = json.load(open(caps_json))
+    urdf_txt = open(urdf_path).read().replace(
         "/workspace/resources/fr3", os.path.join(REPO, "resources/fr3"))
     tmp = "/tmp/fr3_host.urdf"
     open(tmp, "w").write(urdf_txt)
@@ -106,9 +107,13 @@ def main():
 
     tree = ET.ElementTree(mujoco)
     ET.indent(tree, space="  ")
-    tree.write(OUT_MJCF, encoding="utf-8", xml_declaration=True)
-    print(f"wrote {OUT_MJCF} ({drawn} capsules, {len(mesh_assets)} link meshes)")
+    tree.write(out_mjcf, encoding="utf-8", xml_declaration=True)
+    print(f"wrote {out_mjcf} ({drawn} capsules, {len(mesh_assets)} link meshes)")
     p.disconnect()
+
+
+def main():
+    write_capsule_mjcf(FR3_URDF, CAPS_JSON, OUT_MJCF)
 
 
 if __name__ == "__main__":
