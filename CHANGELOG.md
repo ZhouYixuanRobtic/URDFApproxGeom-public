@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-07-03
+
+### Added
+- **Capsule collision geometry approximation** (`capsuleized` binary)
+  - Wu2018 cross-section decomposition: mesh-plane slicing, COA circle fitting, capsule chaining
+  - Config-driven multi-circle section fitting with k-means++ and adaptive circle count
+  - Volume-driven axial splitting with assignment-based tightness metrics
+  - Endpoint-span optimization: `p0`/`p1` are sphere centers, not mesh axial extrema
+  - Coverage-aware budget pruning and variable-count chain matching
+  - Local radius-inflation guard in capsule merging
+- **Diagnostic toolchain** (`scripts/`)
+  - `check_capsule_coverage.py`: per-link coverage, tightness, and axial overhang metrics (JSON + human-readable)
+  - `check_capsule_tightness.py`: global + per-link gate enforcement (capV/aabb, r/binMed, capsule count, overhang)
+  - `compare_capsule_presets.py`: sparse-vs-tight regression detection with absolute ceilings
+- **Config presets**: `capsuleConfig.yml` (sparse), `capsuleConfig_tight.yml` (tight)
+- **25 C++ unit tests** covering cross-section fitting, COA math, splitting, merging, endpoint semantics, and FR3 integration
+- **FR3 capsule output** (`resources/fr3/urdf/fr3_capsuleized.{urdf,json}`)
+
+### Changed
+- Capsule fitter now uses assignment-based metrics aligned with Python gate thresholds
+- Test integration outputs redirected to `/tmp/` to avoid polluting tracked assets
+- Merge radius-difference guard tightened from 0.30 to 0.15
+
+### Fixed
+- Coverage diagnostics now evaluate union-of-capsules per link (was single-capsule false negatives)
+- Config values `CoaThreshold` and `MaxCirclesPerSection` now actually drive the fitter
+- Local capsule radii preserved during merge (no more bulge-radius inheritance)
+
 ## [1.4.0] - 2024-XX-XX
 
 ### Changed
