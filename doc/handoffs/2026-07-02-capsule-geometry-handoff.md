@@ -1,3 +1,5 @@
+> Historical engineering handoff. User-facing usage lives in `README.md` and `docs/`.
+
 # Capsule Geometry Approximation — Handoff
 
 **Date:** 2026-07-02
