@@ -75,6 +75,8 @@ struct CapsuleFitOptions {
     int max_circles_per_section = 4;
     int max_capsules = 6;
     double max_radius_bin_ratio = 1.45;
+    double max_capv_aabb_ratio = -1.0;
+    double min_split_volume_improvement = 0.005;
     bool adaptive_circle_count = true;
 };
 
