@@ -26,7 +26,7 @@
 namespace py = pybind11;
 using replace_pairs_t = std::vector<std::pair<std::string, std::string>>;
 
-PYBIND11_MODULE(urdf_approx_geom, m) {
+PYBIND11_MODULE(_urdf_approx_geom, m) {
     m.doc() = "URDF collision-geometry approximator (sphere / convex / capsule)";
 
     // Capsule -> per-link JSON sidecar (URDF collision left as original mesh).

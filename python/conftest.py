@@ -1,14 +1,14 @@
-"""Pytest bootstrap: make the CMake-built extension importable without PYTHONPATH.
+"""Pytest bootstrap for source-tree package plus CMake-built extension."""
 
-The compiled `urdf_approx_geom` extension lives in <repo>/build/python (built
-with -DCOMPILE_URDFApproxGeom_PYBINDING=ON). Add it to sys.path so
-`pytest python/tests` works from a fresh checkout.
-"""
-import os
+from __future__ import annotations
+
+import pathlib
 import sys
 
-_HERE = os.path.dirname(os.path.abspath(__file__))
-_REPO = os.path.dirname(_HERE)
-_EXT = os.path.join(_REPO, "build", "python")
-if os.path.isdir(_EXT) and _EXT not in sys.path:
-    sys.path.insert(0, _EXT)
+_HERE = pathlib.Path(__file__).resolve().parent
+_REPO = _HERE.parent
+_EXT = _REPO / "build" / "python"
+
+for path in (str(_HERE), str(_EXT)):
+    if path not in sys.path:
+        sys.path.insert(0, path)
