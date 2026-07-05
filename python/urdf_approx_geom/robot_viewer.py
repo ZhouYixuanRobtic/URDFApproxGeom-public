@@ -67,35 +67,47 @@ def bundle(urdf_path: str | pathlib.Path, out_dir: str | pathlib.Path) -> pathli
     attributes are rewritten to ``meshes/<basename>``. The returned URDF path is
     self-contained: drop the bundle directory onto robot_viewer's file tree.
     """
-    urdf_path = pathlib.Path(urdf_path).resolve()
+    return bundle_many([urdf_path], out_dir)[0]
+
+
+def bundle_many(urdf_paths: list[str | pathlib.Path], out_dir: str | pathlib.Path) -> list[pathlib.Path]:
+    """Bundle multiple URDFs into one shared *out_dir* with a single deduped ``meshes/`` tree.
+
+    Mesh files referenced by more than one URDF (e.g. the shared ``.dae`` visual
+    meshes) are copied once. Each URDF is rewritten with relative mesh paths and
+    written next to the others, so the whole directory loads as one drag-and-drop
+    into robot_viewer and the user can click between approximation variants.
+    """
     out_dir = pathlib.Path(out_dir).resolve()
-    if not urdf_path.is_file():
-        raise FileNotFoundError(f"URDF not found: {urdf_path}")
     mesh_dir = out_dir / "meshes"
     mesh_dir.mkdir(parents=True, exist_ok=True)
-
-    pairs, tree = _collect_mesh_paths(urdf_path)
     copied: dict[str, str] = {}  # resolved source -> relative target
-    for mesh, src in pairs:
-        key = str(src)
-        if key in copied:
-            mesh.set("filename", copied[key])
-            continue
-        dst = mesh_dir / src.name
-        counter = 0
-        stem, suffix = src.stem, src.suffix
-        while dst.exists() and dst.stat().st_size != src.stat().st_size:
-            counter += 1
-            dst = mesh_dir / f"{stem}_{counter}{suffix}"
-        if not dst.exists():
-            shutil.copy2(src, dst)
-        rel = "meshes/" + dst.name
-        copied[key] = rel
-        mesh.set("filename", rel)
-
-    out_urdf = out_dir / urdf_path.name
-    tree.write(out_urdf, encoding="utf-8", xml_declaration=True)
-    return out_urdf
+    outputs: list[pathlib.Path] = []
+    for raw in urdf_paths:
+        urdf_path = pathlib.Path(raw).resolve()
+        if not urdf_path.is_file():
+            raise FileNotFoundError(f"URDF not found: {urdf_path}")
+        pairs, tree = _collect_mesh_paths(urdf_path)
+        for mesh, src in pairs:
+            key = str(src)
+            if key in copied:
+                mesh.set("filename", copied[key])
+                continue
+            dst = mesh_dir / src.name
+            stem, suffix = src.stem, src.suffix
+            counter = 0
+            while dst.exists() and dst.stat().st_size != src.stat().st_size:
+                counter += 1
+                dst = mesh_dir / f"{stem}_{counter}{suffix}"
+            if not dst.exists():
+                shutil.copy2(src, dst)
+            rel = "meshes/" + dst.name
+            copied[key] = rel
+            mesh.set("filename", rel)
+        out_urdf = out_dir / urdf_path.name
+        tree.write(out_urdf, encoding="utf-8", xml_declaration=True)
+        outputs.append(out_urdf)
+    return outputs
 
 
 def _dev_server_up(url: str) -> bool:

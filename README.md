@@ -39,16 +39,13 @@ PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli presets
 
 The Python CLI locates repository scripts from the package path, so `validate` and `visualize` work even when invoked from outside the repository root as long as `PYTHONPATH` includes both `python` and `build/python`.
 
-`compare --mode capsule` prints baseline/candidate metrics and validates the
-candidate against absolute ceilings. Add `--require-improvement` when the
-candidate must also be no worse than the baseline on worst capV/aabb and
-r/binMed.
-
-Visualize generated geometry (default backend `robot_viewer` shows the `.dae` visual meshes and the approximation side by side; bundle path is printed):
+Compare all approximation variants side by side in [robot_viewer](https://github.com/fan-ziqi/robot_viewer) — generates convex + sphere (single, default) + capsule (single, default, high_detail), rewrites every mesh path to relative `meshes/<name>`, and copies the meshes into one self-contained directory:
 
 ```bash
-PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli visualize --mode capsule --urdf out/robot_capsule.urdf
+PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli compare-all -i robot.urdf --bundle-dir out/compare_bundle
 ```
+
+Install robot_viewer yourself (it is not bundled with this repo), start its dev server, and drag `out/compare_bundle` onto its file tree. Each variant loads as its own URDF; toggle Visual / Collision to compare the `.dae` ground truth against the approximation. To compare two capsule sidecars' metrics in the terminal instead, use `compare --mode capsule` (add `--require-improvement` to fail when the candidate worsens worst capV/aabb or r/binMed).
 
 ## Python API
 

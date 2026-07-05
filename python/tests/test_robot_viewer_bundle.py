@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import os
 import pathlib
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
 
 from urdf_approx_geom import generate
-from urdf_approx_geom.robot_viewer import bundle
+from urdf_approx_geom.robot_viewer import bundle, bundle_many
 
 
 FR3_URDF = "/workspace/resources/fr3/urdf/fr3.urdf"
@@ -59,3 +60,21 @@ def test_cli_visualize_robot_viewer_no_launch(tmp_path):
     bundled = bundle_dir / "fr3_capsule.urdf"
     assert bundled.is_file()
     assert _bundle_has_only_relative_meshes(bundled)
+
+
+def test_bundle_many_shares_meshes_and_keeps_paths_relative(tmp_path):
+    a = tmp_path / "a_capsule.urdf"
+    b = tmp_path / "b_sphere.urdf"
+    a_out = generate("capsule", FR3_URDF, a, preset="default").output_urdf
+    b_out = generate("sphere", FR3_URDF, b, preset="single", simplify=False).output_urdf
+    bundle_dir = tmp_path / "shared"
+    bundled = bundle_many([a_out, b_out], bundle_dir)
+
+    assert len(bundled) == 2
+    assert (bundle_dir / "meshes").is_dir()
+    # Shared .dae visual meshes are copied once, not duplicated.
+    dae_copies = [p for p in (bundle_dir / "meshes").iterdir() if p.suffix == ".dae"]
+    link0_copies = [p for p in dae_copies if p.name == "link0.dae"]
+    assert len(link0_copies) == 1
+    for urdf in bundled:
+        assert _bundle_has_only_relative_meshes(urdf)

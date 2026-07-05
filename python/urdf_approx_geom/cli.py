@@ -21,6 +21,45 @@ def _add_replace_arg(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _run_compare(args) -> int:
+    """Generate convex + sphere + capsule variants and bundle them for robot_viewer."""
+    import tempfile
+
+    from .api import generate
+    from .robot_viewer import bundle_many
+
+    work = pathlib.Path(tempfile.mkdtemp(prefix="urdf_approx_compare_src_"))
+    bundle_dir = pathlib.Path(args.bundle_dir) if args.bundle_dir else pathlib.Path(
+        tempfile.mkdtemp(prefix="urdf_approx_compare_"))
+    bundle_dir.mkdir(parents=True, exist_ok=True)
+    presets = [p.strip() for p in args.presets.split(",") if p.strip()]
+    input_path = pathlib.Path(args.input)
+    stem = input_path.stem
+
+    sources: list[pathlib.Path] = []
+    # Convex (no preset).
+    sources.append(generate("convex", input_path, work / f"{stem}_convex.urdf").output_urdf)
+    # Sphere + capsule presets.
+    for preset in presets:
+        sphere_preset = preset if preset in {"single", "default"} else "default"
+        sources.append(generate("sphere", input_path, work / f"{stem}_sphere_{sphere_preset}.urdf",
+                                preset=sphere_preset, simplify=False).output_urdf)
+        sources.append(generate("capsule", input_path, work / f"{stem}_capsule_{preset}.urdf",
+                                preset=preset).output_urdf)
+
+    bundled = bundle_many(sources, bundle_dir)
+    print(f"compare: bundled {len(bundled)} URDFs into {bundle_dir}")
+    for src, out in zip(sources, bundled):
+        print(f"  {src.name} -> {out.name}")
+    print(
+        "\nOpen robot_viewer and drag this directory onto the file tree:\n"
+        f"  {bundle_dir}\n"
+        "Then click each URDF to compare visual (.dae) vs the approximation.\n"
+        "Install robot_viewer: https://github.com/fan-ziqi/robot_viewer"
+    )
+    return 0
+
+
 def _print_result(result) -> None:
     json_text = f", json={result.json_path}" if result.json_path else ""
     cfg_text = f", config={result.config_path}" if result.config_path else ""
@@ -83,6 +122,15 @@ def build_parser() -> argparse.ArgumentParser:
     viz.add_argument("--png", default="", help="pybullet: render to PNG instead of GUI")
     viz.add_argument("--mjcf", default="", help="mjcf: output MJCF path")
     viz.add_argument("--no-launch", action="store_true", help="robot_viewer: do not launch the dev server")
+
+    cmp = sub.add_parser(
+        "compare-all",
+        help="generate every approximation variant and bundle them for robot_viewer side-by-side comparison",
+    )
+    cmp.add_argument("-i", "--input", required=True, help="input mesh URDF")
+    cmp.add_argument("--bundle-dir", default="", help="bundle output dir (default: temp)")
+    cmp.add_argument("--presets", default="single,default,high_detail",
+                     help="comma-separated capsule/sphere presets to include")
     return parser
 
 
@@ -152,6 +200,9 @@ def main(argv: list[str] | None = None) -> int:
             args.max_r_binmed,
             require_improvement=args.require_improvement,
         )
+
+    if args.command == "compare-all":
+        return _run_compare(args)
 
     if args.command == "visualize":
         if args.viewer == "robot_viewer":
