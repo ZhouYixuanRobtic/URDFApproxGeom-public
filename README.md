@@ -115,10 +115,10 @@ Mesh baselines (no primitive count, no radius metric):
 
 | Baseline | Worst vol/aabb |
 |----------|--------------:|
-| original collision mesh | 0.60 |
-| `convex` hull           | 0.60 |
+| original mesh (`*.dae` visual) | 0.51 |
+| `convex` hull (from `*.stl` collision) | 0.60 |
 
-`capV/aabb` / `sphV/aabb` / `vol/aabb` = primitive (or mesh) volume ÷ link AABB volume (lower = tighter). `r/binMed` = max capsule radius ÷ median axial-bin radius; `r/maxMed` = max sphere radius ÷ median sphere radius (lower = less inflation). Capsule `single` is one tight capsule per link; sphere `single` is one bounding sphere per link — its `sphV/aabb` is high because a single sphere over-sweeps elongated links, which is exactly what `default` (medial sphere tree, 85 spheres) fixes. The FR3 collision meshes are already near-convex, so `convex` hull volume matches the original mesh.
+`capV/aabb` / `sphV/aabb` / `vol/aabb` = primitive (or mesh) volume ÷ link AABB volume (lower = tighter). `r/binMed` = max capsule radius ÷ median axial-bin radius; `r/maxMed` = max sphere radius ÷ median sphere radius (lower = less inflation). Capsule `single` is one tight capsule per link; sphere `single` is one bounding sphere per link — its `sphV/aabb` is high because a single sphere over-sweeps elongated links, which is exactly what `default` (medial sphere tree, 85 spheres) fixes. The `*.dae` row is the high-precision visual mesh (link0–7 only; hand/finger links have no `*.dae`); the `convex` row is the hull the tool computes from the `*.stl` collision meshes (all 11 links).
 
 ## Documentation
 
