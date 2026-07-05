@@ -78,6 +78,7 @@ struct CapsuleFitOptions {
     double max_capv_aabb_ratio = -1.0;
     double min_split_volume_improvement = 0.005;
     bool adaptive_circle_count = true;
+    int union_volume_samples_per_axis = 32;
 };
 
 struct CapsuleTightnessMetrics {
@@ -99,7 +100,11 @@ CapsuleVertexAssignment assignVerticesToCapsules(const Eigen::MatrixXd& V,
                                                  const std::vector<Capsule>& caps);
 
 CapsuleTightnessMetrics evaluateCapsuleTightness(const Eigen::MatrixXd& V,
-                                                 const std::vector<Capsule>& caps);
+                                                 const std::vector<Capsule>& caps,
+                                                 int union_volume_samples_per_axis = 32);
+
+double estimateCapsuleUnionVolume(const std::vector<Capsule>& caps,
+                                  int samples_per_axis = 32);
 
 double assignedPlaneCircleScore(const std::vector<Contour2D>& contours,
                                 const std::vector<Circle2D>& circles);

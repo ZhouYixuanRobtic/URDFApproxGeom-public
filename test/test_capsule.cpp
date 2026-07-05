@@ -310,6 +310,37 @@ static double capsuleSetVolume(const std::vector<Capsule>& caps) {
     return v;
 }
 
+TEST(CapsuleMetrics, UnionVolumeDoesNotDoubleCountIdenticalCapsules) {
+    Capsule cap{Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(1, 0, 0), 0.10};
+    const double primitive_sum = capsuleSetVolume({cap, cap});
+
+    const double single_union = estimateCapsuleUnionVolume({cap}, 64);
+    const double duplicate_union = estimateCapsuleUnionVolume({cap, cap}, 64);
+
+    EXPECT_NEAR(duplicate_union, single_union, single_union * 0.02);
+    EXPECT_LT(duplicate_union, primitive_sum * 0.60)
+        << "Union volume must remove overlap instead of summing primitive volume";
+}
+
+TEST(CapsuleMetrics, EvaluateTightnessUsesUnionVolume) {
+    Eigen::MatrixXd V(8, 3);
+    V << -0.60, -0.20, -0.20,
+          0.60, -0.20, -0.20,
+          0.60,  0.20, -0.20,
+         -0.60,  0.20, -0.20,
+         -0.60, -0.20,  0.20,
+          0.60, -0.20,  0.20,
+          0.60,  0.20,  0.20,
+         -0.60,  0.20,  0.20;
+
+    Capsule cap{Eigen::Vector3d(-0.50, 0, 0), Eigen::Vector3d(0.50, 0, 0), 0.31};
+    auto metrics = evaluateCapsuleTightness(V, {cap, cap}, 64);
+    const double single_union = estimateCapsuleUnionVolume({cap}, 64);
+
+    EXPECT_TRUE(metrics.covered);
+    EXPECT_NEAR(metrics.capsule_volume, single_union, single_union * 0.02);
+}
+
 static bool allVerticesCoveredByAnyCapsule(const Eigen::MatrixXd& V,
                                            const std::vector<Capsule>& caps,
                                            double eps = 1e-9) {

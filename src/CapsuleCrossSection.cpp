@@ -298,10 +298,19 @@ double capsuleVolume(const Capsule& cap) {
     return M_PI * cap.radius * cap.radius * L + 4.0 * M_PI * cap.radius * cap.radius * cap.radius / 3.0;
 }
 
-double capsuleSetVolume(const std::vector<Capsule>& caps) {
-    double total = 0.0;
-    for (const auto& cap : caps) total += capsuleVolume(cap);
-    return total;
+bool capsuleSetBounds(const std::vector<Capsule>& caps,
+                      Eigen::Vector3d& lo,
+                      Eigen::Vector3d& hi) {
+    if (caps.empty()) return false;
+    lo = Eigen::Vector3d::Constant(std::numeric_limits<double>::max());
+    hi = Eigen::Vector3d::Constant(std::numeric_limits<double>::lowest());
+    for (const auto& cap : caps) {
+        if (cap.radius <= 0.0) continue;
+        Eigen::Vector3d r = Eigen::Vector3d::Constant(cap.radius);
+        lo = lo.cwiseMin(cap.p0.cwiseMin(cap.p1) - r);
+        hi = hi.cwiseMax(cap.p0.cwiseMax(cap.p1) + r);
+    }
+    return (hi - lo).minCoeff() > 0.0;
 }
 
 static Capsule capsuleWithSpan(const Capsule& cap, double lo, double hi, double radius) {
@@ -402,6 +411,41 @@ static bool shrinkCapsuleEndpointSpans(std::vector<Capsule>& caps,
 
 }  // namespace
 
+double estimateCapsuleUnionVolume(const std::vector<Capsule>& caps,
+                                  int samples_per_axis) {
+    if (caps.empty()) return 0.0;
+    if (caps.size() == 1) return capsuleVolume(caps.front());
+
+    Eigen::Vector3d lo;
+    Eigen::Vector3d hi;
+    if (!capsuleSetBounds(caps, lo, hi)) return 0.0;
+
+    const int n = std::max(1, samples_per_axis);
+    const Eigen::Vector3d ext = hi - lo;
+    const double box_volume = ext.x() * ext.y() * ext.z();
+    if (box_volume <= 0.0) return 0.0;
+
+    long long inside = 0;
+    const long long total = static_cast<long long>(n) * n * n;
+    for (int ix = 0; ix < n; ++ix) {
+        const double fx = (static_cast<double>(ix) + 0.5) / static_cast<double>(n);
+        for (int iy = 0; iy < n; ++iy) {
+            const double fy = (static_cast<double>(iy) + 0.5) / static_cast<double>(n);
+            for (int iz = 0; iz < n; ++iz) {
+                const double fz = (static_cast<double>(iz) + 0.5) / static_cast<double>(n);
+                Eigen::Vector3d p = lo + Eigen::Vector3d(fx * ext.x(), fy * ext.y(), fz * ext.z());
+                for (const auto& cap : caps) {
+                    if (pointToSegmentDistance(p, cap.p0, cap.p1) <= cap.radius) {
+                        ++inside;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return box_volume * (static_cast<double>(inside) / static_cast<double>(total));
+}
+
 CapsuleVertexAssignment assignVerticesToCapsules(const Eigen::MatrixXd& V,
                                                  const std::vector<Capsule>& caps) {
     CapsuleVertexAssignment out;
@@ -464,7 +508,8 @@ static double assignedRadiusBinRatio(const Eigen::MatrixXd& V,
 }
 
 CapsuleTightnessMetrics evaluateCapsuleTightness(const Eigen::MatrixXd& V,
-                                                 const std::vector<Capsule>& caps) {
+                                                 const std::vector<Capsule>& caps,
+                                                 int union_volume_samples_per_axis) {
     CapsuleTightnessMetrics out;
     if (V.rows() == 0 || caps.empty()) {
         out.covered = V.rows() == 0;
@@ -474,7 +519,7 @@ CapsuleTightnessMetrics evaluateCapsuleTightness(const Eigen::MatrixXd& V,
     out.worst_signed_distance = *std::max_element(assignment.signed_distance.begin(),
                                                   assignment.signed_distance.end());
     out.covered = out.worst_signed_distance <= 1e-9;
-    out.capsule_volume = capsuleSetVolume(caps);
+    out.capsule_volume = estimateCapsuleUnionVolume(caps, union_volume_samples_per_axis);
     out.aabb_volume = aabbVolume(V);
     out.capV_aabb = out.aabb_volume > 1e-12 ? out.capsule_volume / out.aabb_volume : 0.0;
     out.max_radius_bin_ratio = assignedRadiusBinRatio(V, caps, assignment);
@@ -1035,7 +1080,8 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
             growCapsulesToCover(candidate, V);
             candidate = dedupeNestedCapsules(candidate);
             if (!allCovered(candidate, V)) continue;
-            double score = capsuleSetVolume(candidate);
+            double score = 0.0;
+            for (const auto& c : candidate) score += capsuleVolume(c);
             if (score < best_score) {
                 best_score = score;
                 best_remove = i;
