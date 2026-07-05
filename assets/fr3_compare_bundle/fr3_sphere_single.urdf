@@ -8,9 +8,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="-0.042782 0.000320488 0.0595549" rpy="0 -0 0" />
+            <origin xyz="-0.0436334 0.00063973 0.0601613" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.128241" />
+                <sphere radius="0.128383" />
             </geometry>
         </collision>
         <inertial>
@@ -27,9 +27,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="-0.00124895 -0.0269934 -0.0731573" rpy="0 -0 0" />
+            <origin xyz="-0.0086906 -0.0279702 -0.0734574" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.143931" />
+                <sphere radius="0.144564" />
             </geometry>
         </collision>
         <inertial>
@@ -54,9 +54,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="-0.00109716 -0.0753743 0.0290382" rpy="0 -0 0" />
+            <origin xyz="-0.000448315 -0.0739204 0.0280108" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.143708" />
+                <sphere radius="0.144056" />
             </geometry>
         </collision>
         <inertial>
@@ -81,9 +81,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="0.0348989 0.0271869 -0.0396006" rpy="0 -0 0" />
+            <origin xyz="0.0352556 0.0291333 -0.0412664" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.127582" />
+                <sphere radius="0.127649" />
             </geometry>
         </collision>
         <inertial>
@@ -108,9 +108,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="-0.0454568 0.0461902 0.0291456" rpy="0 -0 0" />
+            <origin xyz="-0.0457134 0.0460662 0.0301095" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.128076" />
+                <sphere radius="0.127667" />
             </geometry>
         </collision>
         <inertial>
@@ -135,9 +135,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="0.0067749 0.025746 -0.105254" rpy="0 -0 0" />
+            <origin xyz="-0.00156155 0.027446 -0.105497" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.174023" />
+                <sphere radius="0.173477" />
             </geometry>
         </collision>
         <inertial>
@@ -162,9 +162,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="0.0489446 0.00134087 0.00956819" rpy="0 -0 0" />
+            <origin xyz="0.0482878 -0.000327739 0.00679312" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.099082" />
+                <sphere radius="0.098992" />
             </geometry>
         </collision>
         <inertial>
@@ -189,9 +189,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="0.0136671 0.0132711 0.0855428" rpy="0 -0 0" />
+            <origin xyz="0.0135908 0.0133583 0.0875933" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.072795" />
+                <sphere radius="0.072815" />
             </geometry>
         </collision>
         <inertial>
@@ -228,9 +228,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="-0.00350067 -0.00127333 0.0237402" rpy="0 -0 0" />
+            <origin xyz="0.00546678 -0.00180249 0.0256996" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.107707" />
+                <sphere radius="0.107798" />
             </geometry>
         </collision>
         <inertial>
@@ -274,9 +274,9 @@
             </geometry>
         </visual>
         <collision>
-            <origin xyz="-0.00212804 0.0115837 0.061135" rpy="0 -0 0" />
+            <origin xyz="0.00152809 0.0133891 0.0611549" rpy="0 -0 0" />
             <geometry>
-                <sphere radius="0.064826" />
+                <sphere radius="0.064548" />
             </geometry>
         </collision>
         <inertial>

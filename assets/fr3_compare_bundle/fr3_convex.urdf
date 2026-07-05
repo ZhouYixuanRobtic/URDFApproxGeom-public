@@ -10,7 +10,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0" />
             <geometry>
-                <mesh filename="meshes/link0.obj" />
+                <mesh filename="meshes/link0_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -29,7 +29,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0" />
             <geometry>
-                <mesh filename="meshes/link1.obj" />
+                <mesh filename="meshes/link1_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -56,7 +56,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0" />
             <geometry>
-                <mesh filename="meshes/link2.obj" />
+                <mesh filename="meshes/link2_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -83,7 +83,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0" />
             <geometry>
-                <mesh filename="meshes/link3.obj" />
+                <mesh filename="meshes/link3_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -110,7 +110,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0" />
             <geometry>
-                <mesh filename="meshes/link4.obj" />
+                <mesh filename="meshes/link4_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -137,7 +137,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0" />
             <geometry>
-                <mesh filename="meshes/link5.obj" />
+                <mesh filename="meshes/link5_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -164,7 +164,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0" />
             <geometry>
-                <mesh filename="meshes/link6.obj" />
+                <mesh filename="meshes/link6_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -191,7 +191,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0" />
             <geometry>
-                <mesh filename="meshes/link7.obj" />
+                <mesh filename="meshes/link7_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -230,7 +230,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0" />
             <geometry>
-                <mesh filename="meshes/hand.obj" />
+                <mesh filename="meshes/hand_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -249,7 +249,7 @@
         <collision>
             <origin xyz="-0.0165 0.0165 0.127733" rpy="-1.5708 0.202458 -1.5708" />
             <geometry>
-                <mesh filename="meshes/flex_griper_connect.obj" />
+                <mesh filename="meshes/flex_griper_connect_1.obj" />
             </geometry>
         </collision>
         <inertial>
@@ -276,7 +276,7 @@
         <collision>
             <origin xyz="-0.0165 0.0165 0.127733" rpy="-1.5708 0.202458 -1.5708" />
             <geometry>
-                <mesh filename="meshes/flex_griper_connect.obj" />
+                <mesh filename="meshes/flex_griper_connect_1.obj" />
             </geometry>
         </collision>
         <inertial>
