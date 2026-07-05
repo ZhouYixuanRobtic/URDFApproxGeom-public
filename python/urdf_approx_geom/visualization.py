@@ -6,13 +6,11 @@ import importlib.util
 import pathlib
 import sys
 
-
-def repo_root() -> pathlib.Path:
-    return pathlib.Path(__file__).resolve().parents[2]
+from ._paths import require_source_root
 
 
 def _load_script_module(module_name: str, relative_path: str):
-    root = repo_root()
+    root = require_source_root()
     path = root / relative_path
     spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:

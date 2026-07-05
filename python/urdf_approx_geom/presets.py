@@ -4,24 +4,22 @@ from __future__ import annotations
 
 import pathlib
 
-
-def repo_root() -> pathlib.Path:
-    return pathlib.Path(__file__).resolve().parents[2]
+from ._paths import config_root
 
 
 _PRESETS = {
     "capsule": {
-        "single": "config/capsule/single.yml",
-        "default": "config/capsule/default.yml",
-        "high_detail": "config/capsule/high_detail.yml",
-        "tight": "config/capsule/high_detail.yml",
+        "single": "capsule/single.yml",
+        "default": "capsule/default.yml",
+        "high_detail": "capsule/high_detail.yml",
+        "tight": "capsule/high_detail.yml",
     },
     "sphere": {
-        "single": "config/sphereTree/single.yml",
-        "default": "config/sphereTree/default.yml",
+        "single": "sphereTree/single.yml",
+        "default": "sphereTree/default.yml",
     },
     "convex": {
-        "default": "config/convex/default.yml",
+        "default": "convex/default.yml",
     },
 }
 
@@ -39,7 +37,7 @@ def _normal_mode(mode: str) -> str:
 
 def available_presets(mode: str) -> dict[str, pathlib.Path]:
     normal = _normal_mode(mode)
-    root = repo_root()
+    root = config_root()
     return {name: root / rel for name, rel in _PRESETS[normal].items()}
 
 

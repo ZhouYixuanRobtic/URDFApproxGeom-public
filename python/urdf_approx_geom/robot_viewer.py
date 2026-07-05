@@ -26,17 +26,17 @@ DEFAULT_ROOT_CANDIDATES = (
 )
 
 
-def repo_root() -> pathlib.Path:
-    return pathlib.Path(__file__).resolve().parents[2]
-
-
 def find_robot_viewer_root() -> pathlib.Path | None:
     """Locate a robot_viewer checkout usable as a dev server, or None."""
+    from ._paths import source_root
+
     env = os.environ.get("ROBOT_VIEWER_ROOT")
     candidates: list[pathlib.Path] = []
     if env:
         candidates.append(pathlib.Path(env))
-    candidates.append(repo_root() / "robot_viewer")
+    root = source_root()
+    if root is not None:
+        candidates.append(root / "robot_viewer")
     candidates.extend(pathlib.Path(c) for c in DEFAULT_ROOT_CANDIDATES)
     for cand in candidates:
         if (cand / "package.json").is_file():

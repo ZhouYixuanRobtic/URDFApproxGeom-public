@@ -1,0 +1,52 @@
+# Build context = repo root (`docker build -f docker/Dockerfile .`).
+# Keep third_party/ source (libigl/sphere_tree/ManifoldPlus are vendored).
+# docker/.dockerignore is ignored by Docker — the file must live at context root.
+
+# Build directories (84M + 16M; rebuilt inside the image)
+build/
+build_dkr/
+cmake-build-*/
+temp.linux-*/
+
+# Python cache / build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+bdist.linux-*/
+
+# IDE / OS / VCS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.git/
+.gitignore
+
+# Documentation build
+doc/html/
+doc/latex/
+
+# Test / coverage artifacts
+*.gcov
+*.gcda
+*.gcno
+coverage/
+
+# Temporary / package files
+*.tmp
+*.log
+*.bak
+*.deb
+*.tar.gz
+*.zip
+
+# Vendored VCS metadata (keep source, skip .git inside third_party)
+third_party/**/.git
+third_party/**/.github

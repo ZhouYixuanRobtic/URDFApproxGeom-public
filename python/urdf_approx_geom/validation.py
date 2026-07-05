@@ -7,13 +7,11 @@ import pathlib
 import subprocess
 import sys
 
-
-def repo_root() -> pathlib.Path:
-    return pathlib.Path(__file__).resolve().parents[2]
+from ._paths import require_source_root
 
 
 def _capsule_metrics(caps_json: str, urdf: str = "resources/fr3/urdf/fr3.urdf") -> dict:
-    root = repo_root()
+    root = require_source_root()
     script = root / "scripts" / "check_capsule_coverage.py"
     urdf_path = pathlib.Path(urdf)
     if not urdf_path.is_absolute():

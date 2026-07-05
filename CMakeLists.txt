@@ -77,8 +77,20 @@ prepare_debian_dependencies("${THIS_PACKAGE_BINARY_DEPENDS}" DEBIAN_PACKAGE_DEPE
 
 # add definitions
 # common definitions
-add_definitions(-D${PROJECT_NAME}_RESOURCE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources")
-add_definitions(-D${PROJECT_NAME}_CONFIG_PATH="${CMAKE_CURRENT_SOURCE_DIR}/config")
+# Resource/config directory paths baked into the C++ apps and tests. Cache
+# variables default to the source tree so tests run from the build dir without
+# installing; override at configure time (e.g.
+# -DURDFApproxGeom_CONFIG_PATH=...) to the install layout when packaging
+# binaries, paired with install(DIRECTORY config/) below so the tree exists
+# at the baked path after `cmake --install`.
+set(URDFApproxGeom_RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+    CACHE PATH "Bundled resources/ directory baked into binaries")
+set(URDFApproxGeom_CONFIG_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config"
+    CACHE PATH "Bundled config/ preset directory baked into binaries")
+add_definitions(
+        -D${PROJECT_NAME}_RESOURCE_PATH="${URDFApproxGeom_RESOURCE_PATH}"
+        -D${PROJECT_NAME}_CONFIG_PATH="${URDFApproxGeom_CONFIG_PATH}"
+)
 
 # include area (should be installed into the system)
 set(THIS_PACKAGE_INCLUDE_DIRS
@@ -166,6 +178,13 @@ myproject_package_project(
         PUBLIC_INCLUDES ${THIS_PACKAGE_INCLUDE_DIRS}
         PUBLIC_DEPENDENCIES ${THIS_PACKAGE_IRMV_DEPENDS} ${THIS_PACKAGE_DEPENDS}
 )
+
+# Install the preset config/ tree so packaged binaries can resolve the baked
+# URDFApproxGeom_CONFIG_PATH at their install location. Build package images
+# with -DURDFApproxGeom_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/share/URDFApproxGeom/config.
+include(GNUInstallDirs)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/config/
+        DESTINATION share/URDFApproxGeom/config)
 
 set(CPACK_PACKAGE_FILE_NAME
         "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
