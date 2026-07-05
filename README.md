@@ -96,29 +96,19 @@ Capsule JSON entries use link-frame sphere-center endpoints:
 
 ## Sample Output (FR3)
 
-Capsule mode run on `resources/fr3/urdf/fr3.urdf` (11 mesh collision links):
+Geometry accuracy vs the `*.dae` visual meshes in `resources/fr3/meshes/fr3/visual/`, treated as ground truth (`vol/dae` = approximation volume ÷ `.dae` volume; `.dae` = 1.0, lower = closer to the true shape). All rows measured on fr3 arm links link0–link7 (hand/finger links have no `*.dae`):
 
-| Preset | Capsules | Worst capV/aabb | Worst r/binMed |
-|--------|---------:|----------------:|---------------:|
-| `single`     | 11 | 1.48 | 1.15 |
-| `default`    | 17 | 1.77 | 1.48 |
-| `high_detail`| 17 | 1.86 | 1.35 |
+| Form | Primitives | Worst vol/dae |
+|------|-----------:|-------------:|
+| `*.dae` visual (reference) | mesh | **1.00** |
+| `convex` hull              | mesh | 1.76 |
+| capsule `single`           | 8    | 3.07 |
+| capsule `default`          | 10   | 4.23 |
+| capsule `high_detail`      | 10   | 3.30 |
+| sphere `default`           | 62   | 5.12 |
+| sphere `single`            | 8    | 12.21 |
 
-Sphere mode on the same URDF:
-
-| Preset | Spheres | Worst sphV/aabb | Worst r/maxMed |
-|--------|--------:|----------------:|---------------:|
-| `single`  | 11 | 15.58 | 1.00 |
-| `default` | 85 |  2.06 | 1.66 |
-
-Mesh baselines (no primitive count, no radius metric):
-
-| Baseline | Worst vol/aabb |
-|----------|--------------:|
-| original mesh (`*.dae` visual) | 0.51 |
-| `convex` hull (from `*.stl` collision) | 0.60 |
-
-`capV/aabb` / `sphV/aabb` / `vol/aabb` = primitive (or mesh) volume ÷ link AABB volume (lower = tighter). `r/binMed` = max capsule radius ÷ median axial-bin radius; `r/maxMed` = max sphere radius ÷ median sphere radius (lower = less inflation). Capsule `single` is one tight capsule per link; sphere `single` is one bounding sphere per link — its `sphV/aabb` is high because a single sphere over-sweeps elongated links, which is exactly what `default` (medial sphere tree, 85 spheres) fixes. The `*.dae` row is the high-precision visual mesh (link0–7 only; hand/finger links have no `*.dae`); the `convex` row is the hull the tool computes from the `*.stl` collision meshes (all 11 links).
+`convex` is closest to the `.dae` ground truth (1.76) since a hull hugs the convex envelope of the mesh. Capsules and spheres are looser volume-wise because they are simple primitives grown to cover the surface — the tradeoff for low primitive count and simulator-native collision. `capsule single` is one bounding capsule per link (8 total, tightest capsule preset on this metric); `sphere single` is one bounding sphere per link and over-sweeps elongated links the most, so its `default` (medial sphere tree, 62 spheres) is the tighter sphere preset.
 
 ## Documentation
 
