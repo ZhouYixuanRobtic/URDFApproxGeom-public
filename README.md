@@ -17,39 +17,26 @@ URDFApproxGeom converts mesh-based URDF collision geometry into lighter collisio
 
 ## Visual: ground-truth mesh vs approximations
 
-Left: the `.dae` visual mesh (ground truth). Right: each mode's collision output for the same FR3 link.
+Each screenshot shows the FR3 `link0` `.dae` visual mesh (wireframe) with the generated collision primitives overlaid. Collision geometry is in solid colour.
 
-| Visual mesh (`.dae`) | `convex` collision | `sphere` collision |
-|:-:|:-:|:-:|
-| ![visual](assets/origin.png) | ![convex](assets/convex.png) | ![sphere](assets/spherized.png) |
+| `convex` hull | `sphere` single | `sphere` default | `capsule` single | `capsule` high_detail |
+|:-:|:-:|:-:|:-:|:-:|
+| ![convex](assets/convex.png) | ![sphere single](assets/single_sphere.png) | ![sphere default](assets/sphere_default.png) | ![capsule single](assets/single_capsule.png) | ![capsule high_detail](assets/capsule_high_detail.png) |
 
-Toggle **Visual / Collision** live in [robot_viewer](https://github.com/fan-ziqi/robot_viewer) (see [Bundle compare view](#bundle-compare-view)) to compare the high-precision `.dae` against each approximation directly.
+For a live side-by-side comparison drag the **[pre-bundled FR3 compare directory](assets/fr3_compare_bundle/)** into [robot_viewer](https://github.com/fan-ziqi/robot_viewer) (or run `compare-all` yourself — see [Bundle compare view](#bundle-compare-view)). Toggle **Visual / Collision** to judge every approximation against the `.dae` ground truth.
 
 ## Quickstart (Docker)
 
 The published image is the fastest path — no build step, the `urdf-approx-geom` CLI is the entrypoint.
 
 ```bash
-# pull
 docker pull irmv-docker-hub-registry.cn-shanghai.cr.aliyuncs.com/manipulation/urdfapprox:1.5.0
-
-# run: mount your repo/data at /workspace and invoke the CLI
 docker run --rm -v "$PWD:/workspace" \
   irmv-docker-hub-registry.cn-shanghai.cr.aliyuncs.com/manipulation/urdfapprox:1.5.0 \
   generate --mode all -i /workspace/resources/fr3/urdf/fr3.urdf --output-dir /workspace/out
 ```
 
-`latest` is kept in sync with the newest release. The image ships the C++ apps (`spherized`, `convex`, `capsuleized`) under `/usr/local/bin` as well.
-
-### Build the image yourself
-
-```bash
-docker build -t urdfapprox -f docker/Dockerfile .
-docker run --rm -v "$PWD:/workspace" urdfapprox generate --mode sphere \
-  -i /workspace/resources/fr3/urdf/fr3.urdf -o /workspace/fr3_sphere.urdf
-```
-
-See [Docker environment](#docker-environment) below for details.
+`latest` tracks the newest release. See [Docker environment](#docker-environment) for building the image yourself and using the raw C++ apps.
 
 ## Quickstart (from source)
 
@@ -144,7 +131,21 @@ For custom tuning — `NSections`, `MaxCapsulesPerLink`, sphere-tree `Method`, `
 - `sphere`: writes an output URDF and a JSON sidecar. The canonical per-link field is `spheres`, where each entry has `center` and `radius`. Some legacy sphere-tree outputs may also include `BiggestSphere` and `SubSpheres`; new consumers should read `spheres`.
 - `capsule`: writes an output URDF and a JSON sidecar with per-link `capsules`.
 
-Capsule JSON entries use link-frame sphere-center endpoints:
+Sphere JSON — canonical `spheres` list (`center` + `radius`), plus the legacy `BiggestSphere` entry emitted by multi-sphere fits:
+
+```json
+{
+  "fr3_link0": {
+    "spheres": [
+      {"center": [0.0, 0.0, 0.05], "radius": 0.13},
+      {"center": [-0.04, 0.0, 0.06], "radius": 0.04}
+    ],
+    "BiggestSphere": [0.0, 0.0, 0.05, 0.13]
+  }
+}
+```
+
+Capsule JSON — link-frame sphere-center endpoints (`p0` / `p1`):
 
 ```json
 {
@@ -161,6 +162,17 @@ Capsule JSON entries use link-frame sphere-center endpoints:
 Geometry accuracy vs the `*.dae` visual meshes in `resources/fr3/meshes/fr3/visual/`, treated as ground truth (`vol/dae` = approximation volume ÷ `.dae` volume; `.dae` = 1.0, lower = closer to the true shape). All rows measured on fr3 arm links link0–link7 (hand/finger links have no `*.dae`):
 
 Sphere and capsule generators fit the `.dae` visual mesh by default (`--mesh-source visual`). The visual `.dae` is the true link shape with concavities; the collision `.stl` files in the input URDF are simplified convex-like envelopes. Fitting the true shape makes medial sphere trees tighter (spheres can nestle into concavities) but capsule fits looser (capsules must bridge concavities they cannot enter). `sphere default` (medial sphere tree, 80 spheres) is the tightest primitive preset overall at 3.57×; `sphere single` is one bounding sphere per link and over-sweeps elongated links the most (11.31×). `capsule single` is one covering capsule per link (11 total); `capsule high_detail` raises the detail ceiling but on FR3 the worst link (link0) stays at 4.82×. For the legacy collision-stl fit use `--mesh-source collision`.
+
+## URDF compatibility
+
+All output URDFs follow the ROS URDF specification — collision geometry is standard `<sphere>`, `<cylinder>`, or `<mesh>` elements with correct origins. The generated URDF **only** modifies the `collision` element; the `visual`, `inertial`, and `joint` elements pass through untouched.
+
+- Input collision meshes are read from the input URDF's `<collision>` elements (`.stl` / `.obj` only; visual `.dae` meshes are auto-converted when `--mesh-source visual` is used).
+- Output collision meshes (convex mode) are written as `.obj`.
+- If your robot description is in `.xacro`, pre-process it before use — `pip install xacro` then `python -m xacro robot.urdf.xacro -o robot.urdf`.
+- URDF `.urdf` is the only accepted and emitted format. Xacro and SDF are not generated.
+
+The generated URDF can be loaded by any URDF-compatible toolchain — RViz, Gazebo, PyBullet, MuJoCo (3.0+), Drake, and ROS `robot_state_publisher`.
 
 ## Docker environment
 
