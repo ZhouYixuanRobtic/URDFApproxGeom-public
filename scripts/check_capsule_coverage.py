@@ -150,8 +150,9 @@ def tightness_metrics(V, capsules, assigned, volume_samples=64):
     primitive_sum = sum(capsule_volume(p0, p1, radius) for p0, p1, radius in capsules)
     ext = V.max(axis=0) - V.min(axis=0)
     aabb_volume = float(np.prod(np.maximum(ext, 1e-12)))
-    inflation = primitive_sum / aabb_volume if aabb_volume > 1e-12 else 0.0
     union_volume = estimate_capsule_union_volume(capsules, samples_per_axis=volume_samples)
+    inflation = union_volume / aabb_volume if aabb_volume > 1e-12 else 0.0
+    primitive_inflation = primitive_sum / aabb_volume if aabb_volume > 1e-12 else 0.0
 
     worst_radius_ratio = 0.0
     for idx, (p0, p1, radius) in enumerate(capsules):
@@ -169,7 +170,7 @@ def tightness_metrics(V, capsules, assigned, volume_samples=64):
         if nonzero:
             median_section_radius = float(np.median(nonzero))
             worst_radius_ratio = max(worst_radius_ratio, radius / median_section_radius)
-    return inflation, worst_radius_ratio, union_volume, primitive_sum
+    return inflation, worst_radius_ratio, union_volume, primitive_sum, primitive_inflation
 
 
 def axis_overhang_metrics(V, capsules, assigned):
@@ -249,7 +250,7 @@ def evaluate_capsules(caps_json, urdf_path, mesh_source="visual", volume_samples
         worst = float(signed.max())
         covered = worst <= 1e-6
         all_ok &= covered
-        inflation, radius_ratio, union_volume, primitive_sum = tightness_metrics(
+        inflation, radius_ratio, union_volume, primitive_sum, primitive_inflation = tightness_metrics(
             V, capsules, assigned, volume_samples=volume_samples)
         axis_overhang, axis_overhang_ratio = axis_overhang_metrics(V, capsules, assigned)
 
@@ -274,6 +275,7 @@ def evaluate_capsules(caps_json, urdf_path, mesh_source="visual", volume_samples
             "r_binMed": float(radius_ratio),
             "capsule_union_volume": float(union_volume),
             "capsule_primitive_volume_sum": float(primitive_sum),
+            "capsule_primitiveV_aabb": float(primitive_inflation),
             "volume_samples": volume_samples,
             "mesh_source": mesh_source,
             "axis_overhang": float(axis_overhang),
