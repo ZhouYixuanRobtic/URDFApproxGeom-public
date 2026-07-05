@@ -122,13 +122,13 @@ Quantitative guidance on FR3 arm links (`vol/dae` = approximation volume ÷ `.da
 |------|-----------:|-------------:|
 | `*.dae` visual (reference) | mesh | **1.00** |
 | `convex` hull              | mesh | 1.76 |
-| capsule `single`           | 8    | 3.07 |
-| capsule `default`          | 10   | 4.23 |
-| capsule `high_detail`      | 10   | 3.30 |
-| sphere `default`           | 62   | 5.12 |
-| sphere `single`            | 8    | 12.21 |
+| capsule `single`           | 11   | 3.65 |
+| capsule `default`          | 19   | 5.79 |
+| capsule `high_detail`      | 21   | 4.82 |
+| sphere `default`           | 80   | 3.57 |
+| sphere `single`            | 11   | 11.31 |
 
-`convex` is closest because a hull hugs the convex envelope. Capsules and spheres are looser volume-wise because they are simple primitives grown to cover the surface — the tradeoff for low primitive count and simulator-native collision. See the full discussion in [Sample output](#sample-output-fr3).
+`convex` is closest to the `.dae` ground truth (1.76) since a hull hugs the convex envelope. Sphere and capsule primitives are grown to cover every surface point of the true `.dae` visual mesh — which has concavities that the old collision `.stl` smoothed over. This makes sphere fits *tighter* (medial tree hugs concavities better) but capsule fits *looser* (capsules must bridge concavities they cannot enter). The numbers above reflect the default `--mesh-source visual`; pass `--mesh-source collision` for the legacy collision-.stl fit.
 
 ## Presets
 
@@ -160,7 +160,7 @@ Capsule JSON entries use link-frame sphere-center endpoints:
 
 Geometry accuracy vs the `*.dae` visual meshes in `resources/fr3/meshes/fr3/visual/`, treated as ground truth (`vol/dae` = approximation volume ÷ `.dae` volume; `.dae` = 1.0, lower = closer to the true shape). All rows measured on fr3 arm links link0–link7 (hand/finger links have no `*.dae`):
 
-`convex` is closest to the `.dae` ground truth (1.76) since a hull hugs the convex envelope of the mesh. Capsules and spheres are looser volume-wise because they are simple primitives grown to cover the surface — the tradeoff for low primitive count and simulator-native collision. `capsule single` is one bounding capsule per link (8 total, tightest capsule preset on this metric); `sphere single` is one bounding sphere per link and over-sweeps elongated links the most, so its `default` (medial sphere tree, 62 spheres) is the tighter sphere preset.
+Sphere and capsule generators fit the `.dae` visual mesh by default (`--mesh-source visual`). The visual `.dae` is the true link shape with concavities; the collision `.stl` files in the input URDF are simplified convex-like envelopes. Fitting the true shape makes medial sphere trees tighter (spheres can nestle into concavities) but capsule fits looser (capsules must bridge concavities they cannot enter). `sphere default` (medial sphere tree, 80 spheres) is the tightest primitive preset overall at 3.57×; `sphere single` is one bounding sphere per link and over-sweeps elongated links the most (11.31×). `capsule single` is one covering capsule per link (11 total); `capsule high_detail` raises the detail ceiling but on FR3 the worst link (link0) stays at 4.82×. For the legacy collision-stl fit use `--mesh-source collision`.
 
 ## Docker environment
 
