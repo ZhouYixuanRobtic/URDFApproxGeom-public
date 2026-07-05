@@ -104,7 +104,14 @@ Capsule mode run on `resources/fr3/urdf/fr3.urdf` (11 mesh collision links):
 | `default`    | 17 | 1.77 | 1.48 |
 | `high_detail`| 17 | 1.86 | 1.35 |
 
-`capV/aabb` = capsule union volume ÷ link AABB volume (lower = tighter). `r/binMed` = max capsule radius ÷ median axial-bin radius (lower = less inflation). `single` is one capsule per link — tightest per-link but coarsest shape coverage. `default` and `high_detail` both land at 17 capsules; `default` wins on capV/aabb, `high_detail` wins on r/binMed.
+Sphere mode on the same URDF:
+
+| Preset | Spheres | Worst sphV/aabb | Worst r/maxMed |
+|--------|--------:|----------------:|---------------:|
+| `single`  | 11 | 15.58 | 1.00 |
+| `default` | 85 |  2.06 | 1.66 |
+
+`capV/aabb` / `sphV/aabb` = primitive union volume ÷ link AABB volume (lower = tighter). `r/binMed` = max capsule radius ÷ median axial-bin radius; `r/maxMed` = max sphere radius ÷ median sphere radius (lower = less inflation). Capsule `single` is one tight capsule per link; sphere `single` is one bounding sphere per link — its `sphV/aabb` is high because a single sphere over-sweeps elongated links, which is exactly what `default` (medial sphere tree, 85 spheres) fixes.
 
 ## Documentation
 
