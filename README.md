@@ -44,6 +44,12 @@ candidate against absolute ceilings. Add `--require-improvement` when the
 candidate must also be no worse than the baseline on worst capV/aabb and
 r/binMed.
 
+Visualize generated geometry (default backend `robot_viewer` shows the `.dae` visual meshes and the approximation side by side; bundle path is printed):
+
+```bash
+PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli visualize --mode capsule --urdf out/robot_capsule.urdf
+```
+
 ## Python API
 
 ```python

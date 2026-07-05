@@ -22,6 +22,8 @@ def test_visualize_capsule_mjcf_cli(tmp_path):
             "capsule",
             "--urdf",
             FR3_URDF,
+            "--viewer",
+            "mjcf",
             "--json",
             str(result.json_path),
             "--mjcf",

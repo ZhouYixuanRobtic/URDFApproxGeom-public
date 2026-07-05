@@ -1,14 +1,53 @@
 # Visualization
 
-URDFApproxGeom provides a visualization command that generates an MJCF (MuJoCo) file from capsule approximation data, enabling visual inspection of the fitted capsules against the original mesh.
+URDFApproxGeom's `visualize` command ships three backends. The default, **`robot_viewer`**, is the recommended way to compare the high-precision `.dae` visual meshes against the generated capsule / sphere / convex collision approximation in the same window.
 
-## Capsule Visualization
+## robot_viewer (default)
+
+`robot_viewer` is a browser-based URDF viewer (https://github.com/fan-ziqi/robot_viewer). It renders the `<visual>` and `<collision>` geometry with a toggle, so you can flip between the true shape and the approximation. The generated URDFs reference absolute `/workspace/...` mesh paths that do not exist on a host, so the CLI bundles the URDF and every referenced mesh into a self-contained directory with relative paths first:
 
 ```bash
-PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli visualize --mode capsule --urdf resources/fr3/urdf/fr3.urdf --json /tmp/fr3_approx/fr3_capsule.json --mjcf /tmp/fr3_approx/fr3_capsules.xml
+PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli visualize \
+  --mode capsule --urdf /tmp/fr3_approx/fr3_capsule.urdf --viewer robot_viewer
 ```
 
-This command reads the original URDF meshes and the capsule JSON sidecar, then writes an MJCF XML file that overlays the capsule primitives on the original collision geometry. Open the resulting `.xml` in a MuJoCo viewer to inspect fit quality per link.
+Output:
+
+```
+capsule: bundled /tmp/fr3_approx/fr3_capsule.urdf -> /tmp/urdf_approx_rv_XXXX/fr3_capsule.urdf
+bundle ready: /tmp/urdf_approx_rv_XXXX
+launched robot_viewer dev server at http://localhost:5173 (root=/home/admin1/ref/robot_viewer)
+open http://localhost:5173 in a browser, then drag this directory onto the file tree:
+  /tmp/urdf_approx_rv_XXXX
+toggle Visual / Collision in the viewer to compare the .dae meshes against the approximation.
+```
+
+If `ROBOT_VIEWER_ROOT` is unset and no local `robot_viewer` checkout is found, the command falls back to the hosted demo (http://viewer.robotsfan.com) — drag the bundle directory onto the file tree and the model stays in your browser. Use `--no-launch` to skip starting the dev server and only write the bundle, e.g. when running inside the Docker container where `pnpm`/the checkout live on the host.
+
+The same workflow works for sphere and convex output:
+
+```bash
+PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli visualize \
+  --mode sphere --urdf /tmp/fr3_approx/fr3_spherized.urdf
+PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli visualize \
+  --mode convex --urdf /tmp/fr3_approx/fr3_convex.urdf
+```
+
+## PyBullet and MJCF backends
+
+For headless renders or capsule-only overlays, the legacy backends remain available:
+
+```bash
+# pybullet GUI (or PNG with --png) overlaying red capsule meshes on the link collision meshes
+PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli visualize \
+  --mode capsule --urdf /tmp/fr3_approx/fr3_capsule.urdf --viewer pybullet \
+  --json /tmp/fr3_approx/fr3_capsule.json
+
+# MuJoCo MJCF scene (capsule primitives + gray link meshes)
+PYTHONPATH=$PWD/python:$PWD/build/python python3 -m urdf_approx_geom.cli visualize \
+  --mode capsule --urdf /tmp/fr3_approx/fr3_capsule.urdf --viewer mjcf \
+  --json /tmp/fr3_approx/fr3_capsule.json --mjcf /tmp/fr3_approx/fr3_capsules.xml
+```
 
 ## Validation
 

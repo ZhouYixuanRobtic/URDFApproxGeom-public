@@ -73,11 +73,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     viz = sub.add_parser("visualize", help="visualize generated geometry")
-    viz.add_argument("--mode", required=True, choices=["capsule"])
-    viz.add_argument("--urdf", required=True)
-    viz.add_argument("--json", required=True)
-    viz.add_argument("--png", default="")
-    viz.add_argument("--mjcf", default="")
+    viz.add_argument("--mode", required=True, choices=["capsule", "sphere", "convex"],
+                     help="generated mode carried by the URDF")
+    viz.add_argument("--urdf", required=True, help="generated output URDF to visualize")
+    viz.add_argument("--viewer", default="robot_viewer", choices=["robot_viewer", "mjcf", "pybullet"],
+                     help="visualizer backend; robot_viewer (default) shows visual+collision side by side")
+    viz.add_argument("--json", default="", help="capsule JSON sidecar (required for mjcf/pybullet)")
+    viz.add_argument("--bundle-dir", default="", help="robot_viewer bundle output dir (default: temp)")
+    viz.add_argument("--png", default="", help="pybullet: render to PNG instead of GUI")
+    viz.add_argument("--mjcf", default="", help="mjcf: output MJCF path")
+    viz.add_argument("--no-launch", action="store_true", help="robot_viewer: do not launch the dev server")
     return parser
 
 
@@ -149,6 +154,20 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     if args.command == "visualize":
+        if args.viewer == "robot_viewer":
+            from .robot_viewer import bundle, open_in_robot_viewer
+
+            import tempfile
+            bundle_dir = args.bundle_dir or tempfile.mkdtemp(prefix="urdf_approx_rv_")
+            bundle_urdf = bundle(args.urdf, bundle_dir)
+            print(f"{args.mode}: bundled {args.urdf} -> {bundle_urdf}")
+            return open_in_robot_viewer(bundle_urdf, launch=not args.no_launch)
+
+        if not args.json:
+            parser.error(f"--json is required for --viewer {args.viewer}")
+        if args.viewer == "mjcf" and not args.mjcf:
+            parser.error("--mjcf PATH is required for --viewer mjcf")
+
         from .visualization import visualize_capsules
 
         visualize_capsules(args.urdf, args.json, png=args.png, mjcf=args.mjcf)
