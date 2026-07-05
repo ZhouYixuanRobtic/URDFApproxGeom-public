@@ -194,21 +194,32 @@ The image bundles the preset `config/` tree (installed under `/usr/local/share/U
 
 ## Dependencies & Credits
 
-Built on top of excellent open-source work:
+**Binary-distributed** (apt):
 
-- [irmv_core](https://github.com/IRMV-Manipulation-Group) — IRMV core libraries (logger, algorithm factory)
-- [Eigen](https://eigen.tuxfamily.org/) — linear algebra
-- [libigl](https://libigl.github.io/) — geometry processing + the `igl/copyleft/cgal` convex-hull path
-- [CGAL](https://www.cgal.org/) — computational geometry (convex hulls)
-- [pybind11](https://github.com/pybind/pybind11) — Python bindings
+```shell
+sudo apt-get install libcgal-dev liburdfdom-dev libyaml-cpp-dev libtinyxml2-dev libgmp-dev libeigen3-dev
+```
+
+- [CGAL](https://github.com/CGAL/cgal) + [GMP](https://gmplib.org/) — convex-hull computational geometry
 - [urdfdom](https://github.com/ros/urdfdom) — URDF parsing/writing
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp) — config loading
 - [tinyxml2](https://github.com/leethomason/tinyxml2) — XML parsing
-- [ManifoldPlus](https://github.com/hjwdzh/ManifoldPlus) — watertight manifold conversion
-- [robot_viewer](https://github.com/fan-ziqi/robot_viewer) — web URDF/MJCF viewer used for visual/collision comparison
-- Capsule cross-section decomposition follows the Wu2018 approach
+- [Eigen](https://eigen.tuxfamily.org/) — linear algebra
 
-Thanks to all the maintainers. The base Docker image (`imc:base-2.3.0`) is hosted in the IRMV registry.
+**Vendored sources** (header-only under `third_party/`):
+
+- [libigl](https://github.com/libigl/libigl) — geometry processing + the `igl/copyleft/cgal` convex-hull path
+- [sphere_tree](https://github.com/mlund/spheretree) — sphere-tree generation
+- [ManifoldPlus](https://github.com/hjwdzh/ManifoldPlus) — watertight manifold conversion
+- [cmake-template](https://github.com/cpp-best-practices/cmake_template/tree/main) — CMake scaffolding
+
+**Build, bindings & tooling:**
+
+- [irmv_core](https://github.com/IRMV-Manipulation-Group) — self-maintained IRMV core (logger, algorithm factory); bundled in the base Docker image (`imc:base-2.3.0`)
+- [pybind11](https://github.com/pybind/pybind11) — Python bindings
+- [robot_viewer](https://github.com/fan-ziqi/robot_viewer) — web URDF/MJCF viewer used for the compare bundle
+
+Capsule cross-section decomposition follows the Wu2018 approach. This work is built on the basis of these fantastic projects — thanks to all the maintainers.
 
 ## Documentation
 
