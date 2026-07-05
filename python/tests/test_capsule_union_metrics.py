@@ -55,6 +55,20 @@ def test_tightness_metrics_reports_union_capv_aabb_not_primitive_sum():
     assert capv_aabb < primitive_capv_aabb * 0.75
 
 
+def test_cpp_endpoint_span_shrink_uses_configured_union_sampling():
+    source = (ROOT / "src" / "CapsuleCrossSection.cpp").read_text()
+
+    assert (
+        "static bool shrinkCapsuleEndpointSpans(std::vector<Capsule>& caps,\n"
+        "                                       const Eigen::MatrixXd& V,\n"
+        "                                       int union_volume_samples_per_axis)"
+    ) in source
+    assert "evaluateCapsuleTightness(V, caps, union_volume_samples_per_axis)" in source
+    assert "evaluateCapsuleTightness(V, candidate, union_volume_samples_per_axis)" in source
+    assert "shrinkCapsuleEndpointSpans(candidate, V, union_volume_samples_per_axis)" in source
+    assert "shrinkCapsuleEndpointSpans(caps, V, options.union_volume_samples_per_axis)" in source
+
+
 def test_parse_mesh_sources_prefers_visual_when_requested():
     mod = load_metrics_module()
     sources = mod.parse_mesh_sources(str(ROOT / "resources/fr3/urdf/fr3.urdf"), "visual")

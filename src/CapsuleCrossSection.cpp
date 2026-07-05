@@ -199,7 +199,8 @@ static void resizeCapsulesFromAssignedVertices(std::vector<Capsule>& caps,
 }
 
 static bool shrinkCapsuleEndpointSpans(std::vector<Capsule>& caps,
-                                       const Eigen::MatrixXd& V);
+                                       const Eigen::MatrixXd& V,
+                                       int union_volume_samples_per_axis);
 
 bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
                               const Eigen::MatrixXd& V,
@@ -241,7 +242,7 @@ bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
             resizeCapsulesFromAssignedVertices(candidate, V);
             growCapsulesToCover(candidate, V);
             candidate = dedupeNestedCapsules(candidate);
-            while (shrinkCapsuleEndpointSpans(candidate, V)) {
+            while (shrinkCapsuleEndpointSpans(candidate, V, union_volume_samples_per_axis)) {
             }
 
             auto after_metrics = evaluateCapsuleTightness(V, candidate, union_volume_samples_per_axis);
@@ -390,9 +391,10 @@ static Capsule optimizeEndpointSpanForAssignedVertices(const Capsule& cap,
 }
 
 static bool shrinkCapsuleEndpointSpans(std::vector<Capsule>& caps,
-                                       const Eigen::MatrixXd& V) {
+                                       const Eigen::MatrixXd& V,
+                                       int union_volume_samples_per_axis) {
     if (caps.empty() || V.rows() == 0) return false;
-    auto before = evaluateCapsuleTightness(V, caps);
+    auto before = evaluateCapsuleTightness(V, caps, union_volume_samples_per_axis);
     auto assignment = assignVerticesToCapsules(V, caps);
 
     std::vector<Capsule> candidate = caps;
@@ -403,7 +405,7 @@ static bool shrinkCapsuleEndpointSpans(std::vector<Capsule>& caps,
     }
     growCapsulesToCover(candidate, V);
     candidate = dedupeNestedCapsules(candidate);
-    auto after = evaluateCapsuleTightness(V, candidate);
+    auto after = evaluateCapsuleTightness(V, candidate, union_volume_samples_per_axis);
     if (!after.covered) return false;
     if (after.capsule_volume >= before.capsule_volume * 0.999) return false;
     caps = std::move(candidate);
@@ -1054,7 +1056,7 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
 
     caps = mergeCollinearCapsules(caps);
     growCapsulesToCover(caps, V);
-    while (shrinkCapsuleEndpointSpans(caps, V)) {
+    while (shrinkCapsuleEndpointSpans(caps, V, options.union_volume_samples_per_axis)) {
     }
     if (options.max_radius_bin_ratio > 0 || options.max_capv_aabb_ratio > 0) {
         while (splitMostInflatedCapsule(caps,
@@ -1066,7 +1068,7 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
                                         options.union_volume_samples_per_axis)) {
         }
         growCapsulesToCover(caps, V);
-        while (shrinkCapsuleEndpointSpans(caps, V)) {
+        while (shrinkCapsuleEndpointSpans(caps, V, options.union_volume_samples_per_axis)) {
         }
     }
     caps = dedupeNestedCapsules(caps);
@@ -1094,7 +1096,7 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
         caps = std::move(best_candidate);
     }
     growCapsulesToCover(caps, V);
-    while (shrinkCapsuleEndpointSpans(caps, V)) {
+    while (shrinkCapsuleEndpointSpans(caps, V, options.union_volume_samples_per_axis)) {
     }
     caps = dedupeNestedCapsules(caps);
     return caps;
