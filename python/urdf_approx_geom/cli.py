@@ -22,16 +22,21 @@ def _add_replace_arg(parser: argparse.ArgumentParser) -> None:
 
 
 def _run_compare(args) -> int:
-    """Generate convex + sphere + capsule variants and bundle them for robot_viewer."""
+    """Generate convex + sphere + capsule variants and bundle them for robot_viewer.
+
+    Reuses intermediates: the sphere single+default pair is one generator run
+    (the single sphere is the default run's biggest_sphere), and every capsule
+    preset shares one mesh load + one Manifold pass per link."""
     import tempfile
 
-    from .api import generate
+    from .api import generate, generate_capsule_multi, generate_sphere_pair
     from .robot_viewer import bundle_many
 
     work = pathlib.Path(tempfile.mkdtemp(prefix="urdf_approx_compare_src_"))
     bundle_dir = pathlib.Path(args.bundle_dir) if args.bundle_dir else pathlib.Path(
         tempfile.mkdtemp(prefix="urdf_approx_compare_"))
     bundle_dir.mkdir(parents=True, exist_ok=True)
+    mesh_source = getattr(args, "mesh_source", "visual")
     presets = [p.strip() for p in args.presets.split(",") if p.strip()]
     input_path = pathlib.Path(args.input)
     stem = input_path.stem
@@ -39,13 +44,29 @@ def _run_compare(args) -> int:
     sources: list[pathlib.Path] = []
     # Convex (no preset).
     sources.append(generate("convex", input_path, work / f"{stem}_convex.urdf").output_urdf)
-    # Sphere + capsule presets.
-    for preset in presets:
-        sphere_preset = preset if preset in {"single", "default"} else "default"
-        sources.append(generate("sphere", input_path, work / f"{stem}_sphere_{sphere_preset}.urdf",
-                                preset=sphere_preset, simplify=False).output_urdf)
-        sources.append(generate("capsule", input_path, work / f"{stem}_capsule_{preset}.urdf",
-                                preset=preset).output_urdf)
+
+    # Sphere: when both single + default are requested, run once via the pair
+    # helper (single = default's biggest_sphere). Otherwise emit what's asked.
+    sphere_presets = {p for p in presets if p in {"single", "default"}}
+    if {"single", "default"} <= sphere_presets:
+        default_res, single_res = generate_sphere_pair(
+            input_path,
+            work / f"{stem}_sphere_default.urdf",
+            work / f"{stem}_sphere_single.urdf",
+            simplify=True, mesh_source=mesh_source,
+        )
+        sources += [default_res.output_urdf, single_res.output_urdf]
+    else:
+        for sp in sorted(sphere_presets):
+            sources.append(generate("sphere", input_path, work / f"{stem}_sphere_{sp}.urdf",
+                                    preset=sp, simplify=True, mesh_source=mesh_source).output_urdf)
+
+    # Capsule: one mesh load per link, all presets on the cached mesh.
+    capsule_presets = [p for p in presets if p not in {"single", "default"}]
+    if capsule_presets:
+        cap_outputs = [(work / f"{stem}_capsule_{p}.urdf", p) for p in capsule_presets]
+        for res in generate_capsule_multi(input_path, cap_outputs, mesh_source=mesh_source):
+            sources.append(res.output_urdf)
 
     bundled = bundle_many(sources, bundle_dir)
     print(f"compare: bundled {len(bundled)} URDFs into {bundle_dir}")
@@ -87,6 +108,8 @@ def build_parser() -> argparse.ArgumentParser:
     gen.add_argument("--capsule-preset", default=None, help="capsule preset for --mode all")
     gen.add_argument("--config", default=None, help="explicit config path for a single mode")
     gen.add_argument("--simplify", type=int, default=1, help="sphere mode mesh simplification flag 0/1")
+    gen.add_argument("--mesh-source", default="visual", choices=["visual", "collision"],
+                     help="sphere/capsule: fit the visual mesh (default) or the collision mesh")
     _add_replace_arg(gen)
 
     sub.add_parser("presets", help="list built-in named presets")
@@ -131,6 +154,8 @@ def build_parser() -> argparse.ArgumentParser:
     cmp.add_argument("--bundle-dir", default="", help="bundle output dir (default: temp)")
     cmp.add_argument("--presets", default="single,default,high_detail",
                      help="comma-separated capsule/sphere presets to include")
+    cmp.add_argument("--mesh-source", default="visual", choices=["visual", "collision"],
+                     help="sphere/capsule: fit the visual mesh (default) or the collision mesh")
     return parser
 
 
@@ -164,6 +189,7 @@ def main(argv: list[str] | None = None) -> int:
                 presets=per_mode_presets,
                 replace_pairs=args.replace,
                 simplify=bool(args.simplify),
+                mesh_source=args.mesh_source,
             )
             for result in results:
                 _print_result(result)
@@ -178,6 +204,7 @@ def main(argv: list[str] | None = None) -> int:
             config=args.config,
             replace_pairs=args.replace,
             simplify=bool(args.simplify),
+            mesh_source=args.mesh_source,
         )
         _print_result(result)
         return 0

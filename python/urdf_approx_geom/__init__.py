@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 from ._extension import load_extension
-from .api import GenerateResult, generate, generate_all
+from .api import (
+    GenerateResult,
+    generate,
+    generate_all,
+    generate_capsule_multi,
+    generate_sphere_pair,
+)
 
 
 def _extension_function(name: str):
@@ -24,5 +30,7 @@ __all__ = [
     "convex",
     "generate",
     "generate_all",
+    "generate_capsule_multi",
+    "generate_sphere_pair",
     "spherized",
 ]

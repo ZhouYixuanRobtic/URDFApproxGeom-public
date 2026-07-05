@@ -469,3 +469,31 @@ bool URDFGenerator::replaceWith(std::string &src, const std::string &original, c
     }
     return false;
 }
+
+bool URDFGenerator::resolveMeshSource(const urdf::LinkSharedPtr &link, bool use_visual,
+                                      const std::vector<std::pair<std::string, std::string>> &replace_pairs,
+                                      MeshSource &out) {
+    auto extract = [&](const urdf::GeometrySharedPtr &geom, const urdf::Pose &origin) -> bool {
+        if (!geom || geom->type != urdf::Geometry::MESH) return false;
+        auto *mesh = dynamic_cast<urdf::Mesh *>(geom.get());
+        if (!mesh) return false;
+        std::string fn = mesh->filename;
+        for (const auto &rp : replace_pairs) replaceWith(fn, rp.first, rp.second);
+        out.filename = fn;
+        out.translation = Eigen::Vector3d(origin.position.x, origin.position.y, origin.position.z);
+        out.rotation = Eigen::Quaterniond(origin.rotation.w, origin.rotation.x,
+                                          origin.rotation.y, origin.rotation.z);
+        out.found = true;
+        return true;
+    };
+
+    if (use_visual) {
+        for (const auto &vis : link->visual_array) {
+            if (vis && extract(vis->geometry, vis->origin)) return true;
+        }
+        IRMV_WARN("link '{}': no usable visual mesh, falling back to collision",
+                  link->name.empty() ? std::string{"<unnamed>"} : link->name);
+    }
+    if (link->collision && extract(link->collision->geometry, link->collision->origin)) return true;
+    return false;
+}

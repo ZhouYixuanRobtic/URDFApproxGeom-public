@@ -56,13 +56,17 @@
 
 class SphereTreeURDFGenerator : public URDFGenerator {
 public:
-    SphereTreeURDFGenerator(const std::string& st_config_path, bool simplify = true);
+    /// @param use_visual  fit the visual mesh (true, ground-truth geometry) or
+    ///                   the collision mesh (false). Falls back to collision
+    ///                   when the requested source has no mesh on a link.
+    SphereTreeURDFGenerator(const std::string& st_config_path, bool simplify = true, bool use_visual = true);
 
     ~SphereTreeURDFGenerator() override;
 
 protected:
     bool doSimplify = false;
     double simplify_ratio = 0.01;
+    bool use_visual_ = true;
     SphereTreeMethod::STMethodType type_;
     std::string config_path_;
     nlohmann::json spheres_json_;  // per-link data, filled by buildSphereModel
@@ -84,6 +88,15 @@ protected:
 public:
     irmv_core::bot_common::ErrorInfo run(const std::string &urdf_path, const std::string &output_path,
                               const std::vector<std::pair<std::string, std::string>> &replace_pairs) override;
+
+    /// One mesh load + one tree build, two outputs: the multi-sphere URDF at
+    /// `output_path` (same as run()) AND a single-sphere URDF at
+    /// `single_output_path` built from m_biggest_model (tree.biggest_sphere).
+    /// Saves the compare-all path from running the generator twice.
+    irmv_core::bot_common::ErrorInfo runPair(const std::string &urdf_path,
+                              const std::string &output_path,
+                              const std::string &single_output_path,
+                              const std::vector<std::pair<std::string, std::string>> &replace_pairs);
 };
 
 

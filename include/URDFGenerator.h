@@ -48,6 +48,7 @@
 
 #include <string>
 #include <urdf_world/types.h>
+#include <urdf_model/model.h>
 #include <Eigen/Dense>
 #include "irmv/bot_common/state/error_code.h"
 #include <filesystem>
@@ -78,6 +79,20 @@ protected:
                                                 const Eigen::MatrixXi & F);
 
     static bool replaceWith(std::string &src, const std::string &original, const std::string &now);
+
+    /// Resolved mesh fit target for a link: filename (replace_pairs applied) +
+    /// link-frame transform from the chosen element's origin. `use_visual` picks
+    /// the visual mesh (ground-truth geometry); falls back to collision when the
+    /// requested source has no mesh. `found=false` when neither has a mesh.
+    struct MeshSource {
+        std::filesystem::path filename;
+        Eigen::Vector3d translation{Eigen::Vector3d::Zero()};
+        Eigen::Quaterniond rotation{Eigen::Quaterniond::Identity()};
+        bool found = false;
+    };
+    bool resolveMeshSource(const urdf::LinkSharedPtr &link, bool use_visual,
+                           const std::vector<std::pair<std::string, std::string>> &replace_pairs,
+                           MeshSource &out);
 
 };
 
