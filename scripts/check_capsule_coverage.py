@@ -230,7 +230,10 @@ def evaluate_capsules(caps_json, urdf_path, mesh_source="visual", volume_samples
         if fn is None:
             continue
         stl = fn.replace(MESH_PREFIX, os.path.join(REPO, "resources/fr3"))
-        V = trimesh.load(stl).vertices
+        loaded = trimesh.load(stl, force="mesh")
+        if isinstance(loaded, trimesh.Scene):
+            loaded = trimesh.util.concatenate(tuple(loaded.geometry.values()))
+        V = loaded.vertices
         capsules = [capsule_to_mesh_frame(cp, T, R) for cp in body["capsules"]]
         signed = []
         raw = []

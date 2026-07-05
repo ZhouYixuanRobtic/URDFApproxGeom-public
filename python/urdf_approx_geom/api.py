@@ -89,9 +89,11 @@ def _prepare_visual_meshes(
         return pairs, None
 
     import trimesh  # lazy: only required when .dae (or similar) visuals exist
+    _repo_root = pathlib.Path(__file__).resolve().parents[2]
     tmp = pathlib.Path(tempfile.mkdtemp(prefix="urdf_approx_visual_"))
     for fn in unique:
-        mesh = trimesh.load(fn, force="mesh")
+        local_fn = str(_repo_root / fn.removeprefix("/workspace/")) if fn.startswith("/workspace/") else fn
+        mesh = trimesh.load(local_fn, force="mesh")
         out = tmp / (pathlib.Path(fn).stem + ".obj")
         mesh.export(out)
         pairs.append((fn, str(out)))

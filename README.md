@@ -107,15 +107,15 @@ all_results = generate_all("robot.urdf", "out", modes=["convex", "sphere", "caps
 | **`sphere`** | Your solver prefers primitive spheres — GPU/contact pipelines, signed-distance via sphere sums, or planners that exploit sphere collision. `single` for the cheapest bounding shape; `default` (medial sphere tree) for tighter multi-sphere coverage. |
 | **`capsule`** | You want smooth, low-count analytic primitives with closed-form capsule distance — collision atlases, swept-volume, distance fields, or solvers that benefit from capsule collision. Capsules emit as `<cylinder>` + two `<sphere>` end-caps (urdfdom has no `<capsule>`). |
 
-Quantitative guidance on FR3 arm links (`vol/dae` = approximation volume ÷ `.dae` volume; `.dae` = 1.0, lower is closer to truth):
+Quantitative guidance on FR3 arm links (`vol/dae` = approximation occupied volume ÷ `.dae` volume; capsule rows use sampled capsule-union volume; `.dae` = 1.0, lower is closer to truth):
 
 | Form | Primitives | Worst vol/dae |
 |------|-----------:|-------------:|
 | `*.dae` visual (reference) | mesh | **1.00** |
 | `convex` hull              | mesh | 1.76 |
-| capsule `single`           | 11   | 3.65 |
-| capsule `default`          | 19   | 5.79 |
-| capsule `high_detail`      | 21   | 4.82 |
+| capsule `single`            |  11 | 3.65 |
+| capsule `default`           |  19 | 4.23 |
+| capsule `high_detail`       |  23 | 4.01 |
 | sphere `default`           | 80   | 3.57 |
 | sphere `single`            | 11   | 11.31 |
 
@@ -163,9 +163,9 @@ Capsule JSON — link-frame sphere-center endpoints (`p0` / `p1`):
 
 ## Sample Output (FR3)
 
-Geometry accuracy vs the `*.dae` visual meshes in `resources/fr3/meshes/fr3/visual/`, treated as ground truth (`vol/dae` = approximation volume ÷ `.dae` volume; `.dae` = 1.0, lower = closer to the true shape). All rows measured on fr3 arm links link0–link7 (hand/finger links have no `*.dae`):
+Geometry accuracy vs the `*.dae` visual meshes in `resources/fr3/meshes/fr3/visual/`, treated as ground truth (`vol/dae` = approximation occupied volume ÷ `.dae` volume; capsule rows use sampled capsule-union volume; `.dae` = 1.0, lower = closer to the true shape). All rows measured on fr3 arm links link0–link7 (hand/finger links have no `*.dae`):
 
-Sphere and capsule generators fit the `.dae` visual mesh by default (`--mesh-source visual`). The visual `.dae` is the true link shape with concavities; the collision `.stl` files in the input URDF are simplified convex-like envelopes. Fitting the true shape makes medial sphere trees tighter (spheres can nestle into concavities) but capsule fits looser (capsules must bridge concavities they cannot enter). `sphere default` (medial sphere tree, 80 spheres) is the tightest primitive preset overall at 3.57×; `sphere single` is one bounding sphere per link and over-sweeps elongated links the most (11.31×). `capsule single` is one covering capsule per link (11 total); `capsule high_detail` raises the detail ceiling but on FR3 the worst link (link0) stays at 4.82×. For the legacy collision-stl fit use `--mesh-source collision`.
+Sphere and capsule generators fit the `.dae` visual mesh by default (`--mesh-source visual`). The visual `.dae` is the true link shape with concavities; the collision `.stl` files in the input URDF are simplified convex-like envelopes. Fitting the true shape makes medial sphere trees tighter (spheres can nestle into concavities) but capsule fits looser (capsules must bridge concavities they cannot enter). `sphere default` (medial sphere tree, 80 spheres) is the tightest primitive preset overall at 3.57×; `sphere single` is one bounding sphere per link and over-sweeps elongated links the most (11.31×). `capsule single` is one covering capsule per link (11 total); `capsule high_detail` raises the detail ceiling but on FR3 the worst link (link0) stays at 4.01×. For the legacy collision-stl fit use `--mesh-source collision`.
 
 ## URDF compatibility
 
