@@ -37,13 +37,15 @@ def _run_compare(args) -> int:
         tempfile.mkdtemp(prefix="urdf_approx_compare_"))
     bundle_dir.mkdir(parents=True, exist_ok=True)
     mesh_source = getattr(args, "mesh_source", "visual")
+    pairs = [(str(a), str(b)) for a, b in (getattr(args, "replace", []) or [])]
     presets = [p.strip() for p in args.presets.split(",") if p.strip()]
     input_path = pathlib.Path(args.input)
     stem = input_path.stem
 
     sources: list[pathlib.Path] = []
     # Convex (no preset).
-    sources.append(generate("convex", input_path, work / f"{stem}_convex.urdf").output_urdf)
+    sources.append(generate("convex", input_path, work / f"{stem}_convex.urdf",
+                            replace_pairs=pairs).output_urdf)
 
     # Sphere: when both single + default are requested, run once via the pair
     # helper (single = default's biggest_sphere). Otherwise emit what's asked.
@@ -53,19 +55,21 @@ def _run_compare(args) -> int:
             input_path,
             work / f"{stem}_sphere_default.urdf",
             work / f"{stem}_sphere_single.urdf",
-            simplify=True, mesh_source=mesh_source,
+            simplify=True, mesh_source=mesh_source, replace_pairs=pairs,
         )
         sources += [default_res.output_urdf, single_res.output_urdf]
     else:
         for sp in sorted(sphere_presets):
             sources.append(generate("sphere", input_path, work / f"{stem}_sphere_{sp}.urdf",
-                                    preset=sp, simplify=True, mesh_source=mesh_source).output_urdf)
+                                    preset=sp, simplify=True, mesh_source=mesh_source,
+                                    replace_pairs=pairs).output_urdf)
 
     # Capsule: one mesh load per link, every preset on the cached mesh.
     # ("single"/"default"/"high_detail" are valid for both sphere and capsule.)
     if presets:
         cap_outputs = [(work / f"{stem}_capsule_{p}.urdf", p) for p in presets]
-        for res in generate_capsule_multi(input_path, cap_outputs, mesh_source=mesh_source):
+        for res in generate_capsule_multi(input_path, cap_outputs, mesh_source=mesh_source,
+                                          replace_pairs=pairs):
             sources.append(res.output_urdf)
 
     bundled = bundle_many(sources, bundle_dir)
@@ -156,6 +160,7 @@ def build_parser() -> argparse.ArgumentParser:
                      help="comma-separated capsule/sphere presets to include")
     cmp.add_argument("--mesh-source", default="visual", choices=["visual", "collision"],
                      help="sphere/capsule: fit the visual mesh (default) or the collision mesh")
+    _add_replace_arg(cmp)
     return parser
 
 

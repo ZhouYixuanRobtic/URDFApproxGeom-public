@@ -1,0 +1,307 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="bot">
+    <link name="fr3_link0">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="meshes/link0.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="-0.042782 0.000320488 0.0595549" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.128241" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-0.0172 0.0004 0.0745" rpy="0 -0 0" />
+            <mass value="2.396600" />
+            <inertia ixx="9.000000e-03" ixy="0.000000e+00" ixz="2.000000e-03" iyy="1.150000e-02" iyz="0.000000e+00" izz="8.500000e-03" />
+        </inertial>
+    </link>
+    <link name="fr3_link1">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="meshes/link1.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="-0.00124895 -0.0269934 -0.0731573" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.143931" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="4.128e-07 -0.0181251 -0.0386036" rpy="0 -0 0" />
+            <mass value="2.927465" />
+            <inertia ixx="2.392732e-02" ixy="1.331790e-05" ixz="-1.140477e-04" iyy="2.248216e-02" iyz="-1.995032e-03" izz="6.350098e-03" />
+        </inertial>
+    </link>
+    <joint name="fr3_joint1" type="revolute">
+        <parent link="fr3_link0" />
+        <child link="fr3_link1" />
+        <origin xyz="0 0 0.333" rpy="0 -0 0" />
+        <axis xyz="0 0 1" />
+        <limit lower="-2.743700" upper="2.743700" effort="87.000000" velocity="2.620000" />
+        <dynamics damping="0.003000" friction="0.200000" />
+    </joint>
+    <link name="fr3_link2">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="meshes/link2.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="-0.00109716 -0.0753743 0.0290382" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.143708" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.00318289 -0.0743222 0.00881461" rpy="0 -0 0" />
+            <mass value="2.935537" />
+            <inertia ixx="4.193895e-02" ixy="2.025733e-04" ixz="4.077784e-03" iyy="2.514515e-02" iyz="-4.225216e-03" izz="6.170214e-02" />
+        </inertial>
+    </link>
+    <joint name="fr3_joint2" type="revolute">
+        <parent link="fr3_link1" />
+        <child link="fr3_link2" />
+        <origin xyz="0 0 0" rpy="-1.5708 0 0" />
+        <axis xyz="0 0 1" />
+        <limit lower="-1.783700" upper="1.783700" effort="87.000000" velocity="2.620000" />
+        <dynamics damping="0.003000" friction="0.200000" />
+    </joint>
+    <link name="fr3_link3">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="meshes/link3.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0.0348989 0.0271869 -0.0396006" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.127582" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.0407016 -0.00482006 -0.0289731" rpy="0 -0 0" />
+            <mass value="2.244901" />
+            <inertia ixx="2.410143e-02" ixy="2.404695e-03" ixz="-2.856269e-03" iyy="1.974053e-02" iyz="-2.104213e-03" izz="1.904449e-02" />
+        </inertial>
+    </link>
+    <joint name="fr3_joint3" type="revolute">
+        <parent link="fr3_link2" />
+        <child link="fr3_link3" />
+        <origin xyz="0 -0.316 0" rpy="1.5708 -0 0" />
+        <axis xyz="0 0 1" />
+        <limit lower="-2.900700" upper="2.900700" effort="87.000000" velocity="2.620000" />
+        <dynamics damping="0.003000" friction="0.200000" />
+    </joint>
+    <link name="fr3_link4">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="meshes/link4.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="-0.0454568 0.0461902 0.0291456" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.128076" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-0.0459101 0.0630493 -0.00851879" rpy="0 -0 0" />
+            <mass value="2.615596" />
+            <inertia ixx="3.452998e-02" ixy="1.322552e-02" ixz="1.015143e-02" iyy="2.888162e-02" iyz="-9.762834e-04" izz="4.125471e-02" />
+        </inertial>
+    </link>
+    <joint name="fr3_joint4" type="revolute">
+        <parent link="fr3_link3" />
+        <child link="fr3_link4" />
+        <origin xyz="0.0825 0 0" rpy="1.5708 -0 0" />
+        <axis xyz="0 0 1" />
+        <limit lower="-3.042100" upper="-0.151800" effort="87.000000" velocity="2.620000" />
+        <dynamics damping="0.003000" friction="0.200000" />
+    </joint>
+    <link name="fr3_link5">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="meshes/link5.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0.0067749 0.025746 -0.105254" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.174023" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-0.00160396 0.0292536 -0.0972966" rpy="0 -0 0" />
+            <mass value="2.327121" />
+            <inertia ixx="5.161028e-02" ixy="-5.715173e-03" ixz="-3.567317e-03" iyy="4.787730e-02" iyz="1.067399e-02" izz="1.642363e-02" />
+        </inertial>
+    </link>
+    <joint name="fr3_joint5" type="revolute">
+        <parent link="fr3_link4" />
+        <child link="fr3_link5" />
+        <origin xyz="-0.0825 0.384 0" rpy="-1.5708 0 0" />
+        <axis xyz="0 0 1" />
+        <limit lower="-2.806500" upper="2.806500" effort="12.000000" velocity="5.260000" />
+        <dynamics damping="0.003000" friction="0.200000" />
+    </joint>
+    <link name="fr3_link6">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="meshes/link6.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0.0489446 0.00134087 0.00956819" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.099082" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.0597131 -0.0410295 -0.0101693" rpy="0 -0 0" />
+            <mass value="1.817038" />
+            <inertia ixx="5.412334e-03" ixy="6.193456e-03" ixz="1.421929e-03" iyy="1.405833e-02" iyz="-1.314075e-03" izz="1.608082e-02" />
+        </inertial>
+    </link>
+    <joint name="fr3_joint6" type="revolute">
+        <parent link="fr3_link5" />
+        <child link="fr3_link6" />
+        <origin xyz="0 0 0" rpy="1.5708 -0 0" />
+        <axis xyz="0 0 1" />
+        <limit lower="0.544500" upper="4.516900" effort="12.000000" velocity="4.180000" />
+        <dynamics damping="0.003000" friction="0.200000" />
+    </joint>
+    <link name="fr3_link7">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="meshes/link7.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0.0136671 0.0132711 0.0855428" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.072795" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.00452258 0.00862619 -0.0161633" rpy="0 -0 0" />
+            <mass value="0.627143" />
+            <inertia ixx="2.109239e-04" ixy="-2.433299e-05" ixz="4.564480e-05" iyy="1.771857e-04" iyz="8.744070e-05" izz="5.993191e-05" />
+        </inertial>
+    </link>
+    <joint name="fr3_joint7" type="revolute">
+        <parent link="fr3_link6" />
+        <child link="fr3_link7" />
+        <origin xyz="0.088 0 0" rpy="1.5708 -0 0" />
+        <axis xyz="0 0 1" />
+        <limit lower="-3.015900" upper="3.015900" effort="12.000000" velocity="5.260000" />
+        <dynamics damping="0.003000" friction="0.200000" />
+    </joint>
+    <link name="fr3_link8" />
+    <joint name="fr3_joint8" type="fixed">
+        <parent link="fr3_link7" />
+        <child link="fr3_link8" />
+        <origin xyz="0 0 0.107" rpy="0 -0 0" />
+    </joint>
+    <link name="world" />
+    <joint name="fr3_joint_world" type="fixed">
+        <parent link="world" />
+        <child link="fr3_link0" />
+        <origin xyz="0 0 0" rpy="0 -0 0" />
+    </joint>
+    <link name="hand_hand">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="meshes/hand.dae" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="-0.00350067 -0.00127333 0.0237402" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.107707" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-3.76e-05 0.0119128 0.020726" rpy="0 -0 0" />
+            <mass value="0.654400" />
+            <inertia ixx="1.860000e-03" ixy="0.000000e+00" ixz="0.000000e+00" iyy="3.000000e-04" iyz="-2.000000e-05" izz="1.740000e-03" />
+        </inertial>
+    </link>
+    <link name="hand_leftfinger">
+        <visual>
+            <origin xyz="-0.0165 0.0165 0.127733" rpy="-1.5708 0.202458 -1.5708" />
+            <geometry>
+                <mesh filename="meshes/flex_griper_connect.stl" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0.000651946 0.0129458 0.0612212" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.064403" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0.0145644 0.0227941" rpy="0 -0 0" />
+            <mass value="0.100000" />
+            <inertia ixx="3.012209e-05" ixy="0.000000e+00" ixz="0.000000e+00" iyy="2.958738e-05" iyz="0.000000e+00" izz="6.951252e-06" />
+        </inertial>
+    </link>
+    <joint name="hand_finger_joint1" type="prismatic">
+        <parent link="hand_hand" />
+        <child link="hand_leftfinger" />
+        <origin xyz="0 0 0.0584" rpy="0 -0 0" />
+        <axis xyz="0 1 0" />
+        <limit lower="0.000000" upper="0.040000" effort="100.000000" velocity="0.200000" />
+        <dynamics damping="0.300000" friction="0.000000" />
+    </joint>
+    <link name="hand_rightfinger">
+        <visual>
+            <origin xyz="-0.0165 0.0165 0.127733" rpy="-1.5708 0.202458 -1.5708" />
+            <geometry>
+                <mesh filename="meshes/flex_griper_connect.stl" />
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="-0.00212804 0.0115837 0.061135" rpy="0 -0 0" />
+            <geometry>
+                <sphere radius="0.064826" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0.0145644 0.0227941" rpy="0 -0 3.14159" />
+            <mass value="0.100000" />
+            <inertia ixx="3.012209e-05" ixy="0.000000e+00" ixz="0.000000e+00" iyy="2.958738e-05" iyz="0.000000e+00" izz="6.951252e-06" />
+        </inertial>
+    </link>
+    <joint name="hand_finger_joint2" type="prismatic">
+        <parent link="hand_hand" />
+        <child link="hand_rightfinger" />
+        <origin xyz="0 0 0.0584" rpy="0 -0 3.14159" />
+        <axis xyz="0 1 0" />
+        <limit lower="0.000000" upper="0.040000" effort="100.000000" velocity="0.200000" />
+        <dynamics damping="0.300000" friction="0.000000" />
+    </joint>
+    <link name="hand_hand_tcp" />
+    <joint name="hand_hand_tcp_joint" type="fixed">
+        <parent link="hand_hand" />
+        <child link="hand_hand_tcp" />
+        <origin xyz="0 0 0.1034" rpy="0 -0 0" />
+    </joint>
+    <joint name="hand_joint_fr3_link8" type="fixed">
+        <parent link="fr3_link8" />
+        <child link="hand_hand" />
+        <origin xyz="0 0 0" rpy="0 0 -0.785398" />
+    </joint>
+</robot>

@@ -57,6 +57,10 @@ urdf-approx-geom generate --mode all -i robot.urdf --output-dir out
 # one mode
 urdf-approx-geom generate --mode capsule -i robot.urdf -o out/robot_capsule.urdf --preset default
 
+# with mesh path replacement (e.g. resolve a package:// prefix)
+urdf-approx-geom generate --mode sphere -i robot.urdf -o out.urdf \
+  --replace "package://robot" "/home/user/robot"
+
 # custom config (see docs/parameter-tuning.md)
 urdf-approx-geom generate --mode capsule -i robot.urdf -o out.urdf --config /tmp/my_capsule.yml
 
@@ -167,8 +171,9 @@ Sphere and capsule generators fit the `.dae` visual mesh by default (`--mesh-sou
 
 All output URDFs follow the ROS URDF specification — collision geometry is standard `<sphere>`, `<cylinder>`, or `<mesh>` elements with correct origins. The generated URDF **only** modifies the `collision` element; the `visual`, `inertial`, and `joint` elements pass through untouched.
 
-- Input collision meshes are read from the input URDF's `<collision>` elements (`.stl` / `.obj` only; visual `.dae` meshes are auto-converted when `--mesh-source visual` is used).
-- Output collision meshes (convex mode) are written as `.obj`.
+- **Input mesh source:** `convex` reads the `<collision>` elements. `sphere` and `capsule` default to the `<visual>` elements (`--mesh-source visual`) to fit the true geometric shape — `.dae` visuals are auto-converted to `.obj` for the C++ loader. Pass `--mesh-source collision` to fit the collision mesh instead.
+- **Input formats:** `.stl` and `.obj` are natively supported; `.dae` visual meshes are converted via the Python pre-pass. The input URDF must carry at least one `<mesh>` element per link (in the appropriate geometry slot).
+- **Output:** the generated URDF **only** modifies the `<collision>` element; `<visual>`, `<inertial>`, and `<joint>` elements pass through untouched. Output collision meshes (convex mode) are written as `.obj`.
 - If your robot description is in `.xacro`, pre-process it before use — `pip install xacro` then `python -m xacro robot.urdf.xacro -o robot.urdf`.
 - URDF `.urdf` is the only accepted and emitted format. Xacro and SDF are not generated.
 
