@@ -111,7 +111,14 @@ Sphere mode on the same URDF:
 | `single`  | 11 | 15.58 | 1.00 |
 | `default` | 85 |  2.06 | 1.66 |
 
-`capV/aabb` / `sphV/aabb` = primitive union volume ÷ link AABB volume (lower = tighter). `r/binMed` = max capsule radius ÷ median axial-bin radius; `r/maxMed` = max sphere radius ÷ median sphere radius (lower = less inflation). Capsule `single` is one tight capsule per link; sphere `single` is one bounding sphere per link — its `sphV/aabb` is high because a single sphere over-sweeps elongated links, which is exactly what `default` (medial sphere tree, 85 spheres) fixes.
+Mesh baselines (no primitive count, no radius metric):
+
+| Baseline | Worst vol/aabb |
+|----------|--------------:|
+| original collision mesh | 0.60 |
+| `convex` hull           | 0.60 |
+
+`capV/aabb` / `sphV/aabb` / `vol/aabb` = primitive (or mesh) volume ÷ link AABB volume (lower = tighter). `r/binMed` = max capsule radius ÷ median axial-bin radius; `r/maxMed` = max sphere radius ÷ median sphere radius (lower = less inflation). Capsule `single` is one tight capsule per link; sphere `single` is one bounding sphere per link — its `sphV/aabb` is high because a single sphere over-sweeps elongated links, which is exactly what `default` (medial sphere tree, 85 spheres) fixes. The FR3 collision meshes are already near-convex, so `convex` hull volume matches the original mesh.
 
 ## Documentation
 
