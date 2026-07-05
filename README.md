@@ -94,6 +94,18 @@ Capsule JSON entries use link-frame sphere-center endpoints:
 }
 ```
 
+## Sample Output (FR3)
+
+Capsule mode run on `resources/fr3/urdf/fr3.urdf` (11 mesh collision links):
+
+| Preset | Capsules | Worst capV/aabb | Worst r/binMed |
+|--------|---------:|----------------:|---------------:|
+| `single`     | 11 | 1.48 | 1.15 |
+| `default`    | 17 | 1.77 | 1.48 |
+| `high_detail`| 17 | 1.86 | 1.35 |
+
+`capV/aabb` = capsule union volume ÷ link AABB volume (lower = tighter). `r/binMed` = max capsule radius ÷ median axial-bin radius (lower = less inflation). `single` is one capsule per link — tightest per-link but coarsest shape coverage. `default` and `high_detail` both land at 17 capsules; `default` wins on capV/aabb, `high_detail` wins on r/binMed.
+
 ## Documentation
 
 - `docs/quickstart.md`
