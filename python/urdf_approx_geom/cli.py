@@ -61,10 +61,10 @@ def _run_compare(args) -> int:
             sources.append(generate("sphere", input_path, work / f"{stem}_sphere_{sp}.urdf",
                                     preset=sp, simplify=True, mesh_source=mesh_source).output_urdf)
 
-    # Capsule: one mesh load per link, all presets on the cached mesh.
-    capsule_presets = [p for p in presets if p not in {"single", "default"}]
-    if capsule_presets:
-        cap_outputs = [(work / f"{stem}_capsule_{p}.urdf", p) for p in capsule_presets]
+    # Capsule: one mesh load per link, every preset on the cached mesh.
+    # ("single"/"default"/"high_detail" are valid for both sphere and capsule.)
+    if presets:
+        cap_outputs = [(work / f"{stem}_capsule_{p}.urdf", p) for p in presets]
         for res in generate_capsule_multi(input_path, cap_outputs, mesh_source=mesh_source):
             sources.append(res.output_urdf)
 
