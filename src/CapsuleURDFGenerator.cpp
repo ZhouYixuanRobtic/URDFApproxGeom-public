@@ -54,6 +54,8 @@ void CapsuleURDFGenerator::loadConfigFrom(const std::string& path) {
         max_capv_aabb_ratio_ = doc["MaxCapVAabbRatio"].as<double>(max_capv_aabb_ratio_);
         min_split_volume_improvement_ = doc["MinSplitVolumeImprovement"].as<double>(min_split_volume_improvement_);
         adaptive_circle_count_ = doc["AdaptiveCircleCount"].as<bool>(adaptive_circle_count_);
+        union_volume_samples_per_axis_ =
+            doc["UnionVolumeSamplesPerAxis"].as<int>(union_volume_samples_per_axis_);
     } catch (...) {
         // keep defaults
     }
@@ -129,6 +131,7 @@ void CapsuleURDFGenerator::fitAndEmit(const urdf::LinkSharedPtr& link,
     fit_options.max_capv_aabb_ratio = max_capv_aabb_ratio_;
     fit_options.min_split_volume_improvement = min_split_volume_improvement_;
     fit_options.adaptive_circle_count = adaptive_circle_count_;
+    fit_options.union_volume_samples_per_axis = union_volume_samples_per_axis_;
 
     auto caps = urdf_approx_geom::fitCapsulesByCrossSection(Vlf, F, fit_options);
     // The fit ran on the watertight (Manifold) mesh, which may differ from

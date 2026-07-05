@@ -599,6 +599,63 @@ TEST(CapsuleXSectionFit, LocalSplitReducesVolumeWhenAccepted) {
     EXPECT_LE(after_metrics.max_radius_bin_ratio, before_metrics.max_radius_bin_ratio);
 }
 
+TEST(CapsuleXSectionFit, UnionVolumeSampleResolutionIsConfigurable) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeTwoBoxLink(V, F);
+
+    CapsuleFitOptions opts;
+    opts.n_sections = 6;
+    opts.coa_threshold = 0.005;
+    opts.max_circles_per_section = 4;
+    opts.max_capsules = 12;
+    opts.max_radius_bin_ratio = 1.45;
+    opts.max_capv_aabb_ratio = 2.25;
+    opts.min_split_volume_improvement = 0.001;
+    opts.adaptive_circle_count = true;
+    opts.union_volume_samples_per_axis = 12;
+
+    auto caps = fitCapsulesByCrossSection(V, F, opts);
+    auto metrics_low = evaluateCapsuleTightness(V, caps, 12);
+    auto metrics_high = evaluateCapsuleTightness(V, caps, 64);
+
+    ASSERT_TRUE(metrics_low.covered);
+    ASSERT_TRUE(metrics_high.covered);
+    EXPECT_GT(metrics_low.capsule_volume, 0.0);
+    EXPECT_GT(metrics_high.capsule_volume, 0.0);
+}
+
+TEST(CapsuleXSectionFit, VolumePressureUsesUnionVolumeForSplitting) {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    makeTwoBoxLink(V, F);
+
+    CapsuleFitOptions no_pressure;
+    no_pressure.n_sections = 6;
+    no_pressure.coa_threshold = 0.005;
+    no_pressure.max_circles_per_section = 4;
+    no_pressure.max_capsules = 12;
+    no_pressure.max_radius_bin_ratio = -1.0;
+    no_pressure.max_capv_aabb_ratio = -1.0;
+    no_pressure.adaptive_circle_count = true;
+    no_pressure.union_volume_samples_per_axis = 24;
+
+    auto before = fitCapsulesByCrossSection(V, F, no_pressure);
+    auto before_metrics = evaluateCapsuleTightness(V, before, 24);
+    ASSERT_TRUE(before_metrics.covered);
+
+    CapsuleFitOptions pressure = no_pressure;
+    pressure.max_capv_aabb_ratio = before_metrics.capV_aabb * 0.98;
+    pressure.min_split_volume_improvement = 0.001;
+
+    auto after = fitCapsulesByCrossSection(V, F, pressure);
+    auto after_metrics = evaluateCapsuleTightness(V, after, 24);
+    ASSERT_TRUE(after_metrics.covered);
+
+    EXPECT_LT(after_metrics.capsule_volume, before_metrics.capsule_volume)
+        << "Volume-pressure splits must reduce sampled union volume";
+}
+
 TEST(CapsuleXSectionFit, BudgetPruningPreservesCoverage) {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;

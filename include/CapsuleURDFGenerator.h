@@ -69,6 +69,7 @@ private:
     double max_capv_aabb_ratio_ = -1.0;
     double min_split_volume_improvement_ = 0.005;
     bool adaptive_circle_count_ = false;
+    int union_volume_samples_per_axis_ = 32;
 };
 
 #endif  // URDFAPPROXGEOM_CAPSULEURDFGENERATOR_H

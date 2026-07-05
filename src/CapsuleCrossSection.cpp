@@ -206,10 +206,11 @@ bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
                               double max_ratio,
                               double max_capv_aabb_ratio,
                               double min_volume_improvement,
-                              int max_capsules) {
+                              int max_capsules,
+                              int union_volume_samples_per_axis) {
     if (static_cast<int>(caps.size()) >= max_capsules) return false;
 
-    auto before_metrics = evaluateCapsuleTightness(V, caps);
+    auto before_metrics = evaluateCapsuleTightness(V, caps, union_volume_samples_per_axis);
     bool ratio_pressure = max_ratio > 0.0 &&
                           before_metrics.max_radius_bin_ratio > max_ratio;
     bool volume_pressure = max_capv_aabb_ratio > 0.0 &&
@@ -243,7 +244,7 @@ bool splitMostInflatedCapsule(std::vector<Capsule>& caps,
             while (shrinkCapsuleEndpointSpans(candidate, V)) {
             }
 
-            auto after_metrics = evaluateCapsuleTightness(V, candidate);
+            auto after_metrics = evaluateCapsuleTightness(V, candidate, union_volume_samples_per_axis);
             if (!after_metrics.covered) continue;
 
             double volume_drop = before_metrics.capsule_volume - after_metrics.capsule_volume;
@@ -1061,7 +1062,8 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
                                         options.max_radius_bin_ratio,
                                         options.max_capv_aabb_ratio,
                                         options.min_split_volume_improvement,
-                                        options.max_capsules)) {
+                                        options.max_capsules,
+                                        options.union_volume_samples_per_axis)) {
         }
         growCapsulesToCover(caps, V);
         while (shrinkCapsuleEndpointSpans(caps, V)) {
@@ -1080,8 +1082,7 @@ std::vector<Capsule> fitCapsulesByCrossSection(const Eigen::MatrixXd& V, const E
             growCapsulesToCover(candidate, V);
             candidate = dedupeNestedCapsules(candidate);
             if (!allCovered(candidate, V)) continue;
-            double score = 0.0;
-            for (const auto& c : candidate) score += capsuleVolume(c);
+            double score = estimateCapsuleUnionVolume(candidate, options.union_volume_samples_per_axis);
             if (score < best_score) {
                 best_score = score;
                 best_remove = i;

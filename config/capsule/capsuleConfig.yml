@@ -7,3 +7,4 @@ AdaptiveCircleCount: false
 MaxRadiusBinRatio: 1.45
 MaxCapVAabbRatio: -1.0
 MinSplitVolumeImprovement: 0.005
+UnionVolumeSamplesPerAxis: 32
