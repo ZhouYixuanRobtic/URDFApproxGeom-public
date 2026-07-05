@@ -28,6 +28,10 @@ def test_validate_capsule_cli_passes_default_preset(tmp_path):
         str(result.json_path),
         "--urdf",
         FR3_URDF,
+        "--mesh-source",
+        "visual",
+        "--volume-samples",
+        "32",
         "--max-capv-aabb",
         "2.50",
         "--max-r-binmed",
@@ -35,6 +39,8 @@ def test_validate_capsule_cli_passes_default_preset(tmp_path):
     )
     assert proc.returncode == 0, proc.stdout
     assert "all_covered" in proc.stdout
+    assert "capsule_union_volume" in proc.stdout
+    assert "capsule_primitive_volume_sum" in proc.stdout
 
 
 def test_compare_capsule_cli_uses_absolute_candidate_contract(tmp_path):
@@ -52,6 +58,10 @@ def test_compare_capsule_cli_uses_absolute_candidate_contract(tmp_path):
         str(candidate.json_path),
         "--urdf",
         FR3_URDF,
+        "--mesh-source",
+        "visual",
+        "--volume-samples",
+        "32",
         "--max-capv-aabb",
         "2.50",
         "--max-r-binmed",
@@ -76,6 +86,10 @@ def test_compare_capsule_cli_can_require_relative_improvement(tmp_path):
         str(candidate.json_path),
         "--urdf",
         FR3_URDF,
+        "--mesh-source",
+        "visual",
+        "--volume-samples",
+        "32",
         "--max-capv-aabb",
         "2.50",
         "--max-r-binmed",
@@ -101,6 +115,10 @@ def test_compare_capsule_cli_fails_when_candidate_worsens_relative_metrics(tmp_p
         str(candidate.json_path),
         "--urdf",
         FR3_URDF,
+        "--mesh-source",
+        "visual",
+        "--volume-samples",
+        "32",
         "--max-capv-aabb",
         "2.50",
         "--max-r-binmed",

@@ -7,6 +7,7 @@ mesh-local frame, and prints the PCA axis vs the mesh's longest bbox axis.
 import json
 import math
 import os
+import pathlib
 import xml.etree.ElementTree as ET
 
 import numpy as np
@@ -28,15 +29,13 @@ def rpy_to_R(roll, pitch, yaw):
     return Rz @ Ry @ Rx
 
 
-def parse_collisions(urdf_path):
+def parse_mesh_sources(urdf_path, mesh_source="visual"):
+    repo = pathlib.Path(__file__).resolve().parents[1]
     tree = ET.parse(urdf_path)
     out = {}
-    for link in tree.iter("link"):
-        name = link.get("name")
-        col = link.find("collision")
-        if col is None:
-            continue
-        origin = col.find("origin")
+
+    def read_origin(elem):
+        origin = elem.find("origin")
         xyz = [0.0, 0.0, 0.0]
         rpy = [0.0, 0.0, 0.0]
         if origin is not None:
@@ -44,10 +43,35 @@ def parse_collisions(urdf_path):
                 xyz = [float(v) for v in origin.get("xyz").split()]
             if origin.get("rpy"):
                 rpy = [float(v) for v in origin.get("rpy").split()]
-        mesh = col.find("geometry/mesh")
-        fn = mesh.get("filename") if mesh is not None else None
-        out[name] = (np.array(xyz), rpy_to_R(*rpy), fn)
+        return np.array(xyz), rpy_to_R(*rpy)
+
+    def read_mesh(link, tag):
+        elem = link.find(tag)
+        if elem is None:
+            return None
+        mesh = elem.find("geometry/mesh")
+        if mesh is None:
+            return None
+        fn = mesh.get("filename")
+        if not fn:
+            return None
+        if fn.startswith("/workspace/"):
+            fn = str(repo / fn.removeprefix("/workspace/"))
+        T, R = read_origin(elem)
+        return T, R, fn
+
+    for link in tree.iter("link"):
+        name = link.get("name")
+        primary = read_mesh(link, "visual" if mesh_source == "visual" else "collision")
+        fallback = read_mesh(link, "collision" if mesh_source == "visual" else "visual")
+        chosen = primary if primary is not None else fallback
+        if chosen is not None:
+            out[name] = chosen
     return out
+
+
+def parse_collisions(urdf_path):
+    return parse_mesh_sources(urdf_path, "collision")
 
 
 def point_to_seg(p, a, b):
@@ -70,11 +94,64 @@ def capsule_volume(p0, p1, radius):
     return math.pi * radius * radius * length + (4.0 / 3.0) * math.pi * radius ** 3
 
 
-def tightness_metrics(V, capsules, assigned):
-    cap_volume = sum(capsule_volume(p0, p1, radius) for p0, p1, radius in capsules)
+def capsule_bounds(capsules):
+    if not capsules:
+        return None
+    lows = []
+    highs = []
+    for p0, p1, radius in capsules:
+        r = np.array([radius, radius, radius], dtype=float)
+        lows.append(np.minimum(p0, p1) - r)
+        highs.append(np.maximum(p0, p1) + r)
+    return np.min(np.vstack(lows), axis=0), np.max(np.vstack(highs), axis=0)
+
+
+def estimate_capsule_union_volume(capsules, samples_per_axis=64, chunk_size=200000):
+    if not capsules:
+        return 0.0
+    if len(capsules) == 1:
+        p0, p1, radius = capsules[0]
+        return capsule_volume(p0, p1, radius)
+    bounds = capsule_bounds(capsules)
+    if bounds is None:
+        return 0.0
+    lo, hi = bounds
+    ext = hi - lo
+    box_volume = float(np.prod(ext))
+    if box_volume <= 0.0:
+        return 0.0
+
+    n = max(1, int(samples_per_axis))
+    coords = [lo[d] + (np.arange(n, dtype=float) + 0.5) * ext[d] / n for d in range(3)]
+    total = n ** 3
+    inside = 0
+    for start in range(0, total, chunk_size):
+        stop = min(total, start + chunk_size)
+        ids = np.arange(start, stop, dtype=np.int64)
+        ix = ids // (n * n)
+        iy = (ids // n) % n
+        iz = ids % n
+        points = np.column_stack((coords[0][ix], coords[1][iy], coords[2][iz]))
+        covered = np.zeros(points.shape[0], dtype=bool)
+        for p0, p1, radius in capsules:
+            axis = p1 - p0
+            denom = float(axis @ axis)
+            if denom < 1e-12:
+                nearest = np.repeat(p0.reshape(1, 3), points.shape[0], axis=0)
+            else:
+                t = np.clip(((points - p0) @ axis) / denom, 0.0, 1.0)
+                nearest = p0 + t[:, None] * axis
+            covered |= np.linalg.norm(points - nearest, axis=1) <= radius
+        inside += int(np.count_nonzero(covered))
+    return box_volume * (inside / float(total))
+
+
+def tightness_metrics(V, capsules, assigned, volume_samples=64):
+    primitive_sum = sum(capsule_volume(p0, p1, radius) for p0, p1, radius in capsules)
     ext = V.max(axis=0) - V.min(axis=0)
     aabb_volume = float(np.prod(np.maximum(ext, 1e-12)))
-    inflation = cap_volume / aabb_volume if aabb_volume > 1e-12 else 0.0
+    inflation = primitive_sum / aabb_volume if aabb_volume > 1e-12 else 0.0
+    union_volume = estimate_capsule_union_volume(capsules, samples_per_axis=volume_samples)
 
     worst_radius_ratio = 0.0
     for idx, (p0, p1, radius) in enumerate(capsules):
@@ -92,7 +169,7 @@ def tightness_metrics(V, capsules, assigned):
         if nonzero:
             median_section_radius = float(np.median(nonzero))
             worst_radius_ratio = max(worst_radius_ratio, radius / median_section_radius)
-    return inflation, worst_radius_ratio
+    return inflation, worst_radius_ratio, union_volume, primitive_sum
 
 
 def axis_overhang_metrics(V, capsules, assigned):
@@ -141,9 +218,9 @@ def best_capsule_distance(vertex, capsules):
     return best_signed, best_raw, best_index
 
 
-def evaluate_capsules(caps_json, urdf_path):
+def evaluate_capsules(caps_json, urdf_path, mesh_source="visual", volume_samples=64):
     caps = json.load(open(caps_json))
-    cols = parse_collisions(urdf_path)
+    cols = parse_mesh_sources(urdf_path, mesh_source)
     rows = []
     all_ok = True
     for link, body in caps.items():
@@ -169,7 +246,8 @@ def evaluate_capsules(caps_json, urdf_path):
         worst = float(signed.max())
         covered = worst <= 1e-6
         all_ok &= covered
-        inflation, radius_ratio = tightness_metrics(V, capsules, assigned)
+        inflation, radius_ratio, union_volume, primitive_sum = tightness_metrics(
+            V, capsules, assigned, volume_samples=volume_samples)
         axis_overhang, axis_overhang_ratio = axis_overhang_metrics(V, capsules, assigned)
 
         p0L = np.array(body["capsules"][0]["p0"], dtype=float)
@@ -191,6 +269,10 @@ def evaluate_capsules(caps_json, urdf_path):
             "maxd": float(raw.max()),
             "capV_aabb": float(inflation),
             "r_binMed": float(radius_ratio),
+            "capsule_union_volume": float(union_volume),
+            "capsule_primitive_volume_sum": float(primitive_sum),
+            "volume_samples": volume_samples,
+            "mesh_source": mesh_source,
             "axis_overhang": float(axis_overhang),
             "axis_overhang_r": float(axis_overhang_ratio),
             "axis": [float(cap_axis[0]), float(cap_axis[1]), float(cap_axis[2])],
@@ -206,10 +288,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--caps-json", default=CAPS_JSON)
     ap.add_argument("--urdf", default=FR3_URDF)
+    ap.add_argument("--mesh-source", default="visual", choices=["visual", "collision"])
+    ap.add_argument("--volume-samples", type=int, default=64)
     ap.add_argument("--json", action="store_true", help="emit machine-readable metrics")
     args = ap.parse_args()
 
-    result = evaluate_capsules(args.caps_json, args.urdf)
+    result = evaluate_capsules(args.caps_json, args.urdf,
+                               mesh_source=args.mesh_source,
+                               volume_samples=args.volume_samples)
     if args.json:
         print(json.dumps(result, indent=2, sort_keys=True))
         return

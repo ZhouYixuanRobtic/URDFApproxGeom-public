@@ -10,7 +10,8 @@ import sys
 from ._paths import require_source_root
 
 
-def _capsule_metrics(caps_json: str, urdf: str = "resources/fr3/urdf/fr3.urdf") -> dict:
+def _capsule_metrics(caps_json: str, urdf: str = "resources/fr3/urdf/fr3.urdf",
+                     mesh_source: str = "visual", volume_samples: int = 64) -> dict:
     root = require_source_root()
     script = root / "scripts" / "check_capsule_coverage.py"
     urdf_path = pathlib.Path(urdf)
@@ -24,6 +25,10 @@ def _capsule_metrics(caps_json: str, urdf: str = "resources/fr3/urdf/fr3.urdf") 
             str(caps_json),
             "--urdf",
             str(urdf_path),
+            "--mesh-source",
+            mesh_source,
+            "--volume-samples",
+            str(volume_samples),
             "--json",
         ],
         cwd=str(root),
@@ -58,8 +63,9 @@ def validate_capsule_metrics(metrics: dict, max_capv_aabb: float, max_r_binmed: 
     return failures
 
 
-def validate_capsule_file(caps_json: str, urdf: str, max_capv_aabb: float, max_r_binmed: float) -> int:
-    metrics = _capsule_metrics(caps_json, urdf)
+def validate_capsule_file(caps_json: str, urdf: str, max_capv_aabb: float, max_r_binmed: float,
+                          mesh_source: str = "visual", volume_samples: int = 64) -> int:
+    metrics = _capsule_metrics(caps_json, urdf, mesh_source=mesh_source, volume_samples=volume_samples)
     print(json.dumps(metrics, indent=2, sort_keys=True))
     failures = validate_capsule_metrics(metrics, max_capv_aabb, max_r_binmed)
     if failures:
@@ -78,9 +84,11 @@ def compare_capsule_files(
     max_r_binmed: float,
     *,
     require_improvement: bool = False,
+    mesh_source: str = "visual",
+    volume_samples: int = 64,
 ) -> int:
-    baseline = _capsule_metrics(baseline_json, urdf)
-    candidate = _capsule_metrics(candidate_json, urdf)
+    baseline = _capsule_metrics(baseline_json, urdf, mesh_source=mesh_source, volume_samples=volume_samples)
+    candidate = _capsule_metrics(candidate_json, urdf, mesh_source=mesh_source, volume_samples=volume_samples)
     baseline_capv = _worst(baseline, "capV_aabb")
     candidate_capv = _worst(candidate, "capV_aabb")
     baseline_r = _worst(baseline, "r_binMed")

@@ -26,6 +26,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--caps-json", required=True)
     parser.add_argument("--urdf", default="resources/fr3/urdf/fr3.urdf")
+    parser.add_argument("--mesh-source", default="visual", choices=["visual", "collision"])
+    parser.add_argument("--volume-samples", type=int, default=64)
     parser.add_argument("--max-capv-aabb", type=float, default=2.50)
     parser.add_argument("--max-r-binmed", type=float, default=1.45)
     parser.add_argument("--max-capsules", type=int, default=24)
@@ -54,6 +56,8 @@ def main():
             "scripts/check_capsule_coverage.py",
             "--caps-json", args.caps_json,
             "--urdf", args.urdf,
+            "--mesh-source", args.mesh_source,
+            "--volume-samples", str(args.volume_samples),
             "--json",
         ],
         text=True,

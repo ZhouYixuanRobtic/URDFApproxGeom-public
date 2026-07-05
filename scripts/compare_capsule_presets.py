@@ -5,9 +5,13 @@ import subprocess
 import sys
 
 
-def load_metrics(path):
+def load_metrics(path, mesh_source="visual", volume_samples=64):
     proc = subprocess.run(
-        [sys.executable, "scripts/check_capsule_coverage.py", "--caps-json", path, "--json"],
+        [sys.executable, "scripts/check_capsule_coverage.py",
+         "--caps-json", path,
+         "--mesh-source", mesh_source,
+         "--volume-samples", str(volume_samples),
+         "--json"],
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -31,14 +35,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sparse-json", required=True)
     ap.add_argument("--tight-json", required=True)
+    ap.add_argument("--mesh-source", default="visual", choices=["visual", "collision"])
+    ap.add_argument("--volume-samples", type=int, default=64)
     ap.add_argument("--max-capv-aabb", type=float, default=2.35,
                     help="absolute capV/aabb ceiling for tight preset")
     ap.add_argument("--max-r-binmed", type=float, default=1.45,
                     help="absolute r/binMed ceiling for tight preset")
     args = ap.parse_args()
 
-    sparse = load_metrics(args.sparse_json)
-    tight = load_metrics(args.tight_json)
+    sparse = load_metrics(args.sparse_json, mesh_source=args.mesh_source, volume_samples=args.volume_samples)
+    tight = load_metrics(args.tight_json, mesh_source=args.mesh_source, volume_samples=args.volume_samples)
     if not sparse["all_covered"] or not tight["all_covered"]:
         print("coverage failed for sparse or tight preset", file=sys.stderr)
         return 1

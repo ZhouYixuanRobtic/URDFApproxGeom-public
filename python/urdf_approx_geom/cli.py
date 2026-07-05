@@ -122,6 +122,8 @@ def build_parser() -> argparse.ArgumentParser:
     val.add_argument("--mode", required=True, choices=["capsule", "sphere"])
     val.add_argument("--json", required=True, help="generated JSON sidecar")
     val.add_argument("--urdf", default="resources/fr3/urdf/fr3.urdf", help="source URDF for mesh metrics")
+    val.add_argument("--mesh-source", default="visual", choices=["visual", "collision"])
+    val.add_argument("--volume-samples", type=int, default=64)
     val.add_argument("--max-capv-aabb", type=float, default=2.50)
     val.add_argument("--max-r-binmed", type=float, default=1.45)
 
@@ -130,6 +132,8 @@ def build_parser() -> argparse.ArgumentParser:
     cmp_parser.add_argument("--baseline-json", required=True)
     cmp_parser.add_argument("--candidate-json", required=True)
     cmp_parser.add_argument("--urdf", required=True, help="source URDF the sidecars were generated from")
+    cmp_parser.add_argument("--mesh-source", default="visual", choices=["visual", "collision"])
+    cmp_parser.add_argument("--volume-samples", type=int, default=64)
     cmp_parser.add_argument("--max-capv-aabb", type=float, default=2.50)
     cmp_parser.add_argument("--max-r-binmed", type=float, default=1.45)
     cmp_parser.add_argument(
@@ -218,7 +222,12 @@ def main(argv: list[str] | None = None) -> int:
         from .validation import validate_capsule_file
 
         if args.mode == "capsule":
-            return validate_capsule_file(args.json, args.urdf, args.max_capv_aabb, args.max_r_binmed)
+            return validate_capsule_file(
+                args.json, args.urdf,
+                args.max_capv_aabb, args.max_r_binmed,
+                mesh_source=args.mesh_source,
+                volume_samples=args.volume_samples,
+            )
         parser.error("sphere validation is not implemented in this release")
 
     if args.command == "compare":
@@ -231,6 +240,8 @@ def main(argv: list[str] | None = None) -> int:
             args.max_capv_aabb,
             args.max_r_binmed,
             require_improvement=args.require_improvement,
+            mesh_source=args.mesh_source,
+            volume_samples=args.volume_samples,
         )
 
     if args.command == "compare-all":
