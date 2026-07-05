@@ -21,7 +21,7 @@ Each screenshot shows the FR3 `link0` `.dae` visual mesh (wireframe) with the ge
 
 | `convex` hull | `sphere` single | `sphere` default | `capsule` single | `capsule` high_detail |
 |:-:|:-:|:-:|:-:|:-:|
-| ![convex](assets/convex.png) | ![sphere single](assets/single_sphere.png) | ![sphere default](assets/sphere_default.png) | ![capsule single](assets/single_capsule.png) | ![capsule high_detail](assets/capsule_high_detail.png) |
+| <img src="assets/convex.png" width="180"> | <img src="assets/single_sphere.png" width="180"> | <img src="assets/sphere_default.png" width="180"> | <img src="assets/single_capsule.png" width="180"> | <img src="assets/capsule_high_detail.png" width="180"> |
 
 For a live side-by-side comparison drag the **[pre-bundled FR3 compare directory](assets/fr3_compare_bundle/)** into [robot_viewer](https://github.com/fan-ziqi/robot_viewer) (or run `compare-all` yourself — see [Bundle compare view](#bundle-compare-view)). Toggle **Visual / Collision** to judge every approximation against the `.dae` ground truth.
 
