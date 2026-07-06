@@ -1,7 +1,0 @@
-mode,preset,total_primitives,all_covered,worst_worst_signed_distance,worst_capV_aabb,worst_r_binMed,runtime_seconds
-convex,default,8,True,0,,,0.468
-sphere,single,8,False,2e-05,,,10.104
-sphere,default,63,False,0.017608,,,40.719
-capsule,single,8,False,0.006689,1.3684,1.2684,12.661
-capsule,default,10,False,0.010226,1.47,1.4966,33.843
-capsule,high_detail,10,False,0.002338,1.3245,1.3225,21.797

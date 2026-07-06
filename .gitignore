@@ -92,8 +92,5 @@ scripts/run_fr3_mode_comparison.py
 # Fishros scripts (local)
 fishros
 
-# Paper handoff documents (development artifacts)
-doc/handoffs/
-
-# Paper build artifacts
-doc/paper/CMakeFiles/
+# Paper writing workspace (local only, not shipped)
+doc/
