@@ -27,6 +27,7 @@ def _run_compare(args) -> int:
     Reuses intermediates: the sphere single+default pair is one generator run
     (the single sphere is the default run's biggest_sphere), and every capsule
     preset shares one mesh load + one Manifold pass per link."""
+    import shutil
     import tempfile
 
     from .api import generate, generate_capsule_multi, generate_sphere_pair
@@ -43,9 +44,13 @@ def _run_compare(args) -> int:
     stem = input_path.stem
 
     sources: list[pathlib.Path] = []
+    sidecars: list[pathlib.Path] = []
     # Convex (no preset).
-    sources.append(generate("convex", input_path, work / f"{stem}_convex.urdf",
-                            replace_pairs=pairs).output_urdf)
+    convex_res = generate("convex", input_path, work / f"{stem}_convex.urdf",
+                           replace_pairs=pairs)
+    sources.append(convex_res.output_urdf)
+    if convex_res.json_path:
+        sidecars.append(convex_res.json_path)
 
     # Sphere: when both single + default are requested, run once via the pair
     # helper (single = default's biggest_sphere). Otherwise emit what's asked.
@@ -58,11 +63,17 @@ def _run_compare(args) -> int:
             simplify=True, mesh_source=mesh_source, replace_pairs=pairs,
         )
         sources += [default_res.output_urdf, single_res.output_urdf]
+        for r in (default_res, single_res):
+            if r.json_path:
+                sidecars.append(r.json_path)
     else:
         for sp in sorted(sphere_presets):
-            sources.append(generate("sphere", input_path, work / f"{stem}_sphere_{sp}.urdf",
-                                    preset=sp, simplify=True, mesh_source=mesh_source,
-                                    replace_pairs=pairs).output_urdf)
+            r = generate("sphere", input_path, work / f"{stem}_sphere_{sp}.urdf",
+                         preset=sp, simplify=True, mesh_source=mesh_source,
+                         replace_pairs=pairs)
+            sources.append(r.output_urdf)
+            if r.json_path:
+                sidecars.append(r.json_path)
 
     # Capsule: one mesh load per link, every preset on the cached mesh.
     # ("single"/"default"/"high_detail" are valid for both sphere and capsule.)
@@ -71,9 +82,14 @@ def _run_compare(args) -> int:
         for res in generate_capsule_multi(input_path, cap_outputs, mesh_source=mesh_source,
                                           replace_pairs=pairs):
             sources.append(res.output_urdf)
+            if res.json_path:
+                sidecars.append(res.json_path)
 
     bundled = bundle_many(sources, bundle_dir)
-    print(f"compare: bundled {len(bundled)} URDFs into {bundle_dir}")
+    for j in sidecars:
+        if j.is_file():
+            shutil.copy2(j, bundle_dir / j.name)
+    print(f"compare: bundled {len(bundled)} URDFs + {len(sidecars)} JSON sidecars into {bundle_dir}")
     for src, out in zip(sources, bundled):
         print(f"  {src.name} -> {out.name}")
     print(
