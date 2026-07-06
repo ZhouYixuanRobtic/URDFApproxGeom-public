@@ -73,7 +73,7 @@ dist/
 docs/superpowers/plans/
 
 # External dependency / build artifact
-irmv_core/
+irmv_core
 
 # Local environment scripts
 run_env.sh
