@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-07-06
+
+### Added
+- **Python package** `urdf-approx-geom` with pybind11 bindings — `pip install` ready
+- **Capsule mode** with JSON sidecar (`p0`, `p1`, `radius` per capsule)
+- **Sphere mode** with JSON sidecar (`center`, `radius` per sphere)
+- **Convex mode** via CGAL/libigl Quickhull
+- **CLI** `urdf-approx-geom` with `generate`, `validate`, `compare`, `compare-all`, `visualize` subcommands
+- **Python API** `urdf_approx_geom.generate()` / `generate_all()` returning `GenerateResult`
+- **Named presets**: `single`, `default`, `high_detail` per mode
+- **Validation metrics**: coverage (vertex + surface-sampled), capV/aabb, r/binMed, primitive count, runtime
+- **Validation gates**: pass/fail thresholds for automated quality checking
+- **robot_viewer bundle** export for side-by-side visual inspection
+- **Docker image** published on Alibaba Cloud Registry
+- **User documentation** in `docs/`: quickstart, developer guide, Python API, config presets, modes, output schema
+- **Academic paper** (arXiv preprint) in `doc/paper/` (local only)
+
+### Changed
+- **BREAKING**: Project renamed from SpherizedURDFGenerator to URDFApproxGeom
+- **BREAKING**: Package name is now `urdf-approx-geom` (Python) — old C++ `SpherizedURDFGenerator` no longer shipped
+- **BREAKING**: Entry point is now `urdf-approx-geom` CLI or Python API — old C++ binaries removed
+- README rewritten with Docker quickstart, mode comparison table, visual screenshots
+- `.gitignore` expanded: build trees, plans, local scripts, dev artifacts
+
+### Removed
+- Old C++ standalone binaries (replaced by Python CLI + pybind11)
+- Internal handoff documents and planning artifacts from tracked files
+- `docs/superpowers/plans/` from version control (local only)
+
+### Migration from v1.x
+- Pin to `v1-legacy` tag for the old C++-only SpherizedURDFGenerator
+- v2.x is a complete rewrite — no API compatibility with v1.x
+
+---
+
 ## [1.5.0] - 2026-07-03
 
 ### Added
