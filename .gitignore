@@ -82,3 +82,18 @@ run_env.sh
 scripts/render_fr3_screenshots.py
 scripts/render_fr3_screenshots_pb.py
 scripts/run_fr3_mode_comparison.py
+
+# Claude worktrees (local only)
+.claude/worktrees/
+
+# Dev container (local config)
+.devcontainer/
+
+# Fishros scripts (local)
+fishros
+
+# Paper handoff documents (development artifacts)
+doc/handoffs/
+
+# Paper build artifacts
+doc/paper/CMakeFiles/
