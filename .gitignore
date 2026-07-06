@@ -68,3 +68,17 @@ check_json2.py
 *.egg-info/
 *.egg-link
 dist/
+
+# Superpowers planning artifacts
+docs/superpowers/plans/
+
+# External dependency / build artifact
+irmv_core/
+
+# Local environment scripts
+run_env.sh
+
+# One-off utility scripts
+scripts/render_fr3_screenshots.py
+scripts/render_fr3_screenshots_pb.py
+scripts/run_fr3_mode_comparison.py
