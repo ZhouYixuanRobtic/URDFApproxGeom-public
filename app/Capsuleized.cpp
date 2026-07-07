@@ -16,18 +16,19 @@
 
  */
 
-#include "CapsuleURDFGenerator.h"
-#include "irmv/bot_common/log/singleton_logger.h"
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
+#include "CapsuleURDFGenerator.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 
 int main(int argc, char* argv[]) {
     // Initialize logger
     irmv_core::logging::SingletonLogger::getInstance().initialize("URDFApproxGeom");
     if (argc < 3) {
-        IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [-c <capsule_config.yml>]",
+        IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] "
+                   "[-c <capsule_config.yml>]",
                    argv[0]);
         return 1;
     }

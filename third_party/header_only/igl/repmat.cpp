@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "repmat.h"
 
@@ -50,10 +50,10 @@ IGL_INLINE void igl::repmat(
       for (int k = 0; k < A.outerSize(); ++k)
       {
         // loop inner level
-        for (typename Eigen::SparseMatrix<T, majorType>::InnerIterator 
+        for (typename Eigen::SparseMatrix<T, majorType>::InnerIterator
           it(A,k); it; ++it)
         {
-          Eigen::Triplet<T> triplet(i * A.rows() + it.row(), j * A.cols() 
+          Eigen::Triplet<T> triplet(i * A.rows() + it.row(), j * A.cols()
             + it.col(), it.value());
           b.push_back(triplet);
         }

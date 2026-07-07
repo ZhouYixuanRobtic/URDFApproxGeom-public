@@ -34,8 +34,11 @@ def _run_compare(args) -> int:
     from .robot_viewer import bundle_many
 
     work = pathlib.Path(tempfile.mkdtemp(prefix="urdf_approx_compare_src_"))
-    bundle_dir = pathlib.Path(args.bundle_dir) if args.bundle_dir else pathlib.Path(
-        tempfile.mkdtemp(prefix="urdf_approx_compare_"))
+    bundle_dir = (
+        pathlib.Path(args.bundle_dir)
+        if args.bundle_dir
+        else pathlib.Path(tempfile.mkdtemp(prefix="urdf_approx_compare_"))
+    )
     bundle_dir.mkdir(parents=True, exist_ok=True)
     mesh_source = getattr(args, "mesh_source", "visual")
     pairs = [(str(a), str(b)) for a, b in (getattr(args, "replace", []) or [])]
@@ -46,8 +49,7 @@ def _run_compare(args) -> int:
     sources: list[pathlib.Path] = []
     sidecars: list[pathlib.Path] = []
     # Convex (no preset).
-    convex_res = generate("convex", input_path, work / f"{stem}_convex.urdf",
-                           replace_pairs=pairs)
+    convex_res = generate("convex", input_path, work / f"{stem}_convex.urdf", replace_pairs=pairs)
     sources.append(convex_res.output_urdf)
     if convex_res.json_path:
         sidecars.append(convex_res.json_path)
@@ -60,7 +62,9 @@ def _run_compare(args) -> int:
             input_path,
             work / f"{stem}_sphere_default.urdf",
             work / f"{stem}_sphere_single.urdf",
-            simplify=True, mesh_source=mesh_source, replace_pairs=pairs,
+            simplify=True,
+            mesh_source=mesh_source,
+            replace_pairs=pairs,
         )
         sources += [default_res.output_urdf, single_res.output_urdf]
         for r in (default_res, single_res):
@@ -68,9 +72,15 @@ def _run_compare(args) -> int:
                 sidecars.append(r.json_path)
     else:
         for sp in sorted(sphere_presets):
-            r = generate("sphere", input_path, work / f"{stem}_sphere_{sp}.urdf",
-                         preset=sp, simplify=True, mesh_source=mesh_source,
-                         replace_pairs=pairs)
+            r = generate(
+                "sphere",
+                input_path,
+                work / f"{stem}_sphere_{sp}.urdf",
+                preset=sp,
+                simplify=True,
+                mesh_source=mesh_source,
+                replace_pairs=pairs,
+            )
             sources.append(r.output_urdf)
             if r.json_path:
                 sidecars.append(r.json_path)
@@ -79,8 +89,9 @@ def _run_compare(args) -> int:
     # ("single"/"default"/"high_detail" are valid for both sphere and capsule.)
     if presets:
         cap_outputs = [(work / f"{stem}_capsule_{p}.urdf", p) for p in presets]
-        for res in generate_capsule_multi(input_path, cap_outputs, mesh_source=mesh_source,
-                                          replace_pairs=pairs):
+        for res in generate_capsule_multi(
+            input_path, cap_outputs, mesh_source=mesh_source, replace_pairs=pairs
+        ):
             sources.append(res.output_urdf)
             if res.json_path:
                 sidecars.append(res.json_path)
@@ -89,7 +100,9 @@ def _run_compare(args) -> int:
     for j in sidecars:
         if j.is_file():
             shutil.copy2(j, bundle_dir / j.name)
-    print(f"compare: bundled {len(bundled)} URDFs + {len(sidecars)} JSON sidecars into {bundle_dir}")
+    print(
+        f"compare: bundled {len(bundled)} URDFs + {len(sidecars)} JSON sidecars into {bundle_dir}"
+    )
     for src, out in zip(sources, bundled):
         print(f"  {src.name} -> {out.name}")
     print(
@@ -118,7 +131,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     gen = sub.add_parser("generate", help="generate one mode or all modes")
-    gen.add_argument("--mode", required=True, choices=["convex", "sphere", "spherized", "capsule", "all"])
+    gen.add_argument(
+        "--mode", required=True, choices=["convex", "sphere", "spherized", "capsule", "all"]
+    )
     gen.add_argument("-i", "--input", required=True, help="input mesh URDF")
     gen.add_argument("-o", "--output", help="output URDF for a single mode")
     gen.add_argument("--output-dir", help="output directory when --mode all is used")
@@ -127,9 +142,15 @@ def build_parser() -> argparse.ArgumentParser:
     gen.add_argument("--sphere-preset", default=None, help="sphere preset for --mode all")
     gen.add_argument("--capsule-preset", default=None, help="capsule preset for --mode all")
     gen.add_argument("--config", default=None, help="explicit config path for a single mode")
-    gen.add_argument("--simplify", type=int, default=1, help="sphere mode mesh simplification flag 0/1")
-    gen.add_argument("--mesh-source", default="visual", choices=["visual", "collision"],
-                     help="sphere/capsule: fit the visual mesh (default) or the collision mesh")
+    gen.add_argument(
+        "--simplify", type=int, default=1, help="sphere mode mesh simplification flag 0/1"
+    )
+    gen.add_argument(
+        "--mesh-source",
+        default="visual",
+        choices=["visual", "collision"],
+        help="sphere/capsule: fit the visual mesh (default) or the collision mesh",
+    )
     _add_replace_arg(gen)
 
     sub.add_parser("presets", help="list built-in named presets")
@@ -137,7 +158,9 @@ def build_parser() -> argparse.ArgumentParser:
     val = sub.add_parser("validate", help="validate generated output metrics")
     val.add_argument("--mode", required=True, choices=["capsule", "sphere"])
     val.add_argument("--json", required=True, help="generated JSON sidecar")
-    val.add_argument("--urdf", default="resources/fr3/urdf/fr3.urdf", help="source URDF for mesh metrics")
+    val.add_argument(
+        "--urdf", default="resources/fr3/urdf/fr3.urdf", help="source URDF for mesh metrics"
+    )
     val.add_argument("--mesh-source", default="visual", choices=["visual", "collision"])
     val.add_argument("--volume-samples", type=int, default=64)
     val.add_argument("--max-capv-aabb", type=float, default=2.50)
@@ -147,7 +170,9 @@ def build_parser() -> argparse.ArgumentParser:
     cmp_parser.add_argument("--mode", required=True, choices=["capsule"])
     cmp_parser.add_argument("--baseline-json", required=True)
     cmp_parser.add_argument("--candidate-json", required=True)
-    cmp_parser.add_argument("--urdf", required=True, help="source URDF the sidecars were generated from")
+    cmp_parser.add_argument(
+        "--urdf", required=True, help="source URDF the sidecars were generated from"
+    )
     cmp_parser.add_argument("--mesh-source", default="visual", choices=["visual", "collision"])
     cmp_parser.add_argument("--volume-samples", type=int, default=64)
     cmp_parser.add_argument("--max-capv-aabb", type=float, default=2.50)
@@ -159,16 +184,28 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     viz = sub.add_parser("visualize", help="visualize generated geometry")
-    viz.add_argument("--mode", required=True, choices=["capsule", "sphere", "convex"],
-                     help="generated mode carried by the URDF")
+    viz.add_argument(
+        "--mode",
+        required=True,
+        choices=["capsule", "sphere", "convex"],
+        help="generated mode carried by the URDF",
+    )
     viz.add_argument("--urdf", required=True, help="generated output URDF to visualize")
-    viz.add_argument("--viewer", default="robot_viewer", choices=["robot_viewer", "mjcf", "pybullet"],
-                     help="visualizer backend; robot_viewer (default) shows visual+collision side by side")
+    viz.add_argument(
+        "--viewer",
+        default="robot_viewer",
+        choices=["robot_viewer", "mjcf", "pybullet"],
+        help="visualizer backend; robot_viewer (default) shows visual+collision side by side",
+    )
     viz.add_argument("--json", default="", help="capsule JSON sidecar (required for mjcf/pybullet)")
-    viz.add_argument("--bundle-dir", default="", help="robot_viewer bundle output dir (default: temp)")
+    viz.add_argument(
+        "--bundle-dir", default="", help="robot_viewer bundle output dir (default: temp)"
+    )
     viz.add_argument("--png", default="", help="pybullet: render to PNG instead of GUI")
     viz.add_argument("--mjcf", default="", help="mjcf: output MJCF path")
-    viz.add_argument("--no-launch", action="store_true", help="robot_viewer: do not launch the dev server")
+    viz.add_argument(
+        "--no-launch", action="store_true", help="robot_viewer: do not launch the dev server"
+    )
 
     cmp = sub.add_parser(
         "compare-all",
@@ -176,10 +213,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     cmp.add_argument("-i", "--input", required=True, help="input mesh URDF")
     cmp.add_argument("--bundle-dir", default="", help="bundle output dir (default: temp)")
-    cmp.add_argument("--presets", default="single,default,high_detail",
-                     help="comma-separated capsule/sphere presets to include")
-    cmp.add_argument("--mesh-source", default="visual", choices=["visual", "collision"],
-                     help="sphere/capsule: fit the visual mesh (default) or the collision mesh")
+    cmp.add_argument(
+        "--presets",
+        default="single,default,high_detail",
+        help="comma-separated capsule/sphere presets to include",
+    )
+    cmp.add_argument(
+        "--mesh-source",
+        default="visual",
+        choices=["visual", "collision"],
+        help="sphere/capsule: fit the visual mesh (default) or the collision mesh",
+    )
     _add_replace_arg(cmp)
     return parser
 
@@ -239,8 +283,10 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.mode == "capsule":
             return validate_capsule_file(
-                args.json, args.urdf,
-                args.max_capv_aabb, args.max_r_binmed,
+                args.json,
+                args.urdf,
+                args.max_capv_aabb,
+                args.max_r_binmed,
                 mesh_source=args.mesh_source,
                 volume_samples=args.volume_samples,
             )
@@ -268,6 +314,7 @@ def main(argv: list[str] | None = None) -> int:
             from .robot_viewer import bundle, open_in_robot_viewer
 
             import tempfile
+
             bundle_dir = args.bundle_dir or tempfile.mkdtemp(prefix="urdf_approx_rv_")
             bundle_urdf = bundle(args.urdf, bundle_dir)
             print(f"{args.mode}: bundled {args.urdf} -> {bundle_urdf}")

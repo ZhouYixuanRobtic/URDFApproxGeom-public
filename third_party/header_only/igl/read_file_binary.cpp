@@ -12,15 +12,15 @@
 
 IGL_INLINE void igl::read_file_binary(
   FILE *fp,
-  std::vector<uint8_t> &fileBufferBytes) 
+  std::vector<uint8_t> &fileBufferBytes)
 {
-  if (!ferror(fp)) 
+  if (!ferror(fp))
   {
     fseek(fp, 0, SEEK_END);
     size_t sizeBytes = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     fileBufferBytes.resize(sizeBytes);
-    if(fread((char*)fileBufferBytes.data(), 1, sizeBytes, fp) == sizeBytes) 
+    if(fread((char*)fileBufferBytes.data(), 1, sizeBytes, fp) == sizeBytes)
     {
       fclose(fp);
       return;

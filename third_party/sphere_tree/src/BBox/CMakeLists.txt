@@ -6,12 +6,10 @@ file(GLOB_RECURSE LibSource ./*.cpp)
 list(FILTER LibSource EXCLUDE REGEX ".*MVBB/.*")
 list(FILTER LibSource EXCLUDE REGEX ".*qHull/.*")
 
-add_library(${BOT_LIB_NAME} STATIC
-        ${LibSource}
-)
-
+add_library(${BOT_LIB_NAME} STATIC ${LibSource})
 
 target_link_libraries(${BOT_LIB_NAME} qHull MVBB)
 
-
-SET(BBox_LIBS_OUT MVBB qHull ${BOT_LIB_NAME} PARENT_SCOPE)
+set(BBox_LIBS_OUT
+    MVBB qHull ${BOT_LIB_NAME}
+    PARENT_SCOPE)

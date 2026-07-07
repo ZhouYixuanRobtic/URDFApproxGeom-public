@@ -14,7 +14,7 @@
 #include <vector>
 
 
-namespace igl 
+namespace igl
 {
     /// read triangle surface mesh and tetrahedral volume mesh from .msh file
     ///
@@ -27,7 +27,7 @@ namespace igl
     /// @param[out] TriTag #Tri eigen integer vector of tags associated with surface faces
     /// @param[out] TetTag #Tet eigen integer vector of tags associated with volume elements
     /// @param[out] XFields #XFields list of strings with field names associated with nodes
-    /// @param[out] XF      #XFields list of eigen double matrices, fields associated with nodes 
+    /// @param[out] XF      #XFields list of eigen double matrices, fields associated with nodes
     /// @param[out] EFields #EFields list of strings with field names associated with elements
     /// @param[out] TriF    #EFields list of eigen double matrices, fields associated with surface elements
     /// @param[out] TetF    #EFields list of eigen double matrices, fields associated with volume elements
@@ -35,7 +35,7 @@ namespace igl
     /// \bug only version 2.2 of .msh file is supported (gmsh 3.X)
     /// \bug only triangle surface elements and tetrahedral volumetric elements are supported
     /// \bug only 3D information is supported
-    /// \bug only the 1st tag per element is returned (physical) 
+    /// \bug only the 1st tag per element is returned (physical)
     /// \bug same element fields are expected to be associated with surface elements and volumetric elements
     template <int EigenMatrixOptions>
     IGL_INLINE bool readMSH(

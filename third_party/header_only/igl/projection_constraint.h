@@ -13,7 +13,7 @@ namespace igl
   /// given the current projection matrix (e.g. gl_proj * gl_modelview), viewport
   /// (corner u/v and width/height) and screen space point x,y. Satisfying this
   /// equation means that z projects to screen space point (x,y).
-  /// 
+  ///
   /// @param[in] UV  2-long uv-coordinates of screen space point
   /// @param[in] M  4 by 4 projection matrix
   /// @param[in] VP  4-long viewport: (corner_u, corner_v, width, height)
@@ -38,4 +38,3 @@ namespace igl
 #endif
 
 #endif
-

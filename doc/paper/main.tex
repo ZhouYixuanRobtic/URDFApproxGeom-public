@@ -1,0 +1,104 @@
+% !TEX program = pdflatex
+% URDFApproxGeom: Automatic Primitive Collision Approximation for Robot URDF Models
+% Compile: latexmk -pdf main.tex
+
+\documentclass[journal]{IEEEtran}
+
+% ============================================================
+% Packages
+% ============================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\graphicspath{{./}{./figures/}{./artifacts/}}
+
+% Missing-figure fallback (draft placeholders)
+\makeatletter
+\let\@old@includegraphics\includegraphics
+\renewcommand*{\includegraphics}[2][]{%
+  \IfFileExists{#2}{%
+    \begingroup
+    \edef\@tempa{\detokenize{#1}}%
+    \expandafter\endgroup
+    \ifx\@tempa\@empty
+      \@old@includegraphics{#2}%
+    \else
+      \@old@includegraphics[#1]{#2}%
+    \fi
+  }{%
+    \begingroup
+    \immediate\write16{^^J[MISSING GRAPHIC] `#2' - placeholder used.^^J}%
+    \endgroup
+    \fbox{\begin{minipage}[c][1in][c]{0.95\linewidth}\centering
+      \tiny\ttfamily\detokenize{#2}\\[2pt]
+      \textit{(missing file)}%
+    \end{minipage}}%
+  }%
+}
+\makeatother
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{siunitx}
+\usepackage{balance}
+
+% ============================================================
+% Custom commands
+% ============================================================
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\capsule}{\mathrm{capsule}}
+\newcommand{\sphere}{\mathrm{sphere}}
+\newcommand{\mesh}{\mathrm{mesh}}
+
+% ============================================================
+% Title and Authors
+% ============================================================
+\title{URDFApproxGeom: Automatic Primitive Collision\\Approximation for Robot URDF Models}
+
+\author{
+  Yixuan~Zhou
+  and~Hesheng~Wang,~\IEEEmembership{Senior~Member,~IEEE}
+
+  \thanks{Corresponding authors: Hesheng Wang.}
+  \thanks{Y. Zhou and H. Wang are with the School of Automation and Intelligent Sensing, Shanghai Jiao Tong University, Shanghai 200240, China. (e-mail: yixuanzhou@sjtu.edu.cn; wanghesheng@sjtu.edu.cn)}
+}
+
+% ============================================================
+% Document
+% ============================================================
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\begin{IEEEkeywords}
+URDF, collision geometry, capsule primitive, sphere tree, convex decomposition, geometry approximation
+\end{IEEEkeywords}
+
+% --- Main Sections ---
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/system_overview}
+\input{sections/method}
+\input{sections/validation_metrics}
+\input{sections/experiments}
+\input{sections/discussion}
+\input{sections/conclusion}
+
+% --- References ---
+\bibliographystyle{IEEEtran}
+\bibliography{ref}
+
+\end{document}

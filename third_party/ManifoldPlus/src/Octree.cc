@@ -138,7 +138,7 @@ void Octree::Split(const MatrixD& V)
 				startpoint[0] += i * halfsize[0];
 				startpoint[1] += j * halfsize[1];
 				startpoint[2] += k * halfsize[2];
-									
+
 				children_[ind] = new Octree(startpoint, halfsize);
 				children_[ind]->occupied_ = 0;
 				children_[ind]->number_ = 0;
@@ -246,7 +246,7 @@ void Octree::ConnectEmptyTree(Octree* l, Octree* r, int dim)
 			for (int i = 0; i < 4; ++i) {
 				ConnectEmptyTree(l->children_[i + 4], r->children_[i], dim);
 			}
-		}			
+		}
 		return;
 	}
 	if (!(l->occupied_ || r->occupied_))
@@ -452,7 +452,7 @@ void Octree::ConstructFace(const Vector3i& start,
 			{
 				int x = i / 4;
 				int y = (i - x * 4) / 2;
-				int z = i - x * 4 - y * 2; 
+				int z = i - x * 4 - y * 2;
 				Vector3i nstart = start * 2 + Vector3i(x,y,z);
 				children_[i]->ConstructFace(nstart, vcolor,
 					vertices, faces, v_faces);

@@ -33,12 +33,12 @@ namespace igl
   ///
   /// \see copyleft::cgal::point_areas, knn
   template <
-    typename DerivedP, 
-    typename DerivedA, 
+    typename DerivedP,
+    typename DerivedA,
     typename DerivedN,
-    typename Index, 
-    typename DerivedCH, 
-    typename DerivedCM, 
+    typename Index,
+    typename DerivedCH,
+    typename DerivedCM,
     typename DerivedR,
     typename DerivedEC>
   IGL_INLINE void fast_winding_number(
@@ -74,15 +74,15 @@ namespace igl
   ///         the fast approximation
   /// @param[out] WN  #Q by 1 list of windinng number values at each query point
   template <
-    typename DerivedP, 
-    typename DerivedA, 
+    typename DerivedP,
+    typename DerivedA,
     typename DerivedN,
-    typename Index, 
-    typename DerivedCH, 
-    typename DerivedCM, 
+    typename Index,
+    typename DerivedCH,
+    typename DerivedCM,
     typename DerivedR,
-    typename DerivedEC, 
-    typename DerivedQ, 
+    typename DerivedEC,
+    typename DerivedQ,
     typename BetaType,
     typename DerivedWN>
   IGL_INLINE void fast_winding_number(
@@ -102,11 +102,11 @@ namespace igl
   /// \brief Evaluate the fast winding number for point data without caching the
   /// precomputation.
   template <
-    typename DerivedP, 
-    typename DerivedA, 
+    typename DerivedP,
+    typename DerivedA,
     typename DerivedN,
-    typename DerivedQ, 
-    typename BetaType, 
+    typename DerivedQ,
+    typename BetaType,
     typename DerivedWN>
   IGL_INLINE void fast_winding_number(
     const Eigen::MatrixBase<DerivedP>& P,
@@ -118,10 +118,10 @@ namespace igl
     Eigen::PlainObjectBase<DerivedWN>& WN);
   /// \overload
   template <
-    typename DerivedP, 
-    typename DerivedA, 
+    typename DerivedP,
+    typename DerivedA,
     typename DerivedN,
-    typename DerivedQ, 
+    typename DerivedQ,
     typename DerivedWN>
   IGL_INLINE void fast_winding_number(
     const Eigen::MatrixBase<DerivedP>& P,
@@ -130,9 +130,9 @@ namespace igl
     const Eigen::MatrixBase<DerivedQ>& Q,
     Eigen::PlainObjectBase<DerivedWN>& WN);
   /// @private
-  namespace FastWindingNumber { 
+  namespace FastWindingNumber {
     /// @private
-    namespace HDK_Sample{ 
+    namespace HDK_Sample{
       /// @private
       template <typename T1, typename T2> class UT_SolidAngle;} }
   /// Structure for caching precomputation for fast winding number for triangle
@@ -169,7 +169,7 @@ namespace igl
   /// @param[in] F  #F by 3 list of triangle mesh indices into rows of V
   /// @param[in] order  Taylor series expansion order to use (e.g., 2)
   /// @param[out] fwn_bvh  Precomputed bounding volume hierarchy
-  ///   
+  ///
   template <
     typename DerivedV,
     typename DerivedF>
@@ -210,4 +210,3 @@ namespace igl
 #endif
 
 #endif
-

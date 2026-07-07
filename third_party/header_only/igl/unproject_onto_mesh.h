@@ -69,5 +69,3 @@ namespace igl
 #  include "unproject_onto_mesh.cpp"
 #endif
 #endif
-
-

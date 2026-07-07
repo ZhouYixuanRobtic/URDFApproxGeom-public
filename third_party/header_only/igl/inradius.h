@@ -30,4 +30,3 @@ namespace igl
 #  include "inradius.cpp"
 #endif
 #endif
-

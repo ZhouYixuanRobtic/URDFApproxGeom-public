@@ -266,7 +266,7 @@ namespace igl {
                 {
                     cycleidx[cycleverts[i]] = i;
                 }
-                
+
                 curvert = cycleverts.back();
                 cure = cycleedges.back();
                 while (curvert != -1 && !foundcycle)

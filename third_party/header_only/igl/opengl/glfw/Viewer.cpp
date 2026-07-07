@@ -277,7 +277,7 @@ namespace glfw
     }
     for(auto &core : this->core_list)
     {
-      core.shut(); 
+      core.shut();
     }
     shutdown_plugins();
     glfwDestroyWindow(window);
@@ -584,7 +584,7 @@ namespace glfw
             // If the user wants to flip back and forth between [positional lights
             // without shadows] and [directional lights with shadows] then they
             // can high-jack this key_pressed with a callback.
-            // 
+            //
             // Until shadows support positional lights, let's switch to
             // directional lights here and match the direction best as possible to
             // the current light position.
@@ -955,7 +955,7 @@ namespace glfw
         return;
       }
     }
-    
+
     // Shadow pass
     for (auto& core : core_list)
     {
@@ -1062,7 +1062,7 @@ namespace glfw
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
-      
+
       // create depth attachment texture
       glGenTextures(1, &depthTexture);
       glBindTexture(GL_TEXTURE_2D, depthTexture);
@@ -1081,8 +1081,8 @@ namespace glfw
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     // Clear the buffer
     glClearColor(
-      core.background_color(0), 
-      core.background_color(1), 
+      core.background_color(0),
+      core.background_color(1),
       core.background_color(2),
       core.background_color(3));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

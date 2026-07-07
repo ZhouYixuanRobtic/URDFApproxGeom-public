@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2019 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "rigid_alignment.h"
 #include <Eigen/Sparse>
@@ -75,7 +75,7 @@ IGL_INLINE void igl::rigid_alignment(
     // This could be a lot faster but isn't rank revealing and may produce wonky
     // results when P and N are all the same point and vector.
     //VectorXS u = (Q).ldlt().solve(f);
-    
+
     Eigen::CompleteOrthogonalDecomposition<decltype(Q)> qr(Q);
     if(qr.rank() < 6)
     {
@@ -97,12 +97,12 @@ IGL_INLINE void igl::rigid_alignment(
       Ri = DerivedR::Identity(3,3);
     }else
     {
-      Ri = 
-        DerivedR::Identity(3,3) + 
-        sin(x)/x*W + 
+      Ri =
+        DerivedR::Identity(3,3) +
+        sin(x)/x*W +
         (1.0-cos(x))/(x*x)*W*W;
     }
-    
+
     R = (R*Ri).eval();
     t = (t*Ri + ti).eval();
     X = ((_X*R).rowwise()+t).eval();

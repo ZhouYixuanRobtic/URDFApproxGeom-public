@@ -27,10 +27,10 @@ namespace igl
       /// @param[out] WN  #Q by 1 list of windinng number values at each query point
       ///
       template <
-        typename DerivedP, 
-        typename DerivedN, 
+        typename DerivedP,
+        typename DerivedN,
         typename DerivedQ,
-        typename BetaType, 
+        typename BetaType,
         typename DerivedWN>
       IGL_INLINE void fast_winding_number(
         const Eigen::MatrixBase<DerivedP>& P,
@@ -41,9 +41,9 @@ namespace igl
         Eigen::PlainObjectBase<DerivedWN>& WN);
       /// \overload
       template <
-        typename DerivedP, 
-        typename DerivedN, 
-        typename DerivedQ, 
+        typename DerivedP,
+        typename DerivedN,
+        typename DerivedQ,
         typename DerivedWN>
       IGL_INLINE void fast_winding_number(
         const Eigen::MatrixBase<DerivedP>& P,
@@ -58,4 +58,3 @@ namespace igl
 #endif
 
 #endif
-

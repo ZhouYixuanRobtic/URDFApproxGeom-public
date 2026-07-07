@@ -146,4 +146,3 @@ IGL_INLINE bool igl::writeMSH(
     }
     return true;
 }
-

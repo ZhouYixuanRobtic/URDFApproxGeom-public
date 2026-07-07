@@ -292,7 +292,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_data(
   }else
   {
     assert(D.size() == F.rows());
-    Eigen::MatrixXi UV_F = 
+    Eigen::MatrixXi UV_F =
       Eigen::VectorXi::LinSpaced(F.rows(),0,F.rows()-1).replicate(1,3);
     set_uv(UV,UV_F);
   }
@@ -387,13 +387,13 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_edges_from_vector_field(
-  const Eigen::MatrixXd& P, 
-  const Eigen::MatrixXd& V, 
+  const Eigen::MatrixXd& P,
+  const Eigen::MatrixXd& V,
   const Eigen::MatrixXd& C)
 {
   assert(P.rows() == V.rows());
   Eigen::MatrixXi E(P.rows(),2);
-  const Eigen::MatrixXd PV = 
+  const Eigen::MatrixXd PV =
     (Eigen::MatrixXd(P.rows()+V.rows(),3)<<P,P+V).finished();
   for(int i = 0;i<P.rows();i++)
   {

@@ -34,8 +34,10 @@ def build_capsule_mesh(p0, p1, radius, segments=28):
         m.apply_translation(p0)
         return m
     cyl = trimesh.creation.cylinder(radius=radius, height=L, sections=segments)
-    cap_p = trimesh.creation.uv_sphere(radius=radius); cap_p.apply_translation([0, 0, L / 2.0])
-    cap_n = trimesh.creation.uv_sphere(radius=radius); cap_n.apply_translation([0, 0, -L / 2.0])
+    cap_p = trimesh.creation.uv_sphere(radius=radius)
+    cap_p.apply_translation([0, 0, L / 2.0])
+    cap_n = trimesh.creation.uv_sphere(radius=radius)
+    cap_n.apply_translation([0, 0, -L / 2.0])
     mesh = trimesh.util.concatenate([cyl, cap_p, cap_n])
     # mesh axis is +Z; rotate Z onto the segment direction, then translate to midpoint.
     mat = trimesh.geometry.align_vectors(np.array([0.0, 0, 1.0]), axis / L)
@@ -75,8 +77,7 @@ def render_capsule_overlay(urdf_path=FR3_URDF, caps_json=CAPS_JSON, *, png=""):
 
     # Rewrite absolute /workspace mesh paths to the host repo path.
     urdf_txt = open(urdf_path).read()
-    urdf_txt = urdf_txt.replace("/workspace/resources/fr3",
-                                os.path.join(REPO, "resources/fr3"))
+    urdf_txt = urdf_txt.replace("/workspace/resources/fr3", os.path.join(REPO, "resources/fr3"))
     tmp_urdf = "/tmp/fr3_host.urdf"
     open(tmp_urdf, "w").write(urdf_txt)
 
@@ -122,10 +123,15 @@ def render_capsule_overlay(urdf_path=FR3_URDF, caps_json=CAPS_JSON, *, png=""):
                 mesh_file = mesh_file.decode()
             scale = list(c[3])
             wpos, worn = p.multiplyTransforms(lw_pos, lw_orn, list(c[5]), list(c[6]))
-            mvs = p.createVisualShape(p.GEOM_MESH, fileName=mesh_file,
-                                      meshScale=scale, rgbaColor=[0.7, 0.7, 0.78, 1.0])
-            p.createMultiBody(baseMass=0, baseVisualShapeIndex=mvs,
-                              basePosition=list(wpos), baseOrientation=list(worn))
+            mvs = p.createVisualShape(
+                p.GEOM_MESH, fileName=mesh_file, meshScale=scale, rgbaColor=[0.7, 0.7, 0.78, 1.0]
+            )
+            p.createMultiBody(
+                baseMass=0,
+                baseVisualShapeIndex=mvs,
+                basePosition=list(wpos),
+                baseOrientation=list(worn),
+            )
 
     drawn = 0
     for link, body in caps.items():
@@ -149,25 +155,41 @@ def render_capsule_overlay(urdf_path=FR3_URDF, caps_json=CAPS_JSON, *, png=""):
             mesh = build_capsule_mesh(P0, P1, r)
             obj = f"/tmp/cap_{link}_{k}.obj"
             mesh.export(obj)
-            vs = p.createVisualShape(p.GEOM_MESH, fileName=obj, meshScale=[1, 1, 1],
-                                     rgbaColor=[1.0, 0.15, 0.15, 0.5])
-            p.createMultiBody(baseMass=0, baseVisualShapeIndex=vs,
-                              basePosition=[0, 0, 0], baseOrientation=[0, 0, 0, 1])
+            vs = p.createVisualShape(
+                p.GEOM_MESH, fileName=obj, meshScale=[1, 1, 1], rgbaColor=[1.0, 0.15, 0.15, 0.5]
+            )
+            p.createMultiBody(
+                baseMass=0,
+                baseVisualShapeIndex=vs,
+                basePosition=[0, 0, 0],
+                baseOrientation=[0, 0, 0, 1],
+            )
             mid = ((P0 + P1) / 2.0).tolist()
-            p.addUserDebugText(f"{link} r={r:.3f} L={float(np.linalg.norm(P1-P0)):.3f}",
-                               mid, textColorRGB=[1, 1, 0], textSize=0.9)
+            p.addUserDebugText(
+                f"{link} r={r:.3f} L={float(np.linalg.norm(P1-P0)):.3f}",
+                mid,
+                textColorRGB=[1, 1, 0],
+                textSize=0.9,
+            )
             drawn += 1
 
     print(f"drew {drawn} capsules over {robot=} ({n} joints)")
 
     if png:
         from PIL import Image  # noqa
+
         view = (1.6, 1.4, 1.2, 0, 0, 0.6)
-        p.resetDebugVisualizerCamera(*view) if False else p.resetDebugVisualizerCamera(1.8, 35, -25, [0, 0, 0.5])
+        (
+            p.resetDebugVisualizerCamera(*view)
+            if False
+            else p.resetDebugVisualizerCamera(1.8, 35, -25, [0, 0, 0.5])
+        )
         _, _, px, _, _ = p.getCameraImage(1280, 800, renderer=p.ER_TINY_RENDERER)
         import numpy as _np
+
         arr = _np.array(px, dtype=_np.uint8).reshape(800, 1280, 4)
         from PIL import Image as _I
+
         _I.fromarray(arr[:, :, :3]).save(png)
         print(f"rendered -> {png}")
         p.disconnect()

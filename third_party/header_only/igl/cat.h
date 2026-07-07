@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_CAT_H
 #define IGL_CAT_H
@@ -19,7 +19,7 @@ namespace igl
   /// Perform concatenation of a two _sparse_ matrices along a single dimension
   /// If dim == 1, then C = [A;B]; If dim == 2 then C = [A B].
   /// This is an attempt to act like matlab's cat function.
-  /// 
+  ///
   /// @tparam  Scalar  scalar data type for sparse matrices like double or int
   /// @tparam  Mat  matrix type for all matrices (e.g. MatrixXd, SparseMatrix)
   /// @tparam  MatC  matrix type for output matrix (e.g. MatrixXd) needs to support
@@ -28,12 +28,12 @@ namespace igl
   /// @param[in]  A  first input matrix
   /// @param[in]  B  second input matrix
   /// @param[out]  C  output matrix
-  ///   
+  ///
   template <typename Scalar>
   IGL_INLINE void cat(
-      const int dim, 
-      const Eigen::SparseMatrix<Scalar> & A, 
-      const Eigen::SparseMatrix<Scalar> & B, 
+      const int dim,
+      const Eigen::SparseMatrix<Scalar> & A,
+      const Eigen::SparseMatrix<Scalar> & B,
       Eigen::SparseMatrix<Scalar> & C);
 
   /// Perform concatenation of a two _dense_ matrices along a single dimension
@@ -48,7 +48,7 @@ namespace igl
   template <typename Derived, class MatC>
   IGL_INLINE void cat(
     const int dim,
-    const Eigen::MatrixBase<Derived> & A, 
+    const Eigen::MatrixBase<Derived> & A,
     const Eigen::MatrixBase<Derived> & B,
     MatC & C);
   /// Perform concatenation of a two _dense_ matrices along a single dimension

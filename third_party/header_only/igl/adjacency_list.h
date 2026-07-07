@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_ADJACENCY_LIST_H
 #define IGL_ADJACENCY_LIST_H
@@ -12,7 +12,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <vector>
-namespace igl 
+namespace igl
 {
   /// Constructs the graph adjacency list of a given mesh (V,F)
   ///
@@ -28,10 +28,10 @@ namespace igl
   ///   adjacency_list(F,A);
   /// \endcode
   ///
-  /// \see 
+  /// \see
   ///   adjacency_matrix
-  ///   edges, 
-  ///   cotmatrix, 
+  ///   edges,
+  ///   cotmatrix,
   ///   diag
   template <typename Index, typename IndexVector>
   IGL_INLINE void adjacency_list(

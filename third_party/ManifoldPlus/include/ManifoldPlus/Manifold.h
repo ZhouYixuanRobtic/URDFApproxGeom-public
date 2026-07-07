@@ -22,7 +22,7 @@ protected:
 		std::vector<std::set<int> >& v_faces,
 		std::vector<Vector3i>& triangles);
 
-private:	
+private:
 	Octree* tree_;
 	Vector3 min_corner_, max_corner_;
 	MatrixD V_;

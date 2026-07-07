@@ -19,9 +19,9 @@ namespace igl
     /// @return id of named attribute in shader
     IGL_INLINE GLint bind_vertex_attrib_array(
       const GLuint program_shader,
-      const std::string &name, 
-      GLuint bufferID, 
-      const Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> &M, 
+      const std::string &name,
+      GLuint bufferID,
+      const Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> &M,
       bool refresh);
   }
 }

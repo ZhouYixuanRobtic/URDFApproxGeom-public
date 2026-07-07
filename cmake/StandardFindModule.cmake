@@ -68,12 +68,10 @@ If one of the variables ``STANDARD_FIND_MODULE_DEBUG`` or
 output
 #]=======================================================================]
 
-
 if(DEFINED __STANDARD_FIND_MODULE_INCLUDED)
   return()
 endif()
 set(__STANDARD_FIND_MODULE_INCLUDED TRUE)
-
 
 include(FindPackageHandleStandardArgs)
 include(CMakeParseArguments)
@@ -83,7 +81,9 @@ include(ReplaceImportedTargets)
 
 macro(STANDARD_FIND_MODULE _name _pkgconfig_name)
   string(TOUPPER ${_name} _NAME)
-  cmake_parse_arguments(_OPT_${_NAME} "NOT_REQUIRED;SKIP_CMAKE_CONFIG;SKIP_PKG_CONFIG;QUIET" "TARGET" "REPLACE_TARGETS" ${ARGN})
+  cmake_parse_arguments(
+    _OPT_${_NAME} "NOT_REQUIRED;SKIP_CMAKE_CONFIG;SKIP_PKG_CONFIG;QUIET"
+    "TARGET" "REPLACE_TARGETS" ${ARGN})
 
   # Try to use CMake Config file to locate the package
   if(NOT _OPT_${_NAME}_SKIP_CMAKE_CONFIG)
@@ -112,14 +112,15 @@ macro(STANDARD_FIND_MODULE _name _pkgconfig_name)
 
       if(${_name}_FIND_VERSION)
         if(${_name}_FIND_VERSION_EXACT)
-          pkg_check_modules(_PC_${_NAME} QUIET ${_pkgconfig_name}=${${_name}_FIND_VERSION})
+          pkg_check_modules(_PC_${_NAME} QUIET
+                            ${_pkgconfig_name}=${${_name}_FIND_VERSION})
         else(${_name}_FIND_VERSION_EXACT)
-          pkg_check_modules(_PC_${_NAME} QUIET ${_pkgconfig_name}>=${${_name}_FIND_VERSION})
+          pkg_check_modules(_PC_${_NAME} QUIET
+                            ${_pkgconfig_name}>=${${_name}_FIND_VERSION})
         endif(${_name}_FIND_VERSION_EXACT)
       else(${_name}_FIND_VERSION)
         pkg_check_modules(_PC_${_NAME} QUIET ${_pkgconfig_name})
       endif(${_name}_FIND_VERSION)
-
 
       if(_PC_${_NAME}_FOUND)
         unset(_include_dirs)
@@ -128,63 +129,116 @@ macro(STANDARD_FIND_MODULE _name _pkgconfig_name)
             list(APPEND _include_dirs "${_dir}")
           endif()
         endforeach()
-        set(${_name}_INCLUDE_DIRS ${_include_dirs} CACHE PATH "${_name} include directory")
+        set(${_name}_INCLUDE_DIRS
+            ${_include_dirs}
+            CACHE PATH "${_name} include directory")
         unset(_include_dirs)
-        set(${_name}_DEFINITIONS ${_PC_${_NAME}_CFLAGS_OTHER} CACHE STRING "Additional compiler flags for ${_name}")
+        set(${_name}_DEFINITIONS
+            ${_PC_${_NAME}_CFLAGS_OTHER}
+            CACHE STRING "Additional compiler flags for ${_name}")
 
         set(${_name}_LIBRARIES)
 
         foreach(_library IN ITEMS ${_PC_${_NAME}_LIBRARIES})
-          # On macOS -framework libraries can be inserted as they are in ${_name}_LIBRARIES
+          # On macOS -framework libraries can be inserted as they are in
+          # ${_name}_LIBRARIES
           string(REGEX MATCH "^-framework " _result ${_library})
           if(_result)
             list(APPEND ${_name}_LIBRARIES ${_library})
           else()
             string(TOUPPER ${_library} _LIBRARY)
-            find_library(${_name}_${_LIBRARY}_LIBRARY_RELEASE
-                         NAMES ${_library}
-                         PATHS ${_PC_${_NAME}_LIBRARY_DIRS})
-            list(APPEND ${_name}_LIBRARIES ${${_name}_${_LIBRARY}_LIBRARY_RELEASE})
+            find_library(
+              ${_name}_${_LIBRARY}_LIBRARY_RELEASE
+              NAMES ${_library}
+              PATHS ${_PC_${_NAME}_LIBRARY_DIRS})
+            list(APPEND ${_name}_LIBRARIES
+                 ${${_name}_${_LIBRARY}_LIBRARY_RELEASE})
             select_library_configurations(${_name}_${_LIBRARY})
-            if(STANDARD_FIND_MODULE_DEBUG OR STANDARD_FIND_MODULE_DEBUG_${_name})
-              message(STATUS "${_name}_${_LIBRARY}_FOUND = ${${_name}_${_LIBRARY}_FOUND}")
-              message(STATUS "${_name}_${_LIBRARY}_LIBRARY_RELEASE = ${${_name}_${_LIBRARY}_LIBRARY_RELEASE}")
-              message(STATUS "${_name}_${_LIBRARY}_LIBRARY_DEBUG = ${${_name}_${_LIBRARY}_LIBRARY_DEBUG}")
-              message(STATUS "${_name}_${_LIBRARY}_LIBRARY = ${${_name}_${_LIBRARY}_LIBRARY}")
+            if(STANDARD_FIND_MODULE_DEBUG
+               OR STANDARD_FIND_MODULE_DEBUG_${_name})
+              message(
+                STATUS
+                  "${_name}_${_LIBRARY}_FOUND = ${${_name}_${_LIBRARY}_FOUND}")
+              message(
+                STATUS
+                  "${_name}_${_LIBRARY}_LIBRARY_RELEASE = ${${_name}_${_LIBRARY}_LIBRARY_RELEASE}"
+              )
+              message(
+                STATUS
+                  "${_name}_${_LIBRARY}_LIBRARY_DEBUG = ${${_name}_${_LIBRARY}_LIBRARY_DEBUG}"
+              )
+              message(
+                STATUS
+                  "${_name}_${_LIBRARY}_LIBRARY = ${${_name}_${_LIBRARY}_LIBRARY}"
+              )
             endif()
-            
-            # Create imported target (only for the first library
-            # returned by pkg-config
+
+            # Create imported target (only for the first library returned by
+            # pkg-config
             if(DEFINED _OPT_${_NAME}_TARGET)
               if(NOT TARGET ${_OPT_${_NAME}_TARGET})
                 add_library(${_OPT_${_NAME}_TARGET} UNKNOWN IMPORTED)
-            
+
                 if(${_name}_${_LIBRARY}_LIBRARY_RELEASE)
-                  set_property(TARGET ${_OPT_${_NAME}_TARGET} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-                  set_property(TARGET ${_OPT_${_NAME}_TARGET}        PROPERTY IMPORTED_LOCATION_RELEASE "${${_name}_${_LIBRARY}_LIBRARY_RELEASE}" )
+                  set_property(
+                    TARGET ${_OPT_${_NAME}_TARGET}
+                    APPEND
+                    PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+                  set_property(
+                    TARGET ${_OPT_${_NAME}_TARGET}
+                    PROPERTY IMPORTED_LOCATION_RELEASE
+                             "${${_name}_${_LIBRARY}_LIBRARY_RELEASE}")
                 endif()
-            
+
                 if(${_name}_${_LIBRARY}_LIBRARY_DEBUG)
-                  set_property(TARGET ${_OPT_${_NAME}_TARGET} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-                  set_property(TARGET ${_OPT_${_NAME}_TARGET}        PROPERTY IMPORTED_LOCATION_DEBUG "${${_name}_${_LIBRARY}_LIBRARY_DEBUG}" )
+                  set_property(
+                    TARGET ${_OPT_${_NAME}_TARGET}
+                    APPEND
+                    PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+                  set_property(
+                    TARGET ${_OPT_${_NAME}_TARGET}
+                    PROPERTY IMPORTED_LOCATION_DEBUG
+                             "${${_name}_${_LIBRARY}_LIBRARY_DEBUG}")
                 endif()
-            
+
                 if(${_name}_${_LIBRARY}_INCLUDE_DIRS)
-                  set_property(TARGET ${_OPT_${_NAME}_TARGET} APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${${_name}_${_LIBRARY}_INCLUDE_DIRS}")
+                  set_property(
+                    TARGET ${_OPT_${_NAME}_TARGET}
+                    APPEND
+                    PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+                             "${${_name}_${_LIBRARY}_INCLUDE_DIRS}")
                 endif()
-            
+
                 if(${_name}_DEFINITIONS)
-                  set_property(TARGET ${_OPT_${_NAME}_TARGET} PROPERTY INTERFACE_COMPILE_OPTIONS "${${_name}_DEFINITIONS}")
+                  set_property(
+                    TARGET ${_OPT_${_NAME}_TARGET}
+                    PROPERTY INTERFACE_COMPILE_OPTIONS
+                             "${${_name}_DEFINITIONS}")
                 endif()
               else()
-                get_property(_configurations TARGET ${_OPT_${_NAME}_TARGET} PROPERTY IMPORTED_CONFIGURATIONS)
+                get_property(
+                  _configurations
+                  TARGET ${_OPT_${_NAME}_TARGET}
+                  PROPERTY IMPORTED_CONFIGURATIONS)
                 foreach(_config ${_configurations})
                   if(${_name}_${_LIBRARY}_LIBRARY_${_config})
-                    set_property(TARGET ${_OPT_${_NAME}_TARGET} APPEND PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config} "${${_name}_${_LIBRARY}_LIBRARY_${_config}}")
+                    set_property(
+                      TARGET ${_OPT_${_NAME}_TARGET}
+                      APPEND
+                      PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config}
+                               "${${_name}_${_LIBRARY}_LIBRARY_${_config}}")
                   elseif(${_name}_${_LIBRARY}_LIBRARY_RELEASE)
-                    set_property(TARGET ${_OPT_${_NAME}_TARGET} APPEND PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config} "${${_name}_${_LIBRARY}_LIBRARY_RELEASE}")
+                    set_property(
+                      TARGET ${_OPT_${_NAME}_TARGET}
+                      APPEND
+                      PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config}
+                               "${${_name}_${_LIBRARY}_LIBRARY_RELEASE}")
                   elseif(${_name}_${_LIBRARY}_LIBRARY_DEBUG)
-                    set_property(TARGET ${_OPT_${_NAME}_TARGET} APPEND PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config} "${${_name}_${_LIBRARY}_LIBRARY_DEBUG}")
+                    set_property(
+                      TARGET ${_OPT_${_NAME}_TARGET}
+                      APPEND
+                      PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config}
+                               "${${_name}_${_LIBRARY}_LIBRARY_DEBUG}")
                   endif()
                 endforeach()
               endif()
@@ -192,12 +246,15 @@ macro(STANDARD_FIND_MODULE _name _pkgconfig_name)
           endif()
         endforeach()
 
-        replace_imported_targets(${_name}_LIBRARIES ${_OPT_${_NAME}_REPLACE_TARGETS})
+        replace_imported_targets(${_name}_LIBRARIES
+                                 ${_OPT_${_NAME}_REPLACE_TARGETS})
         if(DEFINED _OPT_${_NAME}_TARGET)
-          replace_imported_targets(${_OPT_${_NAME}_TARGET} ${_OPT_${_NAME}_REPLACE_TARGETS})
-          # If requested, replace the <NAME>_LIBRARIES variable
-          # content with the corresponding imported target.
-          if(STANDARD_FIND_MODULE_USE_IMPORTED_TARGET OR STANDARD_FIND_MODULE_USE_IMPORTED_TARGET_${_name})
+          replace_imported_targets(${_OPT_${_NAME}_TARGET}
+                                   ${_OPT_${_NAME}_REPLACE_TARGETS})
+          # If requested, replace the <NAME>_LIBRARIES variable content with the
+          # corresponding imported target.
+          if(STANDARD_FIND_MODULE_USE_IMPORTED_TARGET
+             OR STANDARD_FIND_MODULE_USE_IMPORTED_TARGET_${_name})
             set(${_name}_LIBRARIES ${_OPT_${_NAME}_TARGET})
           endif()
         endif()
@@ -206,8 +263,7 @@ macro(STANDARD_FIND_MODULE _name _pkgconfig_name)
 
       endif(_PC_${_NAME}_FOUND)
 
-      mark_as_advanced(${_name}_INCLUDE_DIRS
-                       ${_name}_DEFINITIONS)
+      mark_as_advanced(${_name}_INCLUDE_DIRS ${_name}_DEFINITIONS)
 
       # If NOT_REQUIRED unset the _FIND_REQUIRED variable and save it for later
       if(_OPT_${_NAME}_NOT_REQUIRED AND DEFINED ${_name}_FIND_REQUIRED)
@@ -244,9 +300,8 @@ macro(STANDARD_FIND_MODULE _name _pkgconfig_name)
     extract_version(${_name})
   endif()
 
-
-  # Print some debug output if either STANDARD_FIND_MODULE_DEBUG
-  # or STANDARD_FIND_MODULE_DEBUG_${_name} is set to TRUE
+  # Print some debug output if either STANDARD_FIND_MODULE_DEBUG or
+  # STANDARD_FIND_MODULE_DEBUG_${_name} is set to TRUE
   if(STANDARD_FIND_MODULE_DEBUG OR STANDARD_FIND_MODULE_DEBUG_${_name})
     message(STATUS "${_name}_FOUND = ${${_name}_FOUND}")
     message(STATUS "${_name}_INCLUDE_DIRS = ${${_name}_INCLUDE_DIRS}")

@@ -144,7 +144,7 @@ IGL_INLINE void igl::per_face_normals(
       const Index np = C(p+1)-C(p);
       for(Eigen::Index i = 0;i<np;i++)
       {
-        FF.row(k) << 
+        FF.row(k) <<
           I(C(p)+((i+0)%np)),
           I(C(p)+((i+1)%np)),
           V.rows()+p;

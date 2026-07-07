@@ -9,7 +9,7 @@ namespace igl
   ///
   /// @param[in] V  #V by dim list of Bezier control points
   /// @param[in] t  evaluation parameter within [0,1]
-  /// @param[out] P  1 by dim output point 
+  /// @param[out] P  1 by dim output point
   template <typename DerivedV, typename DerivedP>
   IGL_INLINE void bezier(
     const Eigen::MatrixBase<DerivedV> & V,
@@ -45,4 +45,4 @@ namespace igl
 #  include "bezier.cpp"
 #endif
 
-#endif 
+#endif

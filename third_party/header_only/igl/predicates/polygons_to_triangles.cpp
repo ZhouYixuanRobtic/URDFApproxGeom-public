@@ -113,7 +113,7 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
 
         //if(pF.rows()>1)
         //{
-        //  // Delaunay-ize 
+        //  // Delaunay-ize
         //  Eigen::MatrixXd pl;
         //  igl::edge_lengths(pV,pF,pl);
 
@@ -128,7 +128,7 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         //  const Index num_faces = pF.rows();
         //  std::vector<Index> Q;
         //  Q.reserve(uE2E.size());
-        //  for (size_t uei=0; uei<uE2E.size(); uei++) 
+        //  for (size_t uei=0; uei<uE2E.size(); uei++)
         //  {
         //    Q.push_back(uei);
         //  }
@@ -136,12 +136,12 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         //  {
         //    const Index uei = Q.back();
         //    Q.pop_back();
-        //    if (uE2E[uei].size() == 2) 
+        //    if (uE2E[uei].size() == 2)
         //    {
         //      double w;
         //      igl::is_Indexrinsic_delaunay(pl,uE2E,num_faces,uei,w);
         //      prIndexf("%d : %0.17f\n",uei,w);
-        //      if(w<-1e-7) 
+        //      if(w<-1e-7)
         //      {
         //        prIndexf("  flippin'\n");
         //        //
@@ -199,7 +199,7 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         //        {
         //          for(Index c=0;c<3;c++)
         //          {
-        //            pl(f,c) = 
+        //            pl(f,c) =
         //              (pV.row(pF(f,(c+1)%3))-pV.row(pF(f,(c+2)%3))).norm();
         //          }
         //        }

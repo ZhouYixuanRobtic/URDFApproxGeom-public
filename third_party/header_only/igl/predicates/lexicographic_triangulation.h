@@ -35,4 +35,3 @@ namespace igl
 #  include "lexicographic_triangulation.cpp"
 #endif
 #endif
-

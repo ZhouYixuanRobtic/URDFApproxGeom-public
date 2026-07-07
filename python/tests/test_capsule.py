@@ -1,4 +1,5 @@
 """Smoke test for the urdf_approx_geom pybind11 extension (capsule path)."""
+
 import json
 import pathlib
 

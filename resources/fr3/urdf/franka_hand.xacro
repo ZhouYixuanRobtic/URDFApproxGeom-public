@@ -33,7 +33,7 @@
                 <inertia ixx="0.00186" ixy="0.0" ixz="0.0" iyy="0.0003" iyz="-2e-05" izz="0.00174"/>
             </inertial>
         </link>
-        
+
         <!-- Define the hand_tcp frame -->
         <link name="${id}_hand_tcp"/>
         <joint name="${id}_hand_tcp_joint" type="fixed">

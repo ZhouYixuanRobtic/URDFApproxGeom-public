@@ -17,7 +17,7 @@
 // sparsity pattern of the matrix involved in the assembly. It should be on if
 // you plan to do many iterations, off if you have to change the matrix
 // structure at every iteration.
-#define SLIM_CACHED 
+#define SLIM_CACHED
 
 #ifdef SLIM_CACHED
 #include "AtA_cached.h"
@@ -33,9 +33,9 @@ namespace igl
 struct SLIMData
 {
   /// #V by 3 list of mesh vertex positions
-  Eigen::MatrixXd V; 
+  Eigen::MatrixXd V;
   /// #F by 3/4 list of mesh faces (triangles/tets)
-  Eigen::MatrixXi F; 
+  Eigen::MatrixXi F;
   /// Mapping energy type
   MappingEnergyType slim_energy;
 
@@ -48,15 +48,15 @@ struct SLIMData
   double soft_const_p;
 
   /// used for exponential energies, ignored otherwise
-  double exp_factor; 
+  double exp_factor;
   /// only supported for 3d
-  bool mesh_improvement_3d; 
+  bool mesh_improvement_3d;
 
   // Output
   /// #V by dim list of mesh vertex positions (dim = 2 for parametrization, 3 otherwise)
-  Eigen::MatrixXd V_o; 
+  Eigen::MatrixXd V_o;
   /// objective value
-  double energy; 
+  double energy;
 
   // INTERNAL
   Eigen::VectorXd M;
@@ -85,7 +85,7 @@ struct SLIMData
 };
 
 /// Compute necessary information to start using SLIM
-/// 
+///
 /// @param[in] V           #V by 3 list of mesh vertex positions
 /// @param[in] F           #F by 3/3 list of mesh faces (triangles/tets)
 /// @param[in] V_init      #V by 3 list of initial mesh vertex positions
@@ -114,7 +114,7 @@ IGL_INLINE void slim_precompute(
 ///
 /// \fileinfo
 IGL_INLINE Eigen::MatrixXd slim_solve(
-  SLIMData& data, 
+  SLIMData& data,
   int iter_num);
 
 /// Internal Routine. Exposed for Integration with SCAF

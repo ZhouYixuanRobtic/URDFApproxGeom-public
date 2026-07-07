@@ -74,5 +74,3 @@ inline float rsqrt(const float f)
 }
 #endif
 #endif
-
-

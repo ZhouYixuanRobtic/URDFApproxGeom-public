@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Qingan Zhou <qnzhou@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "flip_edge.h"
@@ -29,8 +29,8 @@ IGL_INLINE void igl::flip_edge(
   // Before:
   // F(f1,:) = [v1,v2,v4] // in some cyclic order
   // F(f2,:) = [v1,v3,v2] // in some cyclic order
-  // After: 
-  // F(f1,:) = [v1,v3,v4] // in *this* order 
+  // After:
+  // F(f1,:) = [v1,v3,v4] // in *this* order
   // F(f2,:) = [v2,v4,v3] // in *this* order
   //
   //          v1                 v1

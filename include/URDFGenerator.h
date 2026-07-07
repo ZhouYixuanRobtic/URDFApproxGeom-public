@@ -42,43 +42,49 @@
 
  */
 
-
 #ifndef URDFAPPROXGEOM_URDFGNEREATOR_H
 #define URDFAPPROXGEOM_URDFGNEREATOR_H
 
-#include <string>
-#include <urdf_world/types.h>
 #include <urdf_model/model.h>
+#include <urdf_world/types.h>
 #include <Eigen/Dense>
-#include "irmv/bot_common/state/error_code.h"
 #include <filesystem>
+#include <string>
+#include "irmv/bot_common/state/error_code.h"
 
 class URDFGenerator {
-public:
+  public:
     URDFGenerator() = default;
 
     virtual ~URDFGenerator() = default;
-protected:
+
+  protected:
     urdf::ModelInterfaceSharedPtr m_model;
     urdf::ModelInterfaceSharedPtr m_biggest_model;
-public:
-    virtual irmv_core::bot_common::ErrorInfo run(const std::string &urdf_path, const std::string &output_path,
-                                      const std::vector<std::pair<std::string, std::string>>& replace_pairs) = 0;
 
-protected:
-    irmv_core::bot_common::ErrorInfo loadURDF(const std::string &urdf_path, urdf::ModelInterfaceSharedPtr& robot_model);
+  public:
+    virtual irmv_core::bot_common::ErrorInfo run(
+        const std::string& urdf_path, const std::string& output_path,
+        const std::vector<std::pair<std::string, std::string>>& replace_pairs) = 0;
 
-    irmv_core::bot_common::ErrorInfo writeURDF(const std::string& output_path, const urdf::ModelInterfaceSharedPtr& robot_mode);
+  protected:
+    irmv_core::bot_common::ErrorInfo loadURDF(const std::string& urdf_path,
+                                              urdf::ModelInterfaceSharedPtr& robot_model);
 
-    std::string toLowerCase(const std::string &str);
+    irmv_core::bot_common::ErrorInfo writeURDF(const std::string& output_path,
+                                               const urdf::ModelInterfaceSharedPtr& robot_mode);
 
-    irmv_core::bot_common::ErrorInfo loadedIntoIGL( const std::filesystem::path &file_path, Eigen::MatrixXd &V, Eigen::MatrixXi &F,
-                                         Eigen::MatrixXi &N, bool& alreadyOBJ);
+    std::string toLowerCase(const std::string& str);
 
-    irmv_core::bot_common::ErrorInfo saveCollisionGeometry(std::filesystem::path& filename, const Eigen::MatrixXd & V,
-                                                const Eigen::MatrixXi & F);
+    irmv_core::bot_common::ErrorInfo loadedIntoIGL(const std::filesystem::path& file_path,
+                                                   Eigen::MatrixXd& V, Eigen::MatrixXi& F,
+                                                   Eigen::MatrixXi& N, bool& alreadyOBJ);
 
-    static bool replaceWith(std::string &src, const std::string &original, const std::string &now);
+    irmv_core::bot_common::ErrorInfo saveCollisionGeometry(std::filesystem::path& filename,
+                                                           const Eigen::MatrixXd& V,
+                                                           const Eigen::MatrixXi& F);
+
+    static bool replaceWith(std::string& src, const std::string& original, const std::string& now);
 
     /// Resolved mesh fit target for a link: filename (replace_pairs applied) +
     /// link-frame transform from the chosen element's origin. `use_visual` picks
@@ -90,11 +96,9 @@ protected:
         Eigen::Quaterniond rotation{Eigen::Quaterniond::Identity()};
         bool found = false;
     };
-    bool resolveMeshSource(const urdf::LinkSharedPtr &link, bool use_visual,
-                           const std::vector<std::pair<std::string, std::string>> &replace_pairs,
-                           MeshSource &out);
-
+    bool resolveMeshSource(const urdf::LinkSharedPtr& link, bool use_visual,
+                           const std::vector<std::pair<std::string, std::string>>& replace_pairs,
+                           MeshSource& out);
 };
 
-
-#endif //URDFAPPROXGEOM_URDFGNEREATOR_H
+#endif  // URDFAPPROXGEOM_URDFGNEREATOR_H

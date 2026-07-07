@@ -94,7 +94,7 @@ namespace glfw
     template <typename T>
     IGL_INLINE void draw_buffer(
       // can't be const because of writing in and out of `core.viewport`
-      /*const*/ igl::opengl::ViewerCore & core, 
+      /*const*/ igl::opengl::ViewerCore & core,
       Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & R,
       Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & G,
       Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B,

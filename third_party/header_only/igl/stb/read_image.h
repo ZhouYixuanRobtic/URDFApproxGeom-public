@@ -16,9 +16,9 @@ namespace igl
   namespace stb
   {
     // Read an image from a file into 4 memory buffers
-    // 
+    //
     // Supported file formats (based on STB):
-    //  
+    //
     //    JPEG baseline & progressive (12 bpc/arithmetic not supported, same as stock IJG lib)
     //    PNG 1/2/4/8/16-bit-per-channel
     //    TGA (not sure what subset, if a subset)

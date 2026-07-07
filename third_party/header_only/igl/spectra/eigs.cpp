@@ -77,8 +77,8 @@ IGL_INLINE bool igl::spectra::eigs(
   public:
     bool m_solver_is_successfully_factorized;
     ShiftInvert(
-        const Eigen::SparseMatrix<Scalar>& A, 
-        const Eigen::SparseMatrix<Scalar>& B, 
+        const Eigen::SparseMatrix<Scalar>& A,
+        const Eigen::SparseMatrix<Scalar>& B,
         const Scalar sigma):
         m_A(A), m_B(B)
     {

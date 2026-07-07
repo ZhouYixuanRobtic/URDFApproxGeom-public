@@ -68,7 +68,7 @@ IGL_INLINE void igl::cut_mesh(
   // store current number of occurance of each vertex as the alg proceed
   Eigen::Matrix<Index,Eigen::Dynamic,1> occurence(V.rows());
   occurence.setConstant(1);
-  
+
   // set eventual number of occurance of each vertex expected
   Eigen::Matrix<Index,Eigen::Dynamic,1> eventual(V.rows());
   eventual.setZero();
@@ -84,17 +84,17 @@ IGL_INLINE void igl::cut_mesh(
       }
     }
   }
-  
+
   // original number of vertices
-  Index n_v = V.rows(); 
-  
+  Index n_v = V.rows();
+
   // estimate number of new vertices and resize V
   Index n_new = 0;
   for(Index i=0;i<eventual.rows();i++)
     n_new += ((eventual(i) > 0) ? eventual(i)-1 : 0);
   V.conservativeResize(n_v+n_new,Eigen::NoChange);
   I = DerivedI::LinSpaced(V.rows(),0,V.rows());
-  
+
   // pointing to the current bottom of V
   Index pos = n_v;
   for(Index f=0;f<C.rows();f++){
@@ -115,28 +115,28 @@ IGL_INLINE void igl::cut_mesh(
           fi = he.Fi();
           ei = he.Ei();
         }while(C(fi,ei) == 0 && !he.isBorder());
-        
+
         // make a copy
         V.row(pos) << V.row(v0);
         I(pos) = v0;
         // add one occurance to v0
         occurence(v0) += 1;
-        
+
         // replace old v0
         for(Index f0: fan)
           for(Index j=0;j<3;j++)
             if(F(f0,j) == v0)
               F(f0,j) = pos;
-        
+
         // mark cuts as boundary
         FF(f,k) = -1;
         FF(fi,ei) = -1;
-        
+
         pos++;
       }
     }
   }
-  
+
 }
 
 

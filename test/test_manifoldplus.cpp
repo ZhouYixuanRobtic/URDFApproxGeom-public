@@ -51,14 +51,13 @@
 #include "ManifoldPlus/types.h"
 #include "irmv/bot_common/log/singleton_logger.h"
 
-#include <memory>
 #include <filesystem>
-#include <vector>
+#include <memory>
 #include <string>
-
+#include <vector>
 
 class ManifoldTest : public testing::Test {
-protected:
+  protected:
     void SetUp() override {
         m_manifold = std::make_shared<Manifold>();
     }
@@ -68,8 +67,8 @@ protected:
         m_manifold = nullptr;
     }
 
-public:
-    static std::string toLowerCase(const std::string &str) {
+  public:
+    static std::string toLowerCase(const std::string& str) {
         std::string result;
         result.reserve(str.size());
         std::transform(str.begin(), str.end(), std::back_inserter(result),
@@ -77,30 +76,31 @@ public:
         return result;
     }
 
-    static void fetchAllFilesWith(const std::filesystem::path &directory_path, const std::string &suffix,
-                                  std::vector<std::string> &results) {
+    static void fetchAllFilesWith(const std::filesystem::path& directory_path,
+                                  const std::string& suffix, std::vector<std::string>& results) {
         namespace fs = std::filesystem;
         if (!fs::exists(directory_path) || !fs::is_directory(directory_path)) {
-            IRMV_ERROR("Directory does not exist or is not a directory: {}", directory_path.string());
+            IRMV_ERROR("Directory does not exist or is not a directory: {}",
+                       directory_path.string());
             return;
         }
 
         const std::string lower_suffix = toLowerCase(suffix);
         try {
-            for (const auto &entry: fs::recursive_directory_iterator(directory_path)) {
-                if (fs::is_regular_file(entry) && toLowerCase(entry.path().extension().string()) == lower_suffix) {
+            for (const auto& entry : fs::recursive_directory_iterator(directory_path)) {
+                if (fs::is_regular_file(entry) &&
+                    toLowerCase(entry.path().extension().string()) == lower_suffix) {
                     results.push_back(entry.path());
                 }
             }
-        } catch (const fs::filesystem_error &e) {
+        } catch (const fs::filesystem_error& e) {
             IRMV_ERROR("Filesystem error: {}", e.what());
-        } catch (const std::exception &e) {
+        } catch (const std::exception& e) {
             IRMV_ERROR("General error: {}", e.what());
         }
     }
 
-
-    static bool replaceWith(std::string &src, const std::string &original, const std::string &now) {
+    static bool replaceWith(std::string& src, const std::string& original, const std::string& now) {
         size_t pos = src.find(original);
         if (pos != std::string::npos) {
             src.replace(pos, original.length(), now);
@@ -109,7 +109,7 @@ public:
         return false;
     }
 
-protected:
+  protected:
     std::shared_ptr<Manifold> m_manifold;
     MatrixD V, out_V;
     MatrixI F, out_F;
@@ -121,13 +121,13 @@ TEST_F(ManifoldTest, STLTest) {
     std::string meshPath = resourcePath + "/robots/panda/meshes/visual";
     std::vector<std::string> allSTLFiles;
     fetchAllFilesWith(meshPath, ".stl", allSTLFiles);
-    for (auto &stlFile: allSTLFiles) {
+    for (auto& stlFile : allSTLFiles) {
         std::ifstream op(stlFile);
         if (igl::readSTL(op, V, F, N)) {
             m_manifold->ProcessManifold(V, F, 8, &out_V, &out_F);
             replaceWith(stlFile, "/visual/", "/collision/");
             replaceWith(stlFile, ".stl", ".obj");
-            if (!igl::writeOBJ(stlFile, out_V, out_F)){
+            if (!igl::writeOBJ(stlFile, out_V, out_F)) {
                 IRMV_ERROR("Error: Unable to write OBJ file to {}", stlFile);
             } else
                 IRMV_INFO("Success: write watertight OBJ file for {}", stlFile);
@@ -135,7 +135,7 @@ TEST_F(ManifoldTest, STLTest) {
     }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

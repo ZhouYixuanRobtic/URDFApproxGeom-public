@@ -55,7 +55,7 @@ namespace igl
         const Eigen::MatrixBase<DerivedI>& I,
         const Eigen::MatrixBase<DerivedN>& N,
         Eigen::PlainObjectBase<DerivedA> & A);
-        
+
     }
   }
 }
@@ -65,4 +65,3 @@ namespace igl
 #endif
 
 #endif
-

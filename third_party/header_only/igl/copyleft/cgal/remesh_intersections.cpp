@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
 #include "remesh_intersections.h"
@@ -70,13 +70,13 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
 #endif
 
     typedef CGAL::Point_3<Kernel>    Point_3;
-    typedef CGAL::Segment_3<Kernel>  Segment_3; 
+    typedef CGAL::Segment_3<Kernel>  Segment_3;
     typedef CGAL::Plane_3<Kernel>    Plane_3;
     typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
     typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
     typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
     typedef CGAL::Exact_intersections_tag Itag;
-    typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TDS_2,Itag> 
+    typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TDS_2,Itag>
         CDT_2;
     typedef CGAL::Constrained_triangulation_plus_2<CDT_2> CDT_plus_2;
 
@@ -107,7 +107,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
       const auto& fi = itr.first;
       const auto P = T[fi].supporting_plane();
       assert(!P.is_degenerate());
-      for (const auto jtr : itr.second) 
+      for (const auto jtr : itr.second)
       {
         const auto& fj = jtr.first;
         const auto& tj = T[fj];
@@ -136,7 +136,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     std::unordered_map<Index, std::vector<Index>> face_vertices;
 
     // Run constraint Delaunay triangulation on the plane.
-    // 
+    //
     // Inputs:
     //   P  plane to triangulate upone
     //   involved_faces  #F list of indices into triangle of involved faces
@@ -148,7 +148,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
       const Plane_3& P,
       const std::vector<Index>& involved_faces,
       std::vector<Point_3>& vertices,
-      std::vector<std::vector<Index> >& faces) -> void 
+      std::vector<std::vector<Index> >& faces) -> void
     {
       std::vector<CGAL::Object> objects;
 
@@ -162,7 +162,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         {
           continue;
         }
-        for (const auto& index_obj : itr->second) 
+        for (const auto& index_obj : itr->second)
         {
           //const auto& ofid = index_obj.first;
           const auto& obj = index_obj.second;
@@ -181,8 +181,8 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     // set)
     //
     auto find_or_append_point = [&](
-      const Point_3& p, 
-      const size_t ori_f) -> Index 
+      const Point_3& p,
+      const size_t ori_f) -> Index
     {
       assert(stitch_all == false);
       // Stitching triangles according to input connectivity.
@@ -191,7 +191,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
       const auto& f = F.row(ori_f).eval();
 
       // Check if p is one of the triangle corners.
-      for (size_t i=0; i<3; i++) 
+      for (size_t i=0; i<3; i++)
       {
         if (p == triangle[i]) return f[i];
       }
@@ -239,7 +239,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
       new_vertices.push_back(p);
       existing_face_vertices.push_back(index);
       return index;
-      
+
     };
 
     // Determine the vertex indices for each corner of each output triangle.
@@ -248,7 +248,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     // every new triangle, relying on the call to `unique` below to de-duplicate
     // them. Seems this could at least only create one copy per CDT. In general,
     // this could mean 12 copies of a new vertex rather than just 2.
-    // 
+    //
     // Inputs:
     //   vertices  #V list of vertices of cdt
     //   faces  #F list of list of face indices into vertices of cdt
@@ -256,11 +256,11 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     // Side effects:
     //   - add faces to resolved_faces
     //   - add corresponding original face to source_faces
-    //   - 
+    //   -
     auto post_triangulation_process = [&](
       const std::vector<Point_3>& vertices,
       const std::vector<std::vector<Index> >& faces,
-      const std::vector<Index>& involved_faces) -> void 
+      const std::vector<Index>& involved_faces) -> void
     {
       assert(involved_faces.size() > 0);
       std::vector<Index> indices(vertices.size());
@@ -275,14 +275,14 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         }
       }
       // for all faces of the cdt
-      for (const auto& f : faces) 
+      for (const auto& f : faces)
       {
         std::vector<Index> corners(3);
         if(stitch_all){ for(size_t i =0;i<3;i++){ corners[i] = indices[f[i]];} }
         const Point_3& v0 = vertices[f[0]];
         const Point_3& v1 = vertices[f[1]];
         const Point_3& v2 = vertices[f[2]];
-        if(involved_faces.size() == 1) 
+        if(involved_faces.size() == 1)
         {
           const auto& ori_f = involved_faces[0];
           // If only there is only one involved face, all sub-triangles must
@@ -295,19 +295,19 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
           }
           resolved_faces.emplace_back(corners);
           source_faces.push_back(ori_f);
-        }else 
+        }else
         {
-          // CGAL is silly about adding points together: 
+          // CGAL is silly about adding points together:
           // https://stackoverflow.com/questions/46693301/why-can-i-not-add-points-in-cgal
           Point_3 center(
             (v0[0] + v1[0] + v2[0]) / 3.0,
             (v0[1] + v1[1] + v2[1]) / 3.0,
             (v0[2] + v1[2] + v2[2]) / 3.0);
           // O(n²) type loop for a large co-planar patch
-          for (const auto& ori_f : involved_faces) 
+          for (const auto& ori_f : involved_faces)
           {
             const auto& triangle = T[ori_f];
-            if (triangle.has_on(center)) 
+            if (triangle.has_on(center))
             {
               const Plane_3 P = triangle.supporting_plane();
               if(!stitch_all)
@@ -335,9 +335,9 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     };
 
     // Process un-touched faces.
-    for (size_t i=0; i<num_faces; i++) 
+    for (size_t i=0; i<num_faces; i++)
     {
-      if (!is_offending[i] && !T[i].is_degenerate()) 
+      if (!is_offending[i] && !T[i].is_degenerate())
       {
         resolved_faces.push_back( { F(i,0), F(i,1), F(i,2) } );
         source_faces.push_back(i);
@@ -347,7 +347,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     // Process self-intersecting faces.
     std::vector<bool> processed(num_faces, false);
     std::vector<std::pair<Plane_3, std::vector<Index> > > cdt_inputs;
-    for (const auto itr : offending) 
+    for (const auto itr : offending)
     {
       const auto fid = itr.first;
       if (processed[fid]) continue;
@@ -355,14 +355,14 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
 
       const auto loc = intersecting_and_coplanar.find(fid);
       std::vector<Index> involved_faces;
-      if (loc == intersecting_and_coplanar.end()) 
+      if (loc == intersecting_and_coplanar.end())
       {
         involved_faces.push_back(fid);
-      } else 
+      } else
       {
         std::queue<Index> Q;
         Q.push(fid);
-        while (!Q.empty()) 
+        while (!Q.empty())
         {
           const auto index = Q.front();
           involved_faces.push_back(index);
@@ -371,7 +371,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
           const auto overlapping_faces = intersecting_and_coplanar.find(index);
           assert(overlapping_faces != intersecting_and_coplanar.end());
 
-          for (const auto other_index : overlapping_faces->second) 
+          for (const auto other_index : overlapping_faces->second)
           {
             if (processed[other_index]) continue;
             processed[other_index] = true;
@@ -403,7 +403,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     log_time("cdt");
 #endif
 
-    for (size_t i=0; i<num_cdts; i++) 
+    for (size_t i=0; i<num_cdts; i++)
     {
       const auto& vertices = cdt_vertices[i];
       const auto& faces = cdt_faces[i];
@@ -444,7 +444,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
 
     const size_t num_out_faces = resolved_faces.size();
     FF.resize(num_out_faces, 3);
-    for (size_t i=0; i<num_out_faces; i++) 
+    for (size_t i=0; i<num_out_faces; i++)
     {
       FF(i,0) = resolved_faces[i][0];
       FF(i,1) = resolved_faces[i][1];
@@ -484,7 +484,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
 #ifdef REMESH_INTERSECTIONS_TIMING
     log_time("unique");
 #endif
-    if(stitch_all) 
+    if(stitch_all)
     {
       // Merge all vertices having the same coordinates into a single vertex
       // and set IM to identity map.
@@ -499,7 +499,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
       IM << igl::LinSpaced<
         Eigen::Matrix<typename DerivedIM::Scalar, Eigen::Dynamic,1 >
         >(unique_vv.rows(), 0, unique_vv.rows()-1);
-    }else 
+    }else
     {
       // Vertices with the same coordinates would be represented by one vertex.
       // The IM value of a vertex is the index of the representative vertex.

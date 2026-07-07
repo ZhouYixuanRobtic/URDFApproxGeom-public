@@ -7,7 +7,7 @@ template <
   typename DerivedICM
   >
 IGL_INLINE void igl::isolines_map(
-  const Eigen::MatrixBase<DerivedCM> & CM, 
+  const Eigen::MatrixBase<DerivedCM> & CM,
   const Eigen::MatrixBase<Derivediso_color> & iso_color,
   const int interval_thickness,
   const int iso_thickness,
@@ -39,7 +39,7 @@ template <
   typename DerivedICM
   >
 IGL_INLINE void igl::isolines_map(
-  const Eigen::MatrixBase<DerivedCM> & CM, 
+  const Eigen::MatrixBase<DerivedCM> & CM,
   Eigen::PlainObjectBase<DerivedICM> & ICM)
 {
   return isolines_map(

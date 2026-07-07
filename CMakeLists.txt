@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.22)
 
-if (NOT DEFINED CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 17)
-endif ()
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
 set(CMAKE_C_STANDARD 99)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -17,10 +17,10 @@ set(PACKAGE_DESCRIPTION "IRMV URDF Approximated Collision-Geometry Generator")
 
 # Set the project name and language
 project(
-        URDFApproxGeom
-        VERSION ${PROJECT_VERSION}
-        DESCRIPTION ${PACKAGE_DESCRIPTION}
-        LANGUAGES CXX C)
+  URDFApproxGeom
+  VERSION ${PROJECT_VERSION}
+  DESCRIPTION ${PACKAGE_DESCRIPTION}
+  LANGUAGES CXX C)
 
 # options area
 option(ENABLE_WARNINGS "Enable project warnings" ON)
@@ -29,29 +29,28 @@ option(ENABLE_TEST "Enable test " ON)
 option(ENABLE_DOXYGEN "Enable doxygen" OFF)
 option(ENABLE_STATIC "Build with static library" OFF)
 option(COMPILE_${PROJECT_NAME}_PYBINDING "Compile pybind " OFF)
+option(ENABLE_COVERAGE "Enable code coverage instrumentation (gcov/lcov)" OFF)
 
 # Set up modules path and include necessary scripts from cmake_template
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-#required VPN
+# required VPN
 include(FetchContent)
 # Include standard project settings
 include(StandardProjectSettings)
 
-if (ENABLE_STATIC)
-    SET(COMPILE_TYPE "STATIC")
-else ()
-    SET(COMPILE_TYPE "SHARED")
-    set(CMAKE_POSITION_INDEPENDENT_CODE ON) # -fPIC
-endif ()
+if(ENABLE_STATIC)
+  set(COMPILE_TYPE "STATIC")
+else()
+  set(COMPILE_TYPE "SHARED")
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON) # -fPIC
+endif()
 
 # find package area
 include(Utilities)
 
 # find IRMV packages (NO IRMV DEPENDS)
-set(THIS_PACKAGE_IRMV_DEPENDS
-        "irmv_core 1.0"
-)
+set(THIS_PACKAGE_IRMV_DEPENDS "irmv_core 1.0")
 prepare_irmv_dependencies("${THIS_PACKAGE_IRMV_DEPENDS}" IRMV_PACKAGE_DEPENDS)
 
 # find other packages
@@ -59,135 +58,143 @@ find_package(Eigen3 3.1 REQUIRED)
 find_package(yaml-cpp 0.6 REQUIRED)
 find_package(urdfdom REQUIRED)
 # Define dependencies with versions
-set(THIS_PACKAGE_DEPENDS
-        "Eigen3 3.1"
-        "yaml-cpp 0.6"
-        "urdfdom "
-        "tinyxml2 8.0"
-)
+set(THIS_PACKAGE_DEPENDS "Eigen3 3.1" "yaml-cpp 0.6" "urdfdom " "tinyxml2 8.0")
 
-set(THIS_PACKAGE_BINARY_DEPENDS
-        "libeigen3-dev 3.1"
-        "libyaml-cpp-dev 0.6"
-        "liburdfdom-dev 1.0"
-        "libtinyxml2-dev 8.0"
-)
+set(THIS_PACKAGE_BINARY_DEPENDS "libeigen3-dev 3.1" "libyaml-cpp-dev 0.6"
+                                "liburdfdom-dev 1.0" "libtinyxml2-dev 8.0")
 # Find each package with the specified version
-prepare_debian_dependencies("${THIS_PACKAGE_BINARY_DEPENDS}" DEBIAN_PACKAGE_DEPENDS)
+prepare_debian_dependencies("${THIS_PACKAGE_BINARY_DEPENDS}"
+                            DEBIAN_PACKAGE_DEPENDS)
 
-# add definitions
-# common definitions
-# Resource/config directory paths baked into the C++ apps and tests. Cache
-# variables default to the source tree so tests run from the build dir without
-# installing; override at configure time (e.g.
+# add definitions common definitions Resource/config directory paths baked into
+# the C++ apps and tests. Cache variables default to the source tree so tests
+# run from the build dir without installing; override at configure time (e.g.
 # -DURDFApproxGeom_CONFIG_PATH=...) to the install layout when packaging
-# binaries, paired with install(DIRECTORY config/) below so the tree exists
-# at the baked path after `cmake --install`.
-set(URDFApproxGeom_RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+# binaries, paired with install(DIRECTORY config/) below so the tree exists at
+# the baked path after `cmake --install`.
+set(URDFApproxGeom_RESOURCE_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/resources"
     CACHE PATH "Bundled resources/ directory baked into binaries")
-set(URDFApproxGeom_CONFIG_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config"
+set(URDFApproxGeom_CONFIG_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/config"
     CACHE PATH "Bundled config/ preset directory baked into binaries")
 add_definitions(
-        -D${PROJECT_NAME}_RESOURCE_PATH="${URDFApproxGeom_RESOURCE_PATH}"
-        -D${PROJECT_NAME}_CONFIG_PATH="${URDFApproxGeom_CONFIG_PATH}"
-)
+  -D${PROJECT_NAME}_RESOURCE_PATH="${URDFApproxGeom_RESOURCE_PATH}"
+  -D${PROJECT_NAME}_CONFIG_PATH="${URDFApproxGeom_CONFIG_PATH}")
 
 # include area (should be installed into the system)
 set(THIS_PACKAGE_INCLUDE_DIRS
-        include
-        third_party/header_only
-        third_party/ManifoldPlus/include
-        third_party/sphere_tree/src
-        bot_utils/sphereTreeWrapper/include
-)
+    include third_party/header_only third_party/ManifoldPlus/include
+    third_party/sphere_tree/src bot_utils/sphereTreeWrapper/include)
 
 # special handle to pass include directories to parent scope
-if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-else ()
-    set(${PROJECT_NAME}_INCLUDE_DIRS_CHILD)
-    foreach (DIR ${THIS_PACKAGE_INCLUDE_DIRS})
-        seT(${PROJECT_NAME}_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${DIR}")
-        list(APPEND ${PROJECT_NAME}_INCLUDE_DIRS_CHILD ${${PROJECT_NAME}_DIR})
-    endforeach ()
-    set(${PROJECT_NAME}_INCLUDE_DIRS ${${PROJECT_NAME}_INCLUDE_DIRS_CHILD} PARENT_SCOPE)
-endif ()
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+
+else()
+  set(${PROJECT_NAME}_INCLUDE_DIRS_CHILD)
+  foreach(DIR ${THIS_PACKAGE_INCLUDE_DIRS})
+    set(${PROJECT_NAME}_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${DIR}")
+    list(APPEND ${PROJECT_NAME}_INCLUDE_DIRS_CHILD ${${PROJECT_NAME}_DIR})
+  endforeach()
+  set(${PROJECT_NAME}_INCLUDE_DIRS
+      ${${PROJECT_NAME}_INCLUDE_DIRS_CHILD}
+      PARENT_SCOPE)
+endif()
 
 # include area
 include_directories(
-        SYSTEM
-
-        # package include directories
-        ${EIGEN3_INCLUDE_DIRS}
-
-        # include directories that should be installed
-        ${THIS_PACKAGE_INCLUDE_DIRS}
-        # irmv package include directories
-        ${irmv_core_INCLUDE_DIRS}
-        /usr/include/irmv/third_party/
-)
+  SYSTEM
+  # package include directories
+  ${EIGEN3_INCLUDE_DIRS}
+  # include directories that should be installed
+  ${THIS_PACKAGE_INCLUDE_DIRS}
+  # irmv package include directories
+  ${irmv_core_INCLUDE_DIRS}
+  /usr/include/irmv/third_party/)
 
 add_subdirectory(third_party/ManifoldPlus)
 add_subdirectory(third_party/sphere_tree)
 add_subdirectory(bot_utils)
 
 # project library area
-set(THIS_PACKAGE_TARGETS
-        ${LIBS_TO_LINK_OUT}
-        ManifoldPlus
-        sphereTreeWrapper
-)
-add_library(${PROJECT_NAME}
-        ${COMPILE_TYPE}
-        src/SphereTreeURDFGenerator.cpp
-        src/ConvexHullCollisionURDFGenerator.cpp
-        src/CapsuleFitter.cpp
-        src/CapsuleCrossSection.cpp
-        src/CapsuleURDFGenerator.cpp
-        src/URDFGenerator.cpp
-)
+set(THIS_PACKAGE_TARGETS ${LIBS_TO_LINK_OUT} ManifoldPlus sphereTreeWrapper)
+add_library(
+  ${PROJECT_NAME}
+  ${COMPILE_TYPE}
+  src/SphereTreeURDFGenerator.cpp
+  src/ConvexHullCollisionURDFGenerator.cpp
+  src/CapsuleFitter.cpp
+  src/CapsuleCrossSection.cpp
+  src/CapsuleURDFGenerator.cpp
+  src/URDFGenerator.cpp)
 # link irmv package and/or other packages
-target_link_libraries(${PROJECT_NAME} PUBLIC ${THIS_PACKAGE_TARGETS} ${irmv_core_LIBRARIES} gmp tinyxml2 urdfdom_model urdfdom_world urdfdom_sensor)
+target_link_libraries(
+  ${PROJECT_NAME}
+  PUBLIC ${THIS_PACKAGE_TARGETS}
+         ${irmv_core_LIBRARIES}
+         gmp
+         tinyxml2
+         urdfdom_model
+         urdfdom_world
+         urdfdom_sensor)
 
 add_subdirectory(app)
 
 # add test
-if (ENABLE_TEST)
-    enable_testing()
-    add_subdirectory(test)
-endif ()
+if(ENABLE_TEST)
+  enable_testing()
+  add_subdirectory(test)
+endif()
 
-#add_subdirectory(benchmark)
+# add_subdirectory(benchmark)
 
-# Python bindings (pybind11); enabled with -DCOMPILE_${PROJECT_NAME}_PYBINDING=ON
-if (COMPILE_${PROJECT_NAME}_PYBINDING)
-    add_subdirectory(interface)
-endif ()
+# Python bindings (pybind11); enabled with
+# -DCOMPILE_${PROJECT_NAME}_PYBINDING=ON
+if(COMPILE_${PROJECT_NAME}_PYBINDING)
+  add_subdirectory(interface)
+endif()
 
 # debug for address and undefined behavior sanitizer
-if (ENABLE_SANITIZER AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    include(Sanitizers)
-    myproject_enable_sanitizers(${PROJECT_NAME}_interface ON ON ON OFF ON)
-endif ()
+if(ENABLE_SANITIZER AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+  include(Sanitizers)
+  myproject_enable_sanitizers(${PROJECT_NAME}_interface ON ON ON OFF ON)
+endif()
+
+# Code coverage instrumentation (gcov/lcov)
+if(ENABLE_COVERAGE)
+  include(Tests)
+  myproject_enable_coverage(${PROJECT_NAME})
+endif()
 
 # package area
 include(PackageProject)
 myproject_package_project(
-        NAME ${PROJECT_NAME}
-        VERSION ${PROJECT_VERSION}
-        TARGETS ${THIS_PACKAGE_TARGETS} ${PROJECT_NAME} convex spherized capsuleized
-        PUBLIC_INCLUDES ${THIS_PACKAGE_INCLUDE_DIRS}
-        PUBLIC_DEPENDENCIES ${THIS_PACKAGE_IRMV_DEPENDS} ${THIS_PACKAGE_DEPENDS}
-)
+  NAME
+  ${PROJECT_NAME}
+  VERSION
+  ${PROJECT_VERSION}
+  TARGETS
+  ${THIS_PACKAGE_TARGETS}
+  ${PROJECT_NAME}
+  convex
+  spherized
+  capsuleized
+  PUBLIC_INCLUDES
+  ${THIS_PACKAGE_INCLUDE_DIRS}
+  PUBLIC_DEPENDENCIES
+  ${THIS_PACKAGE_IRMV_DEPENDS}
+  ${THIS_PACKAGE_DEPENDS})
 
 # Install the preset config/ tree so packaged binaries can resolve the baked
 # URDFApproxGeom_CONFIG_PATH at their install location. Build package images
-# with -DURDFApproxGeom_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/share/URDFApproxGeom/config.
+# with
+# -DURDFApproxGeom_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/share/URDFApproxGeom/config.
 include(GNUInstallDirs)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/config/
         DESTINATION share/URDFApproxGeom/config)
 
 set(CPACK_PACKAGE_FILE_NAME
-        "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
+    "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
 )
 
 set(CPACK_GENERATOR "DEB")
@@ -195,38 +202,38 @@ set(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
 set(CPACK_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}")
 set(CPACK_PACKAGE_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${AUTHOR}) #given your own name
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${AUTHOR}) # given your own name
 
 # Use a valid Debian architecture name
-if ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
-elseif ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "aarch64")
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "arm64")
-else ()
-    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})
-endif ()
-
+if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+  set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "aarch64")
+  set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "arm64")
+else()
+  set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})
+endif()
 
 # Generate CPACK_DEBIAN_PACKAGE_DEPENDS
 
 # Set the package dependencies
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.28), libstdc++6 (>= 9.4), python3 (>= 3.8), ${DEBIAN_PACKAGE_DEPENDS}, ${IRMV_PACKAGE_DEPENDS}")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS
+    "libc6 (>= 2.28), libstdc++6 (>= 9.4), python3 (>= 3.8), ${DEBIAN_PACKAGE_DEPENDS}, ${IRMV_PACKAGE_DEPENDS}"
+)
 
 include(CPack)
 
-if (ENABLE_DOXYGEN)
-    include(Doxygen)
-    # Exclude the pybind11 and third_party directories from the documentation
-    set(EXCLUDE_PATH_AND_ITEMS
-            "${CMAKE_CURRENT_SOURCE_DIR}/interface/pybind11"
-            "${CMAKE_CURRENT_SOURCE_DIR}/third_party"
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-debug"
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-release"
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-docker-debug"
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-docker-release"
-            "${CMAKE_CURRENT_SOURCE_DIR}/example"
-            "${CMAKE_CURRENT_SOURCE_DIR}/setup.py"
-    )
+if(ENABLE_DOXYGEN)
+  include(Doxygen)
+  # Exclude the pybind11 and third_party directories from the documentation
+  set(EXCLUDE_PATH_AND_ITEMS
+      "${CMAKE_CURRENT_SOURCE_DIR}/interface/pybind11"
+      "${CMAKE_CURRENT_SOURCE_DIR}/third_party"
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-debug"
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-release"
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-docker-debug"
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-docker-release"
+      "${CMAKE_CURRENT_SOURCE_DIR}/example"
+      "${CMAKE_CURRENT_SOURCE_DIR}/setup.py")
 
-    myproject_enable_doxygen("awesome-sidebar" "${EXCLUDE_PATH_AND_ITEMS}")
-endif ()
+  myproject_enable_doxygen("awesome-sidebar" "${EXCLUDE_PATH_AND_ITEMS}")
+endif()

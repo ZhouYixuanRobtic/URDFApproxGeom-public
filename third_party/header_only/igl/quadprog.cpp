@@ -36,14 +36,14 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::quadprog(
   VectorSn bc = VectorSn::Constant(dyn_n,1,-1e26);
   Arraybn k = Arraybn::Constant(dyn_n,1,false);
   Eigen::Index iter;
-  // n³ is probably way too conservative. 
+  // n³ is probably way too conservative.
   for(iter = 0;iter<dyn_n*dyn_n*dyn_n;iter++)
   {
     // For dual contouring 99% of the time the active set is empty.
     // Optimize for this common case.
     // Windows needs template arguments spelled out
     x = min_quad_with_fixed<Scalar,n,m>(H,f,k,bc,A,b);
-    // constraint violations 
+    // constraint violations
     VectorSn vl = lb-x;
     VectorSn vu = x-ub;
 

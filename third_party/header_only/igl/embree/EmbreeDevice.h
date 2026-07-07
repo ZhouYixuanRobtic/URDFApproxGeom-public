@@ -47,15 +47,15 @@ namespace igl
 
         EmbreeDevice():embree_device(nullptr),embree_device_cntr(0) {}
 
-        ~EmbreeDevice() 
-        { 
+        ~EmbreeDevice()
+        {
             if(embree_device)
                 rtcReleaseDevice(embree_device);
         }
 
-        RTCDevice get(const char *config=nullptr) 
+        RTCDevice get(const char *config=nullptr)
         {
-            if(!embree_device) 
+            if(!embree_device)
             {
                 embree_device = rtcNewDevice (config);
                 if(rtcGetDeviceError (embree_device) != RTC_ERROR_NONE)
@@ -73,7 +73,7 @@ namespace igl
         {
             if(!--embree_device_cntr) {
                 rtcReleaseDevice (embree_device);
-                embree_device = nullptr;                
+                embree_device = nullptr;
             #ifdef IGL_VERBOSE
                     std::cerr << "Embree: core released." << std::endl;
             #endif

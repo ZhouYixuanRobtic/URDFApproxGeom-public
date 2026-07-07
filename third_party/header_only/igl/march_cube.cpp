@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2021 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "march_cube.h"
 
@@ -12,8 +12,8 @@
 // into the respective functions in igl::marching_cubes
 //
 // Even if I make it a lambda with no arguments (all capture by reference [&])
-// and call it immediately I get a 1.25× slow-down. 
-// 
+// and call it immediately I get a 1.25× slow-down.
+//
 // Maybe keeping it out of a function allows the compiler to optimize with the
 // loop? But then I guess that measn this function is not getting inlined? Or
 // that it's not getting optimized after inlining?
@@ -101,7 +101,7 @@ IGL_INLINE void igl::march_cube(
           t = (isovalue - a)/delta;
         };
         // record global index into local table
-        edge_vertices[e] = 
+        edge_vertices[e] =
           ij2vertex(cI(a2eConnection[e][0]),cI(a2eConnection[e][1]),t);
         assert(edge_vertices[e] >= 0);
         assert(edge_vertices[e] < n);
@@ -133,4 +133,4 @@ template void igl::march_cube<Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0,
 #ifdef WIN32
 template void __cdecl igl::march_cube<class Eigen::MatrixBase<class Eigen::Matrix<double,-1,-1,0,-1,-1> >,double,__int64,class Eigen::Matrix<double,-1,-1,0,-1,-1>,class Eigen::Matrix<int,-1,-1,0,-1,-1> >(class Eigen::MatrixBase<class Eigen::Matrix<double,-1,-1,0,-1,-1> > const &,class Eigen::Matrix<double,8,1,0,8,1> const &,class Eigen::Matrix<__int64,8,1,0,8,1> const &,double const &,class Eigen::PlainObjectBase<class Eigen::Matrix<double,-1,-1,0,-1,-1> > &,__int64 &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > &,__int64 &,class std::unordered_map<__int64,int,struct std::hash<__int64>,struct std::equal_to<__int64>,class std::allocator<struct std::pair<__int64 const ,int> > > &);
 #endif
-#endif 
+#endif

@@ -18,7 +18,7 @@ namespace igl
   {
     /// Given two segments in 2d test whether they intersect each other
     /// using predicates orient2d
-    /// 
+    ///
     /// @param[in] A:   1st endpoint of segment 1
     /// @param[in] B:   2st endpoint of segment 1
     /// @param[in] C:   1st endpoint of segment 2

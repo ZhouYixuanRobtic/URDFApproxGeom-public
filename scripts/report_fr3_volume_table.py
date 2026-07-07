@@ -24,6 +24,7 @@ def import_project_modules():
         sys.path.insert(0, scripts_dir)
     from urdf_approx_geom import generate
     from check_capsule_coverage import evaluate_capsules
+
     return generate, evaluate_capsules
 
 

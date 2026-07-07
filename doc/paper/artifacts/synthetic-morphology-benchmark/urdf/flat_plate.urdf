@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="flat_plate">
+  <link name="world" />
+  <link name="flat_plate">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/flat_plate.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="../meshes/flat_plate.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="joint_world_flat_plate" type="fixed">
+    <parent link="world" />
+    <child link="flat_plate" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+</robot>

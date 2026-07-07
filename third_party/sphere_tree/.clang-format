@@ -1,4 +1,3 @@
 BasedOnStyle: LLVM
 SortIncludes: false
 Standard: c++11
-

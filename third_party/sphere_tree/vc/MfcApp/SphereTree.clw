@@ -351,4 +351,3 @@ ControlCount=3
 Control1=IDC_OUTPUTBOX,edit,1352732676
 Control2=IDC_CANCEL,button,1342242816
 Control3=IDC_HIDE,button,1342242816
-

@@ -11,7 +11,7 @@
 #include "igl_inline.h"
 #include <Eigen/Core>
 
-namespace igl 
+namespace igl
 {
   /// Given a point, p0, on an isosurface, construct a shell of epsilon sized cubes surrounding the surface.
   /// These cubes can be used as the input to marching cubes.
@@ -28,10 +28,10 @@ namespace igl
   ///   represents 8 corners of cube in y-x-z binary counting order.
   ///
   template <
-    typename DerivedP0, 
-    typename Func, 
-    typename DerivedS, 
-    typename DerivedV, 
+    typename DerivedP0,
+    typename Func,
+    typename DerivedS,
+    typename DerivedV,
     typename DerivedI>
   IGL_INLINE void sparse_voxel_grid(
     const Eigen::MatrixBase<DerivedP0>& p0,

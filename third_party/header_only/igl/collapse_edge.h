@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_COLLAPSE_EDGE_H
 #define IGL_COLLAPSE_EDGE_H
@@ -94,7 +94,7 @@ namespace igl
     Eigen::VectorXi & EMAP,
     Eigen::MatrixXi & EF,
     Eigen::MatrixXi & EI);
-  /// Collapse least-cost edge from a priority queue and update queue 
+  /// Collapse least-cost edge from a priority queue and update queue
   ///
   /// See decimate.h for more details.
   ///

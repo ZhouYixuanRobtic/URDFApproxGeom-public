@@ -10,12 +10,12 @@ namespace igl
 {
   /// Read triangular mesh from ply file, filling in vertex positions, normals
   /// and texture coordinates, if available
-  /// also read additional properties associated with vertex,faces and edges 
+  /// also read additional properties associated with vertex,faces and edges
   /// and file comments
   ///
   /// @tparam Derived* from Eigen matrix parameters
   /// @param[in] ply_stream  ply file input stream
-  /// @param[out] V  (#V,3) matrix of vertex positions 
+  /// @param[out] V  (#V,3) matrix of vertex positions
   /// @param[out] F  (#F,3) list of face indices into vertex positions
   /// @param[out] E  (#E,2) list of edge indices into vertex positions
   /// @param[out] N  (#V,3) list of normals

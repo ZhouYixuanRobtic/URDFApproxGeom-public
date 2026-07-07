@@ -33,8 +33,11 @@ def write_capsule_mjcf(urdf_path=FR3_URDF, caps_json=CAPS_JSON, out_mjcf=OUT_MJC
     import pybullet as p
 
     caps = json.load(open(caps_json))
-    urdf_txt = open(urdf_path).read().replace(
-        "/workspace/resources/fr3", os.path.join(REPO, "resources/fr3"))
+    urdf_txt = (
+        open(urdf_path)
+        .read()
+        .replace("/workspace/resources/fr3", os.path.join(REPO, "resources/fr3"))
+    )
     tmp = "/tmp/fr3_host.urdf"
     open(tmp, "w").write(urdf_txt)
 
@@ -53,8 +56,7 @@ def write_capsule_mjcf(urdf_path=FR3_URDF, caps_json=CAPS_JSON, out_mjcf=OUT_MJC
     asset = ET.SubElement(mujoco, "asset")
     worldbody = ET.SubElement(mujoco, "worldbody")
     ET.SubElement(worldbody, "light", {"pos": "0 0 3", "dir": "0 0 -1", "diffuse": "0.8 0.8 0.8"})
-    ET.SubElement(worldbody, "geom", {"type": "plane", "size": "2 2 0.1",
-                                      "rgba": "0.2 0.25 0.3 1"})
+    ET.SubElement(worldbody, "geom", {"type": "plane", "size": "2 2 0.1", "rgba": "0.2 0.25 0.3 1"})
 
     # gray link meshes for context
     mesh_assets = {}
@@ -77,10 +79,17 @@ def write_capsule_mjcf(urdf_path=FR3_URDF, caps_json=CAPS_JSON, out_mjcf=OUT_MJC
                 mesh_assets[mf] = mname
                 ET.SubElement(asset, "mesh", {"name": mname, "file": mf})
             wpos, worn = p.multiplyTransforms(lw_pos, lw_orn, list(c[5]), list(c[6]))
-            ET.SubElement(worldbody, "geom", {
-                "type": "mesh", "mesh": mesh_assets[mf],
-                "pos": fmt_vec(wpos), "quat": fmt_vec(quat_xyzw_to_wxyz(worn)),
-                "rgba": "0.7 0.7 0.78 1"})
+            ET.SubElement(
+                worldbody,
+                "geom",
+                {
+                    "type": "mesh",
+                    "mesh": mesh_assets[mf],
+                    "pos": fmt_vec(wpos),
+                    "quat": fmt_vec(quat_xyzw_to_wxyz(worn)),
+                    "rgba": "0.7 0.7 0.78 1",
+                },
+            )
 
     # red capsule primitives
     drawn = 0
@@ -98,11 +107,16 @@ def write_capsule_mjcf(urdf_path=FR3_URDF, caps_json=CAPS_JSON, out_mjcf=OUT_MJC
         for cp in body["capsules"]:
             P0 = origin + R @ np.array(cp["p0"], dtype=float)
             P1 = origin + R @ np.array(cp["p1"], dtype=float)
-            ET.SubElement(worldbody, "geom", {
-                "type": "capsule",
-                "fromto": fmt_vec(np.concatenate([P0, P1])),
-                "size": f"{float(cp['radius']):.6f}",
-                "rgba": "1.0 0.15 0.15 0.5"})
+            ET.SubElement(
+                worldbody,
+                "geom",
+                {
+                    "type": "capsule",
+                    "fromto": fmt_vec(np.concatenate([P0, P1])),
+                    "size": f"{float(cp['radius']):.6f}",
+                    "rgba": "1.0 0.15 0.15 0.5",
+                },
+            )
             drawn += 1
 
     tree = ET.ElementTree(mujoco)

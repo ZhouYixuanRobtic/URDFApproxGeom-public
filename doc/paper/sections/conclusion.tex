@@ -1,0 +1,32 @@
+% ============================================================
+% VIII. CONCLUSION
+% ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+We have presented URDFApproxGeom, an integrated open-source toolchain for automatic conversion of mesh-based URDF collision geometry into convex, sphere-tree, and capsule approximations.
+The toolchain provides a unified CLI and Python API, named presets, validation metrics with pass/fail gates, and qualitative visualization support, making it immediately usable in existing robotics workflows.
+
+The main methodological contribution is the automatic capsule-output pipeline, which produces low-count analytic capsule primitives whose vertex coverage, tightness, and runtime can be measured and tuned through the accompanying validation workflow. The pipeline proceeds through principal-axis sectioning, adaptive circle fitting, collinear merging, vertex-coverage-aware growth, endpoint tightening, inflation-based splitting, and nested-capsule pruning.
+Each capsule is emitted as a URDF-compatible cylinder-plus-two-sphere decomposition alongside a JSON sidecar with the canonical analytic parameters.
+
+\subsection*{Future Work}
+
+Several directions for future development are evident:
+
+\paragraph{Broader robot benchmarks.}
+The current evaluation focuses on the Franka FR3 arm.
+Applying the pipeline to a wider range of robot morphologies---including mobile manipulators, humanoids, parallel kinematics, and non-tubular links---would reveal generalizability limits and guide algorithmic improvements.
+
+\paragraph{Topology-aware capsule decomposition.}
+The PCA-based sectioning assumes a single dominant axis per link.
+For branched or non-elongated geometry, algorithms that discover multiple local axes or use volumetric over-segmentation before per-segment capsule fitting could improve approximation quality.
+
+\paragraph{URDF format extension.}
+Advocating for and implementing a native capsule element in the URDF standard would eliminate the need for cylinder-sphere decomposition, enabling simulators and planners to directly use the capsule distance function.
+
+\paragraph{Tighter integration with collision libraries.}
+The JSON sidecar format is a step toward making primitive parameters reusable, but tighter integration with collision-checking libraries (e.g., FCL~\cite{pan2012fcl} and its derivatives, or the Drake geometry framework) would allow the generated capsules to be used natively without manual sidecar parsing.
+
+\paragraph{Learning-based fitting.}
+While the current pipeline is entirely geometric, a learned approach could potentially predict capsule configurations from mesh topology, though generalizability beyond the training distribution and the cost of generating labeled training data remain open challenges.

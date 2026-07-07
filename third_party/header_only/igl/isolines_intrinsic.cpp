@@ -95,7 +95,7 @@ void igl::isolines_intrinsic(
   iB.resize(uE2I.size(),F.cols());
   iFI.resize(uE2I.size());
   Eigen::VectorXi U(uE2I.size());
-  const auto flipped = 
+  const auto flipped =
     [&uE,&F,&EMAP,&uEE,&uEC](const int u, const int f, const int k)->bool
   {
     return uE(u,0) != F(f,(k+1)%3);
@@ -119,7 +119,7 @@ void igl::isolines_intrinsic(
       U(w) = u;
     }
   }
-  
+
   const int num_edge_crossings = iB.rows();
   // Vertex crossings
   std::unordered_map<int,int> V2I;

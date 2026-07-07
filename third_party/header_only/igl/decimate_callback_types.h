@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_DECIMATE_CALLBACK_TYPES_H
 #define IGL_DECIMATE_CALLBACK_TYPES_H
@@ -32,7 +32,7 @@ namespace igl
   /// @param[in] EI  #E by 2 list of edge flap corners (see above).
   /// @param[out] cost  cost of collapsing edge e
   /// @param[out] p  placement of merged vertex resulting from collapse
-  using decimate_cost_and_placement_callback = 
+  using decimate_cost_and_placement_callback =
     std::function<void(
       const int                                           ,/*e*/
       const Eigen::MatrixXd &                             ,/*V*/
@@ -44,7 +44,7 @@ namespace igl
       double &                                            ,/*cost*/
       Eigen::RowVectorXd &                                 /*p*/
       )>;
-  /// Function handle used to control whether the queue processing in 
+  /// Function handle used to control whether the queue processing in
   /// igl::decimate should stop.
   ///
   /// See decimate.h for more details.
@@ -69,7 +69,7 @@ namespace igl
   /// @param[in] f1  index into F of face collpased on left.
   /// @param[in] f2  index into F of face collpased on right.
   /// @return whether to stop
-  using decimate_stopping_condition_callback = 
+  using decimate_stopping_condition_callback =
     std::function<bool(
       const Eigen::MatrixXd &                             ,/*V*/
       const Eigen::MatrixXi &                             ,/*F*/
@@ -87,7 +87,7 @@ namespace igl
       const int                                            /*f2*/
       )>;
   /// Function handle called just before `collapse_edge` is attempted. If this
-  /// function returns false then the collapse is aborted. 
+  /// function returns false then the collapse is aborted.
   ///
   /// See decimate.h for more details.
   ///
@@ -107,7 +107,7 @@ namespace igl
   /// @param[in] e  index into E of attempted collapsed edge. Set to -1 if Q is empty or
   ///               contains only infinite cost edges.
   /// @return true if collapse should be carried out
-  using decimate_pre_collapse_callback = 
+  using decimate_pre_collapse_callback =
     std::function<bool(
       const Eigen::MatrixXd &                             ,/*V*/
       const Eigen::MatrixXi &                             ,/*F*/
@@ -120,7 +120,7 @@ namespace igl
       const Eigen::MatrixXd &                             ,/*C*/
       const int                                            /*e*/
       )>;
-  /// Function handle called just after `collapse_edge` is attempted. 
+  /// Function handle called just after `collapse_edge` is attempted.
   ///
   /// See decimate.h for more details.
   ///
@@ -144,7 +144,7 @@ namespace igl
   /// @param[in] f1  index into F of face collpased on left.
   /// @param[in] f2  index into F of face collpased on right.
   /// @param[in] collapsed whether collapse actual took place
-  using decimate_post_collapse_callback = 
+  using decimate_post_collapse_callback =
     std::function<void(
       const Eigen::MatrixXd &                             ,/*V*/
       const Eigen::MatrixXi &                             ,/*F*/

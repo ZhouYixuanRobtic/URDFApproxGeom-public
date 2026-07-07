@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "bezier.h"
 #include <cassert>
@@ -23,8 +23,8 @@ IGL_INLINE void igl::bezier(
   int degree = Vtemp.rows()-1;
   /* Triangle computation	*/
   for (int i = 1; i <= degree; i++)
-  {	
-    for (int j = 0; j <= degree-i; j++) 
+  {
+    for (int j = 0; j <= degree-i; j++)
     {
       Vtemp.row(j) = ((1.0 - t) * Vtemp.row(j) + t * Vtemp.row(j+1)).eval();
     }

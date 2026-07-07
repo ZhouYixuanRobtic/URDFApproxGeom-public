@@ -26,7 +26,7 @@ IGL_INLINE void igl::embree::EmbreeRenderer::init_view()
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
   camera_up << 0, 1, 0;
-  
+
   rot_matrix = Eigen::Matrix3f::Identity();
 
   view = Eigen::Matrix4f::Identity();
@@ -34,7 +34,7 @@ IGL_INLINE void igl::embree::EmbreeRenderer::init_view()
   norm = Eigen::Matrix4f::Identity();
 
   orthographic = false;
-  
+
 
 }
 
@@ -149,7 +149,7 @@ IGL_INLINE igl::embree::EmbreeRenderer::~EmbreeRenderer()
 {
   if(initialized)
     deinit();
-  
+
   igl::embree::EmbreeDevice::release_device();
 }
 
@@ -212,9 +212,9 @@ IGL_INLINE bool igl::embree::EmbreeRenderer::intersect_ray(
   return false;
 }
 
-IGL_INLINE void 
+IGL_INLINE void
 igl::embree::EmbreeRenderer
-::create_ray(RTCRayHit& ray, const Eigen::RowVector3f& origin, 
+::create_ray(RTCRayHit& ray, const Eigen::RowVector3f& origin,
  const Eigen::RowVector3f& direction, float tnear, float tfar, int mask) const
 {
   ray.ray.org_x = origin[0];
@@ -273,7 +273,7 @@ igl::embree::EmbreeRenderer
   view = view
     * (rot_matrix * Eigen::Scaling(camera_zoom * camera_base_zoom)
     * Eigen::Translation3f(camera_translation + camera_base_translation)).matrix();
-  
+
   if (orthographic)
   {
     float length = (camera_eye - camera_center).norm();
@@ -286,9 +286,9 @@ igl::embree::EmbreeRenderer
   }
 
   // go over all pixels in the "view"
-  for(int x=0;x<(int)width;++x) 
+  for(int x=0;x<(int)width;++x)
   {
-    for(int y=0;y<(int)height;++y) 
+    for(int y=0;y<(int)height;++y)
     {
       Vec3f s,d,dir;
       igl::embree::EmbreeRenderer::Hit hit;
@@ -340,7 +340,7 @@ igl::embree::EmbreeRenderer
           B(x,y)=0;
         }
         // give the same alpha to all points with something behind
-        A(x,y)=255; 
+        A(x,y)=255;
       } else {
         R(x,y)=0;
         G(x,y)=0;
@@ -402,39 +402,39 @@ IGL_INLINE void igl::embree::EmbreeRenderer::set_data(
 }
 
 template <typename Derivedr>
-IGL_INLINE void 
+IGL_INLINE void
 igl::embree::EmbreeRenderer::set_rot(const Eigen::MatrixBase<Derivedr> &r)
 {
   this->rot_matrix = r.template cast<float>();
 }
 
 template <typename T>
-IGL_INLINE void 
+IGL_INLINE void
 igl::embree::EmbreeRenderer::set_zoom(T zoom)
 {
   this->camera_zoom=zoom;
 }
 
 template <typename Derivedtr>
-IGL_INLINE void 
+IGL_INLINE void
 igl::embree::EmbreeRenderer::set_translation(const Eigen::MatrixBase<Derivedtr> &tr)
 {
   this->camera_translation=tr.template cast<float>();
 }
 
-IGL_INLINE void 
+IGL_INLINE void
 igl::embree::EmbreeRenderer::set_face_based(bool _f)
 {
   this->face_based=_f;
 }
 
-IGL_INLINE void 
+IGL_INLINE void
 igl::embree::EmbreeRenderer::set_orthographic(bool o)
 {
   this->orthographic=o;
 }
 
-IGL_INLINE void 
+IGL_INLINE void
 igl::embree::EmbreeRenderer::set_double_sided(bool d)
 {
   this->double_sided=d;

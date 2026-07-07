@@ -1,9 +1,9 @@
-// This file is part of libigl, a simple c++ geometry processing library. 
-// 
+// This file is part of libigl, a simple c++ geometry processing library.
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "oriented_facets.h"
 #include "doublearea.h"
@@ -13,9 +13,9 @@
 #include "unique_simplices.h"
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
-  typename DerivedFN, 
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedFN,
   typename DerivedN,
   typename DerivedE,
   typename DerivedEMAP>
@@ -73,14 +73,14 @@ IGL_INLINE void igl::per_edge_normals(
       }
     }
   }
- 
+
   // take average via normalization
   N.rowwise().normalize();
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
+  typename DerivedV,
+  typename DerivedF,
   typename DerivedN,
   typename DerivedE,
   typename DerivedEMAP>
@@ -98,8 +98,8 @@ IGL_INLINE void igl::per_edge_normals(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
+  typename DerivedV,
+  typename DerivedF,
   typename DerivedN,
   typename DerivedE,
   typename DerivedEMAP>
@@ -110,7 +110,7 @@ IGL_INLINE void igl::per_edge_normals(
   Eigen::PlainObjectBase<DerivedE> & E,
   Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
 {
-  return 
+  return
     per_edge_normals(V,F,PER_EDGE_NORMALS_WEIGHTING_TYPE_DEFAULT,N,E,EMAP);
 }
 

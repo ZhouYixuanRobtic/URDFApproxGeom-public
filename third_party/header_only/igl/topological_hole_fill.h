@@ -12,7 +12,7 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-    
+
   /// Topological fill hole on a mesh, with one additional vertex each hole
   /// Index of new abstract vertices will be F.maxCoeff() + (index of hole)
   ///

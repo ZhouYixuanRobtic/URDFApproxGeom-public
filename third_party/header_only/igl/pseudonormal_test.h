@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PSEUDONORMAL_TEST_H
 #define IGL_PSEUDONORMAL_TEST_H
@@ -18,7 +18,7 @@ namespace igl
   ///
   /// @param[in] V  #V by 3 list of vertex positions
   /// @param[in] F  #F by 3 list of triangle indices
-  /// @param[in] FN  #F by 3 list of triangle normals 
+  /// @param[in] FN  #F by 3 list of triangle normals
   /// @param[in] VN  #V by 3 list of vertex normals (ANGLE WEIGHTING)
   /// @param[in] EN  #E by 3 list of edge normals (UNIFORM WEIGHTING)
   /// @param[in] EMAP  #F*3 mapping edges in F to E

@@ -1,11 +1,11 @@
-// based on MSH reader from PyMesh 
+// based on MSH reader from PyMesh
 
-// Copyright (c) 2015 Qingnan Zhou <qzhou@adobe.com>           
-// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com> 
+// Copyright (c) 2015 Qingnan Zhou <qzhou@adobe.com>
+// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com>
 //
-// This Source Code Form is subject to the terms of the Mozilla 
-// Public License v. 2.0. If a copy of the MPL was not distributed 
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "MshLoader.h"
 
@@ -79,8 +79,8 @@ IGL_INLINE igl::MshLoader::MshLoader(const std::string &filename) {
     }
 
     fin >> buf;
-    if (buf != "$EndMeshFormat") 
-    { 
+    if (buf != "$EndMeshFormat")
+    {
         std::stringstream err_msg;
         err_msg << "Unexpected contents in the file header." << std::endl;
         throw std::runtime_error(err_msg.str());
@@ -185,7 +185,7 @@ IGL_INLINE void igl::MshLoader::parse_elements(std::ifstream& fin) {
                     if(j<2) m_elements_tags[j].push_back(tag);
                 }
 
-                for (size_t j=num_tags; j<2; j++) 
+                for (size_t j=num_tags; j<2; j++)
                     m_elements_tags[j].push_back(-1); // fill up tags if less then 2
 
                 m_elements_nodes_idx.push_back(m_elements.size());
@@ -193,7 +193,7 @@ IGL_INLINE void igl::MshLoader::parse_elements(std::ifstream& fin) {
                 for (size_t j=0; j<nodes_per_element; j++) {
                     int idx;
                     fin.read((char*)&idx, sizeof(int));
-                    
+
                     m_elements.push_back(idx-1);
                 }
             }
@@ -211,9 +211,9 @@ IGL_INLINE void igl::MshLoader::parse_elements(std::ifstream& fin) {
                 fin >> tag;
                 if(j<2) m_elements_tags[j].push_back(tag);
             }
-            for (size_t j=num_tags; j<2; j++) 
+            for (size_t j=num_tags; j<2; j++)
                 m_elements_tags[j].push_back(-1); // fill up tags if less then 2
-            
+
             nodes_per_element = num_nodes_per_elem_type(elem_type);
             m_elements_types.push_back(elem_type);
             m_elements_lengths.push_back(nodes_per_element);
@@ -284,10 +284,10 @@ IGL_INLINE void igl::MshLoader::parse_node_field( std::ifstream& fin ) {
         for (size_t i=0; i<num_entries; i++) {
 			int node_idx;
 			memcpy(&node_idx,&data[i*(4+num_components*m_data_size)],4);
-			
+
             if(node_idx<1) throw std::runtime_error("Negative or zero index");
             node_idx -= 1;
-			
+
             if(node_idx>=num_entries) throw std::runtime_error("Index too big");
             size_t base_idx = i*(4+num_components*m_data_size) + 4;
             // TODO: make this work when m_data_size != sizeof(double) ?
@@ -304,7 +304,7 @@ IGL_INLINE void igl::MshLoader::parse_node_field( std::ifstream& fin ) {
             }
         }
     }
-    
+
     m_node_fields_names.push_back(fieldname);
     m_node_fields.push_back(field);
     m_node_fields_components.push_back(num_components);
@@ -358,7 +358,7 @@ IGL_INLINE void igl::MshLoader::parse_element_field(std::ifstream& fin) {
 			// works with sizeof(int)==4
 			memcpy(&elem_idx, &data[i*(4+num_components*m_data_size)],4);
             elem_idx -= 1;
-			
+
 			// directly copy data into vector storage space
 			memcpy(&field[elem_idx*num_components], &data[i*(4+num_components*m_data_size) + 4], m_data_size*num_components);
         }
@@ -394,7 +394,7 @@ IGL_INLINE int igl::MshLoader::num_nodes_per_elem_type(int elem_type) {
     int nodes_per_element = 0;
     switch (elem_type) {
         case ELEMENT_LINE:         // 2-node line
-            nodes_per_element = 2; 
+            nodes_per_element = 2;
             break;
         case ELEMENT_TRI:
             nodes_per_element = 3; // 3-node triangle
@@ -406,34 +406,34 @@ IGL_INLINE int igl::MshLoader::num_nodes_per_elem_type(int elem_type) {
             nodes_per_element = 4; // 4-node tetrahedra
             break;
         case ELEMENT_HEX:          // 8-node hexahedron
-            nodes_per_element = 8; 
+            nodes_per_element = 8;
             break;
         case ELEMENT_PRISM:        // 6-node prism
-            nodes_per_element = 6; 
-            break;
-        case ELEMENT_LINE_2ND_ORDER: 
-            nodes_per_element = 3;
-            break;
-        case ELEMENT_TRI_2ND_ORDER: 
             nodes_per_element = 6;
             break;
-        case ELEMENT_QUAD_2ND_ORDER: 
+        case ELEMENT_LINE_2ND_ORDER:
+            nodes_per_element = 3;
+            break;
+        case ELEMENT_TRI_2ND_ORDER:
+            nodes_per_element = 6;
+            break;
+        case ELEMENT_QUAD_2ND_ORDER:
             nodes_per_element = 9;
             break;
-        case ELEMENT_TET_2ND_ORDER: 
+        case ELEMENT_TET_2ND_ORDER:
             nodes_per_element = 10;
             break;
-        case ELEMENT_HEX_2ND_ORDER: 
+        case ELEMENT_HEX_2ND_ORDER:
             nodes_per_element = 27;
             break;
-        case ELEMENT_PRISM_2ND_ORDER: 
+        case ELEMENT_PRISM_2ND_ORDER:
             nodes_per_element = 18;
             break;
-        case ELEMENT_PYRAMID_2ND_ORDER: 
+        case ELEMENT_PYRAMID_2ND_ORDER:
             nodes_per_element = 14;
             break;
         case ELEMENT_POINT:        // 1-node point
-            nodes_per_element = 1; 
+            nodes_per_element = 1;
             break;
         default:
             std::stringstream err_msg;
@@ -467,20 +467,20 @@ IGL_INLINE void igl::MshLoader::index_structures(int tag_column)
     {
         m_structure_index.insert(
             std::pair<msh_struct,int>(
-                msh_struct( m_elements_tags[tag_column][i], 
+                msh_struct( m_elements_tags[tag_column][i],
                             m_elements_types[i]), i)
             );
     }
 
-    // identify unique structures 
+    // identify unique structures
     std::vector<StructIndex::value_type> _unique_structs;
-    std::unique_copy(std::begin(m_structure_index), 
-                     std::end(m_structure_index), 
+    std::unique_copy(std::begin(m_structure_index),
+                     std::end(m_structure_index),
                      std::back_inserter(_unique_structs),
                      [](const StructIndex::value_type &c1, const StructIndex::value_type &c2)
                      { return c1.first == c2.first; });
 
-    std::for_each( _unique_structs.begin(), _unique_structs.end(), 
+    std::for_each( _unique_structs.begin(), _unique_structs.end(),
         [this](const StructIndex::value_type &n){ this->m_structures.push_back(n.first); });
 
     for(auto t = m_structures.begin(); t != m_structures.end(); ++t)
