@@ -13,7 +13,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-namespace igl 
+namespace igl
 {
   /// Compute a Least-squares conformal map parametrization (equivalently
   /// derived in "Intrinsic Parameterizations of Surface Meshes" [Desbrun et al.
@@ -33,11 +33,11 @@ namespace igl
   /// @param[out] Q  #Vx2 by #Vx2 symmetric positive semi-definite matrix for computing LSCM energy
   /// @return true only on solver success.
   template <
-    typename DerivedV, 
-    typename DerivedF, 
-    typename Derivedb, 
-    typename Derivedbc, 
-    typename DerivedV_uv, 
+    typename DerivedV,
+    typename DerivedF,
+    typename Derivedb,
+    typename Derivedbc,
+    typename DerivedV_uv,
     typename QScalar>
   IGL_INLINE bool lscm(
     const Eigen::MatrixBase<DerivedV> & V,
@@ -48,10 +48,10 @@ namespace igl
     Eigen::SparseMatrix<QScalar> & Q);
   /// \overload
   template <
-    typename DerivedV, 
-    typename DerivedF, 
-    typename Derivedb, 
-    typename Derivedbc, 
+    typename DerivedV,
+    typename DerivedF,
+    typename Derivedb,
+    typename Derivedbc,
     typename DerivedV_uv>
   IGL_INLINE bool lscm(
     const Eigen::MatrixBase<DerivedV> & V,
@@ -65,8 +65,8 @@ namespace igl
   /// decomposition; Assumes mesh is a single connected component topologically
   /// equivalent to a chunk of the plane.
   template <
-    typename DerivedV, 
-    typename DerivedF, 
+    typename DerivedV,
+    typename DerivedF,
     typename DerivedV_uv>
   IGL_INLINE bool lscm(
     const Eigen::MatrixBase<DerivedV> & V,

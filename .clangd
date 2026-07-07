@@ -1,0 +1,21 @@
+# clangd configuration for LSP-based IDEs (VS Code, CLion, neovim, etc.)
+# Requires: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+CompileFlags:
+  CompilationDatabase: build/
+  Add:
+    - "-std=c++17"
+
+Diagnostics:
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+
+Index:
+  Background: Build
+
+InlayHints:
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+
+Hover:
+  ShowAKA: Yes

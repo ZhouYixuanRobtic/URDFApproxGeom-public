@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mesh_to_cgal_triangle_list.h"
 #include "assign.h"
@@ -30,7 +30,7 @@ IGL_INLINE void igl::copyleft::cgal::mesh_to_cgal_triangle_list(
   };
   tictoc();
   typedef CGAL::Point_3<Kernel>    Point_3;
-  typedef CGAL::Triangle_3<Kernel> Triangle_3; 
+  typedef CGAL::Triangle_3<Kernel> Triangle_3;
   // Must be 3D
   assert(V.cols() == 3);
   // **Copy** to convert to output type (this is especially/only needed if the
@@ -38,7 +38,7 @@ IGL_INLINE void igl::copyleft::cgal::mesh_to_cgal_triangle_list(
   Eigen::Matrix<
     typename Kernel::FT,
     DerivedV::RowsAtCompileTime,
-    DerivedV::ColsAtCompileTime> 
+    DerivedV::ColsAtCompileTime>
     KV(V.rows(),V.cols());
   assign(V,KV);
   // Must be triangles
@@ -46,7 +46,7 @@ IGL_INLINE void igl::copyleft::cgal::mesh_to_cgal_triangle_list(
   T.resize(F.rows());
   igl::parallel_for(F.rows(),[&](const Eigen::Index f)
   {
-    T[f] = 
+    T[f] =
       Triangle_3(
         Point_3( KV(F(f,0),0), KV(F(f,0),1), KV(F(f,0),2)),
         Point_3( KV(F(f,1),0), KV(F(f,1),1), KV(F(f,1),2)),

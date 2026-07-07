@@ -1,4 +1,4 @@
-/* 
+/*
 Fast Ray-Box Intersection
 by Andrew Woo
 from "Graphics Gems", Academic Press, 1990
@@ -67,5 +67,4 @@ char HitBoundingBox(double minB[NUMDIM], double maxB[NUMDIM],   //  BOX
 			coord[i] = candidatePlane[i];
 		}
 	return (TRUE);				/* ray hits box */
-}	
-
+}

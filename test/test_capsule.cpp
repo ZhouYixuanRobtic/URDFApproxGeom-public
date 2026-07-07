@@ -16,11 +16,11 @@
 
  */
 
+#include <gtest/gtest.h>
 #include <cmath>
 #include <fstream>
-#include <gtest/gtest.h>
-#include "CapsuleFitter.h"
 #include "CapsuleCrossSection.h"
+#include "CapsuleFitter.h"
 #include "CapsuleURDFGenerator.h"
 #include "irmv/third_party/json.hpp"
 
@@ -42,16 +42,15 @@ static Eigen::MatrixXd ring(double r, double x0, int n) {
 // spanning the full length, with every vertex inside.
 TEST(CapsuleFit, CylinderAxisIsPrincipalAxis) {
     Eigen::MatrixXd V(64, 3);
-    V.topRows(32) = ring(0.05, 0.0, 32);   // x = 0 end
-    V.bottomRows(32) = ring(0.05, 1.0, 32); // x = 1 end
+    V.topRows(32) = ring(0.05, 0.0, 32);     // x = 0 end
+    V.bottomRows(32) = ring(0.05, 1.0, 32);  // x = 1 end
 
     Capsule c = fitCoveringCapsule(V);
 
     EXPECT_NEAR(c.radius, 0.05, 1e-6);
     EXPECT_NEAR((c.p1 - c.p0).norm(), 1.0, 1e-6);
     for (int i = 0; i < V.rows(); ++i)
-        EXPECT_LE(pointToSegmentDistance(V.row(i).transpose(), c.p0, c.p1),
-                  c.radius + 1e-9);
+        EXPECT_LE(pointToSegmentDistance(V.row(i).transpose(), c.p0, c.p1), c.radius + 1e-9);
 }
 
 // An isotropic spherical shell: PCA axis is (near) arbitrary, so the covering
@@ -74,8 +73,7 @@ TEST(CapsuleFit, SphereShellIsCovered) {
     EXPECT_GT(c.radius, 0.0);
     EXPECT_LE(c.radius, 0.1 + 1e-6);  // never exceeds the true enclosing radius
     for (int i = 0; i < V.rows(); ++i)
-        EXPECT_LE(pointToSegmentDistance(V.row(i).transpose(), c.p0, c.p1),
-                  c.radius + 1e-9);
+        EXPECT_LE(pointToSegmentDistance(V.row(i).transpose(), c.p0, c.p1), c.radius + 1e-9);
 }
 
 // Two rings of small spheres (caps shape of a cylinder): the disk-aware fit
@@ -110,7 +108,9 @@ TEST(CapsuleMeshFit, CylinderSurfaceIsTight) {
     for (int i = 0; i < 64; ++i) {
         double x = (i < 32) ? 0.0 : 1.0;
         double a = 2.0 * M_PI * (i % 32) / 32;
-        V(i, 0) = x; V(i, 1) = R_true * std::cos(a); V(i, 2) = R_true * std::sin(a);
+        V(i, 0) = x;
+        V(i, 1) = R_true * std::cos(a);
+        V(i, 2) = R_true * std::sin(a);
     }
     std::vector<Eigen::Vector3d> c{{0.5, 0, 0}};
     std::vector<double> r{0.1};  // over-covers by 2x on purpose
@@ -127,7 +127,8 @@ TEST(CapsuleMeshFit, SlabSplits) {
         for (int j = 0; j < 9; ++j)
             verts.emplace_back(0, 0.05 * i, 0.05 * j);
     Eigen::MatrixXd V(verts.size(), 3);
-    for (size_t k = 0; k < verts.size(); ++k) V.row(k) = verts[k].transpose();
+    for (size_t k = 0; k < verts.size(); ++k)
+        V.row(k) = verts[k].transpose();
     std::vector<Eigen::Vector3d> c{{0, 0.1, 0.1}};
     std::vector<double> r{0.3};
     auto caps = fitCapsulesFromMesh(V, c, r, 0.02, 8, 0.4, 3);
@@ -138,7 +139,7 @@ TEST(CapsuleMeshFit, SlabSplits) {
 TEST(CapsuleMeshFit, NestedCapsuleDeduped) {
     Capsule big{Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(1, 0, 0), 0.1};
     Capsule small{Eigen::Vector3d(0.4, 0, 0), Eigen::Vector3d(0.6, 0, 0), 0.03};  // inside big
-    Capsule side{Eigen::Vector3d(0, 1, 0), Eigen::Vector3d(1, 1, 0), 0.05};        // disjoint
+    Capsule side{Eigen::Vector3d(0, 1, 0), Eigen::Vector3d(1, 1, 0), 0.05};       // disjoint
     auto out = dedupeNestedCapsules({big, small, side});
     EXPECT_EQ(out.size(), 2u);  // small dropped
 }
@@ -146,13 +147,18 @@ TEST(CapsuleMeshFit, NestedCapsuleDeduped) {
 // Every mesh vertex must be covered by some capsule (collision safety).
 TEST(CapsuleMeshFit, AllVerticesCovered) {
     Eigen::MatrixXd V(40, 3);
-    for (int i = 0; i < 40; ++i) { V(i, 0) = 0.05 * i; V(i, 1) = 0.03 * std::sin(i); V(i, 2) = 0.03 * std::cos(i); }
+    for (int i = 0; i < 40; ++i) {
+        V(i, 0) = 0.05 * i;
+        V(i, 1) = 0.03 * std::sin(i);
+        V(i, 2) = 0.03 * std::cos(i);
+    }
     std::vector<Eigen::Vector3d> c{{0.5, 0, 0}};
     std::vector<double> r{0.1};
     auto caps = fitCapsulesFromMesh(V, c, r, 0.02, 8, 0.4, 3);
     ASSERT_FALSE(caps.empty());
     double Rmax = 0.0;
-    for (const auto& cap : caps) Rmax = std::max(Rmax, cap.radius);
+    for (const auto& cap : caps)
+        Rmax = std::max(Rmax, cap.radius);
     for (int i = 0; i < V.rows(); ++i) {
         double best = 1e9;
         for (const auto& cap : caps)
@@ -185,32 +191,18 @@ static void makeCylinder(double r, double L, int M, Eigen::MatrixXd& V, Eigen::M
 // Axis-aligned box mesh centered at origin with dimensions (x, y, z).
 static void makeBox(double x, double y, double z, Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
     V.resize(8, 3);
-    V << -x/2, -y/2, -z/2,
-          x/2, -y/2, -z/2,
-          x/2,  y/2, -z/2,
-         -x/2,  y/2, -z/2,
-         -x/2, -y/2,  z/2,
-          x/2, -y/2,  z/2,
-          x/2,  y/2,  z/2,
-         -x/2,  y/2,  z/2;
+    V << -x / 2, -y / 2, -z / 2, x / 2, -y / 2, -z / 2, x / 2, y / 2, -z / 2, -x / 2, y / 2, -z / 2,
+        -x / 2, -y / 2, z / 2, x / 2, -y / 2, z / 2, x / 2, y / 2, z / 2, -x / 2, y / 2, z / 2;
     F.resize(12, 3);
-    F << 0, 1, 2, 0, 2, 3,
-         4, 6, 5, 4, 7, 6,
-         0, 4, 5, 0, 5, 1,
-         1, 5, 6, 1, 6, 2,
-         2, 6, 7, 2, 7, 3,
-         3, 7, 4, 3, 4, 0;
+    F << 0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3,
+        3, 7, 4, 3, 4, 0;
 }
 
 // Closed capsule surface with sphere centers at x=0 and x=center_distance.
 // Mesh axial extrema are [-radius, center_distance + radius]; fitted capsule
 // sphere centers should recover the center span, not the extrema.
-static void makeCapsuleSurface(double radius,
-                               double center_distance,
-                               int radial_segments,
-                               int hemi_segments,
-                               Eigen::MatrixXd& V,
-                               Eigen::MatrixXi& F) {
+static void makeCapsuleSurface(double radius, double center_distance, int radial_segments,
+                               int hemi_segments, Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
     std::vector<Eigen::Vector3d> verts;
     std::vector<std::vector<int>> rings;
 
@@ -257,9 +249,11 @@ static void makeCapsuleSurface(double radius,
     }
 
     V.resize(static_cast<int>(verts.size()), 3);
-    for (int i = 0; i < static_cast<int>(verts.size()); ++i) V.row(i) = verts[i].transpose();
+    for (int i = 0; i < static_cast<int>(verts.size()); ++i)
+        V.row(i) = verts[i].transpose();
     F.resize(static_cast<int>(faces.size()), 3);
-    for (int i = 0; i < static_cast<int>(faces.size()); ++i) F.row(i) = faces[i];
+    for (int i = 0; i < static_cast<int>(faces.size()); ++i)
+        F.row(i) = faces[i];
 }
 
 // Two small boxes separated by a narrow neck: the bulge should stay local.
@@ -268,8 +262,10 @@ static void makeTwoBoxLink(Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
     Eigen::MatrixXi FA, FB;
     makeBox(0.20, 0.20, 0.20, A, FA);
     makeBox(0.20, 0.60, 0.20, B, FB);
-    for (int i = 0; i < A.rows(); ++i) A(i, 0) -= 0.20;
-    for (int i = 0; i < B.rows(); ++i) B(i, 0) += 0.20;
+    for (int i = 0; i < A.rows(); ++i)
+        A(i, 0) -= 0.20;
+    for (int i = 0; i < B.rows(); ++i)
+        B(i, 0) += 0.20;
 
     V.resize(A.rows() + B.rows(), 3);
     V << A, B;
@@ -290,12 +286,14 @@ TEST(CapsuleXSection, CylinderSectionsAreCircles) {
         const auto& pts = s.contour.points;
         ASSERT_GE(pts.size(), 3u);
         Eigen::Vector2d ctr = Eigen::Vector2d::Zero();
-        for (const auto& p : pts) ctr += p;
+        for (const auto& p : pts)
+            ctr += p;
         ctr /= double(pts.size());
         double R = 0.0;
-        for (const auto& p : pts) R = std::max(R, (p - ctr).norm());
-        EXPECT_NEAR(R, 0.05, 2e-3);       // tight to cylinder radius
-        EXPECT_LT(ctr.norm(), 1e-6);      // centered on axis
+        for (const auto& p : pts)
+            R = std::max(R, (p - ctr).norm());
+        EXPECT_NEAR(R, 0.05, 2e-3);   // tight to cylinder radius
+        EXPECT_LT(ctr.norm(), 1e-6);  // centered on axis
     }
 }
 
@@ -306,7 +304,8 @@ static double capsuleVolume(const Capsule& c) {
 
 static double capsuleSetVolume(const std::vector<Capsule>& caps) {
     double v = 0.0;
-    for (const auto& c : caps) v += capsuleVolume(c);
+    for (const auto& c : caps)
+        v += capsuleVolume(c);
     return v;
 }
 
@@ -324,14 +323,8 @@ TEST(CapsuleMetrics, UnionVolumeDoesNotDoubleCountIdenticalCapsules) {
 
 TEST(CapsuleMetrics, EvaluateTightnessUsesUnionVolume) {
     Eigen::MatrixXd V(8, 3);
-    V << -0.60, -0.20, -0.20,
-          0.60, -0.20, -0.20,
-          0.60,  0.20, -0.20,
-         -0.60,  0.20, -0.20,
-         -0.60, -0.20,  0.20,
-          0.60, -0.20,  0.20,
-          0.60,  0.20,  0.20,
-         -0.60,  0.20,  0.20;
+    V << -0.60, -0.20, -0.20, 0.60, -0.20, -0.20, 0.60, 0.20, -0.20, -0.60, 0.20, -0.20, -0.60,
+        -0.20, 0.20, 0.60, -0.20, 0.20, 0.60, 0.20, 0.20, -0.60, 0.20, 0.20;
 
     Capsule cap{Eigen::Vector3d(-0.50, 0, 0), Eigen::Vector3d(0.50, 0, 0), 0.31};
     auto metrics = evaluateCapsuleTightness(V, {cap, cap}, 64);
@@ -342,8 +335,7 @@ TEST(CapsuleMetrics, EvaluateTightnessUsesUnionVolume) {
 }
 
 static bool allVerticesCoveredByAnyCapsule(const Eigen::MatrixXd& V,
-                                           const std::vector<Capsule>& caps,
-                                           double eps = 1e-9) {
+                                           const std::vector<Capsule>& caps, double eps = 1e-9) {
     for (int i = 0; i < V.rows(); ++i) {
         bool covered = false;
         Eigen::Vector3d p = V.row(i).transpose();
@@ -353,11 +345,11 @@ static bool allVerticesCoveredByAnyCapsule(const Eigen::MatrixXd& V,
                 break;
             }
         }
-        if (!covered) return false;
+        if (!covered)
+            return false;
     }
     return true;
 }
-
 
 // ---- Wu2018 COA metric (P2) ----
 
@@ -414,7 +406,10 @@ TEST(CapsuleLloyd, WideRectangleSplits) {
     for (const auto& v : c.points) {
         bool covered = false;
         for (const auto& cir : circles)
-            if ((cir.center - v).norm() <= cir.radius + 1e-6) { covered = true; break; }
+            if ((cir.center - v).norm() <= cir.radius + 1e-6) {
+                covered = true;
+                break;
+            }
         EXPECT_TRUE(covered);
     }
 }
@@ -680,8 +675,8 @@ TEST(CapsuleXSectionFit, BudgetPruningPreservesCoverage) {
 // not meshes.
 TEST(CapsuleRun, EmitsNativeCylinderSphere) {
     const std::string out_urdf = "/tmp/fr3_sparse_capsule_emit_test.urdf";
-    CapsuleURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) +
-                           "/capsule/capsuleConfig.yml");
+    CapsuleURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) + "/capsule/capsuleConfig.yml",
+                           /*use_visual=*/false);
     auto ret = g.run("/workspace/resources/fr3/urdf/fr3.urdf", out_urdf, {});
     ASSERT_TRUE(ret.isOk()) << ret.message();
 
@@ -693,7 +688,8 @@ TEST(CapsuleRun, EmitsNativeCylinderSphere) {
     ASSERT_FALSE(j.empty()) << "no links in JSON";
     int capsule_count = 0;
     for (auto& [link, body] : j.items()) {
-        if (!body.contains("capsules")) continue;  // link without mesh collision: skip
+        if (!body.contains("capsules"))
+            continue;  // link without mesh collision: skip
         for (auto& cp : body["capsules"]) {
             EXPECT_EQ(cp["p0"].size(), 3u);
             EXPECT_EQ(cp["p1"].size(), 3u);
@@ -714,7 +710,8 @@ TEST(CapsuleRun, EmitsNativeCylinderSphere) {
 TEST(CapsuleRun, TightPresetAddsBaseLinkDetail) {
     const std::string out_urdf = "/tmp/fr3_tight_link0_detail_test.urdf";
     CapsuleURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) +
-                           "/capsule/capsuleConfig_tight.yml");
+                           "/capsule/capsuleConfig_tight.yml",
+                           /*use_visual=*/false);
     auto ret = g.run("/workspace/resources/fr3/urdf/fr3.urdf", out_urdf, {});
     ASSERT_TRUE(ret.isOk()) << ret.message();
 
@@ -725,17 +722,15 @@ TEST(CapsuleRun, TightPresetAddsBaseLinkDetail) {
 
     ASSERT_TRUE(j.contains("fr3_link0")) << "fr3_link0 missing from tight capsule JSON";
     ASSERT_TRUE(j["fr3_link0"].contains("capsules")) << "fr3_link0 capsules missing";
-    ASSERT_GE(j["fr3_link0"]["capsules"].size(), 1u)
-        << "fr3_link0 must have at least one capsule";
+    ASSERT_GE(j["fr3_link0"]["capsules"].size(), 1u) << "fr3_link0 must have at least one capsule";
 
     // Endpoint optimization should give reasonable tightness without overhang.
     // Read capsule params and verify p0/p1 are sphere centers (not mesh extrema).
     for (const auto& cap : j["fr3_link0"]["capsules"]) {
         double r = cap["radius"];
-        double L = std::sqrt(
-            std::pow(cap["p1"][0].get<double>() - cap["p0"][0].get<double>(), 2) +
-            std::pow(cap["p1"][1].get<double>() - cap["p0"][1].get<double>(), 2) +
-            std::pow(cap["p1"][2].get<double>() - cap["p0"][2].get<double>(), 2));
+        double L = std::sqrt(std::pow(cap["p1"][0].get<double>() - cap["p0"][0].get<double>(), 2) +
+                             std::pow(cap["p1"][1].get<double>() - cap["p0"][1].get<double>(), 2) +
+                             std::pow(cap["p1"][2].get<double>() - cap["p0"][2].get<double>(), 2));
         EXPECT_GT(L + 2.0 * r, 0.0) << "capsule has non-degenerate span";
         EXPECT_LT(r, 0.15) << "radius should not balloon on base link";
     }
@@ -744,7 +739,8 @@ TEST(CapsuleRun, TightPresetAddsBaseLinkDetail) {
 static int countDegenerateCapsules(const std::vector<Capsule>& caps) {
     int n = 0;
     for (const auto& cap : caps)
-        if ((cap.p1 - cap.p0).norm() < 1e-9) ++n;
+        if ((cap.p1 - cap.p0).norm() < 1e-9)
+            ++n;
     return n;
 }
 

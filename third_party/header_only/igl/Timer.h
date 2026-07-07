@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 // High Resolution Timer.
 //
@@ -59,7 +59,7 @@ namespace igl
       stopped = 0;
     }
     // default destructor
-    ~Timer()                     
+    ~Timer()
     {
 
     }
@@ -89,7 +89,7 @@ namespace igl
 #endif
 
     /// start timer
-    void   start()               
+    void   start()
     {
       stopped = 0; // reset stop flag
 #ifdef WIN32
@@ -103,7 +103,7 @@ namespace igl
     }
 
     /// stop the timer
-    void   stop()                
+    void   stop()
     {
       stopped = 1; // set timer stopped flag
 
@@ -118,13 +118,13 @@ namespace igl
     }
     /// get elapsed time in second
     /// @return time in seconds
-    double getElapsedTime()      
+    double getElapsedTime()
     {
       return this->getElapsedTimeInSec();
     }
     /// get elapsed time in second (same as getElapsedTime)
     /// @return time
-    double getElapsedTimeInSec() 
+    double getElapsedTimeInSec()
     {
       return this->getElapsedTimeInMicroSec() * 0.000001;
     }
@@ -137,7 +137,7 @@ namespace igl
     }
     /// get elapsed time in micro-second
     /// @return time
-    double getElapsedTimeInMicroSec()          
+    double getElapsedTimeInMicroSec()
     {
       double startTimeInMicroSec = 0;
       double endTimeInMicroSec = 0;
@@ -146,7 +146,7 @@ namespace igl
       if(!stopped)
         QueryPerformanceCounter(&endCount);
 
-      startTimeInMicroSec = 
+      startTimeInMicroSec =
         startCount.QuadPart * (1000000.0 / frequency.QuadPart);
       endTimeInMicroSec = endCount.QuadPart * (1000000.0 / frequency.QuadPart);
 #elif __APPLE__
@@ -158,7 +158,7 @@ namespace igl
       if(!stopped)
         gettimeofday(&endCount, NULL);
 
-      startTimeInMicroSec = 
+      startTimeInMicroSec =
         (startCount.tv_sec * 1000000.0) + startCount.tv_usec;
       endTimeInMicroSec = (endCount.tv_sec * 1000000.0) + endCount.tv_usec;
 #endif
@@ -167,21 +167,20 @@ namespace igl
     }
 
   private:
-    // stop flag 
-    int    stopped;               
+    // stop flag
+    int    stopped;
 #ifdef WIN32
     // ticks per second
-    LARGE_INTEGER frequency;      
-    LARGE_INTEGER startCount;     
-    LARGE_INTEGER endCount;       
+    LARGE_INTEGER frequency;
+    LARGE_INTEGER startCount;
+    LARGE_INTEGER endCount;
 #elif __APPLE__
-    uint64_t startCount;           
-    uint64_t endCount;             
+    uint64_t startCount;
+    uint64_t endCount;
 #else
-    timeval startCount;           
-    timeval endCount;             
+    timeval startCount;
+    timeval endCount;
 #endif
   };
 }
 #endif // TIMER_H_DEF
-

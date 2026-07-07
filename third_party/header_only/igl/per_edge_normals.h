@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PER_EDGE_NORMALS_H
 #define IGL_PER_EDGE_NORMALS_H
@@ -34,8 +34,8 @@ namespace igl
   /// @param[out] EMAP  #E by 1 matrix of indices from all edges to E
   ///
   template <
-    typename DerivedV, 
-    typename DerivedF, 
+    typename DerivedV,
+    typename DerivedF,
     typename DerivedFN,
     typename DerivedN,
     typename DerivedE,
@@ -50,8 +50,8 @@ namespace igl
     Eigen::PlainObjectBase<DerivedEMAP> & EMAP);
   /// \overload
   template <
-    typename DerivedV, 
-    typename DerivedF, 
+    typename DerivedV,
+    typename DerivedF,
     typename DerivedN,
     typename DerivedE,
     typename DerivedEMAP>
@@ -64,8 +64,8 @@ namespace igl
     Eigen::PlainObjectBase<DerivedEMAP> & EMAP);
   /// \overload
   template <
-    typename DerivedV, 
-    typename DerivedF, 
+    typename DerivedV,
+    typename DerivedF,
     typename DerivedN,
     typename DerivedE,
     typename DerivedEMAP>

@@ -29,7 +29,7 @@ IGL_INLINE std::vector<bool> igl::is_irregular_vertex(const Eigen::MatrixBase<De
 
   std::vector<bool> border;
   if(F.cols() == 3)
-  { 
+  {
     border = is_border_vertex(F);
   }else
   {

@@ -1,6 +1,22 @@
 # Prerequisites
 *.d
 
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
 # Compiled Object files
 *.slo
 *.lo
@@ -94,3 +110,36 @@ fishros
 
 # Paper writing workspace (local only, not shipped)
 doc/
+
+# Python virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.Python
+
+# Package files
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+
+# Test results and coverage
+test_results/
+coverage/
+*.gcov
+*.gcda
+*.gcno
+
+# Documentation build artifacts
+docs/html/
+docs/latex/
+
+# Temporary / cache / log / backup
+*.tmp
+*.temp
+.cache/
+*.log
+*.bak
+*.backup

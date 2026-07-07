@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2022 Vladimir S. FONOV <vladimir.fonov@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/
 #pragma once
 #ifndef FAST_FIND_MESH_INTERSECT_H
@@ -14,7 +14,7 @@
 #include <Eigen/Core>
 
 namespace igl {
-  /// Identify triangles where two meshes interesect 
+  /// Identify triangles where two meshes interesect
   /// using AABBTree and tri_tri_intersection_test_3d.
   ///
   /// @param[in] V1  #V by 3 list representing vertices on the first mesh
@@ -22,7 +22,7 @@ namespace igl {
   /// @param[in] V2  #V by 3 list representing vertices on the second mesh
   /// @param[in] F2  #F by 3 list representing triangles on the second mesh
   /// @param[out] intersect_pairs  correspondance list of intersecting triangles
-  ///                    column 0 - mesh 1, column 1 - mesh2  
+  ///                    column 0 - mesh 1, column 1 - mesh2
   /// @param[out] edges      list of pairs of intersection edges
   ///
   /// \see copyleft::cgal::intersect_other

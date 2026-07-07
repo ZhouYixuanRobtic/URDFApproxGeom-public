@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_RANDOM_POINTS_ON_MESH_INTRINSIC_H
 #define IGL_RANDOM_POINTS_ON_MESH_INTRINSIC_H
@@ -21,11 +21,11 @@ namespace igl
   /// @param[in] dblA  #F list of double areas of triangles
   /// @param[out] B  n by 3 list of barycentric coordinates, ith row are coordinates of
   ///     ith sampled point in face FI(i)
-  /// @param[out] FI  n list of indices into F 
+  /// @param[out] FI  n list of indices into F
   /// @param[in,out] urbg An instance of UnformRandomBitGenerator.
   template <
     typename DeriveddblA,
-    typename DerivedB, 
+    typename DerivedB,
     typename DerivedFI,
     typename URBG = DEFAULT_URBG>
   IGL_INLINE void random_points_on_mesh_intrinsic(
@@ -44,7 +44,7 @@ namespace igl
   template <
     typename DeriveddblA,
     typename DerivedF,
-    typename ScalarB, 
+    typename ScalarB,
     typename DerivedFI,
     typename URBG>
   IGL_INLINE void random_points_on_mesh_intrinsic(
@@ -62,4 +62,3 @@ namespace igl
 #endif
 
 #endif
-

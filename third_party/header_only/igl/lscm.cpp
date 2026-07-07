@@ -15,11 +15,11 @@
 
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
-  typename Derivedb, 
-  typename Derivedbc, 
-  typename DerivedV_uv, 
+  typename DerivedV,
+  typename DerivedF,
+  typename Derivedb,
+  typename Derivedbc,
+  typename DerivedV_uv,
   typename QScalar>
 IGL_INLINE bool igl::lscm(
   const Eigen::MatrixBase<DerivedV> & V,
@@ -65,10 +65,10 @@ IGL_INLINE bool igl::lscm(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
-  typename Derivedb, 
-  typename Derivedbc, 
+  typename DerivedV,
+  typename DerivedF,
+  typename Derivedb,
+  typename Derivedbc,
   typename DerivedV_uv>
 IGL_INLINE bool igl::lscm(
   const Eigen::MatrixBase<DerivedV> & V,
@@ -82,8 +82,8 @@ IGL_INLINE bool igl::lscm(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
+  typename DerivedV,
+  typename DerivedF,
   typename DerivedV_uv>
 IGL_INLINE bool igl::lscm(
   const Eigen::MatrixBase<DerivedV> & V,

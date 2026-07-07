@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-07-07
+
+### Added
+- CMake presets (`dev`, `release`, `asan`, `coverage`) via `CMakePresets.json`
+- `ENABLE_COVERAGE` option with gcov/lcov instrumentation support
+- Code quality tooling: `.clang-format`, `.clang-tidy`, `.clangd`, `.editorconfig`
+- Pre-commit hooks (`.pre-commit-config.yaml`) for formatting and lint enforcement
+- Aliyun Codeup CI mirror (`.code.yml`)
+- Docker Compose development environment (`docker/docker-compose.yml`)
+- Agent reference manual (`docs/guides/manual_agent.md`)
+
+### Changed
+- Synced `cmake/` modules from cpp-template upstream (32 .cmake + build.sh.in)
+- Applied pre-commit formatting baseline across all source files
+- Expanded `.gitignore` with template patterns (IDE, OS, venv, coverage artifacts)
+
+### Fixed
+- Test registration: all 39 tests now discovered by CTest (was 1/39)
+- Capsule integration tests use collision meshes (.stl) instead of unsupported visual meshes (.dae)
+- Missing panda robot test fixtures for ManifoldTest and SimplifyTest
+
 ## [2.0.0] - 2026-07-06
 
 ### Added
@@ -110,4 +131,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Watertight mesh processing with ManifoldPlus
 - Mesh simplification support
 - URDF collision geometry generation
-

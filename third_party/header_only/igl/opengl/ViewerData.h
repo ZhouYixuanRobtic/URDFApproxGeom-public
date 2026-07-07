@@ -46,7 +46,7 @@ public:
   /// Change whether drawing per-vertex or per-face; invalidating cache if
   /// necessary
   ///
-  /// @param[in] newvalue whether face based 
+  /// @param[in] newvalue whether face based
   IGL_INLINE void set_face_based(bool newvalue);
 
   /// Set the current mesh. Call this once at the beginning and whenever
@@ -56,11 +56,11 @@ public:
   /// @param[in] F  #F by 3/4 list of mesh faces (triangles/tets)
   IGL_INLINE void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
   /// Set just the vertices. Call this if _just_ the vertices are changing. You
-  /// may need to call compute_normals to update the lighting correctly. 
+  /// may need to call compute_normals to update the lighting correctly.
   ///
   /// @param[in] V  #V by 3 list of mesh vertex positions
   IGL_INLINE void set_vertices(const Eigen::MatrixXd& V);
-  /// Set the normals of a mesh. 
+  /// Set the normals of a mesh.
   ///
   /// @param[in] N #V|#F|3#F by 3 list of mesh normals
   ///
@@ -170,8 +170,8 @@ public:
   /// @param[in] V  #P by 3 list of eminating vectors
   /// @param[in] C  #P|1 by 3 color(s)
   IGL_INLINE void set_edges_from_vector_field(
-    const Eigen::MatrixXd& P, 
-    const Eigen::MatrixXd& V, 
+    const Eigen::MatrixXd& P,
+    const Eigen::MatrixXd& V,
     const Eigen::MatrixXd& C);
 
   /// Clear the edge data

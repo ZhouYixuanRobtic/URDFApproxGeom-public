@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "fit_cubic_bezier.h"
 #include "bezier.h"
@@ -87,12 +87,12 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
     Eigen::MatrixXd Q1(3,Q.cols());
     Eigen::MatrixXd Q2(2,Q.cols());
     /* Generate control vertices for Q'	*/
-    for (int i = 0; i <= 2; i++) 
+    for (int i = 0; i <= 2; i++)
     {
       Q1.row(i) = (Q.row(i+1) - Q.row(i)) * 3.0;
     }
     /* Generate control vertices for Q'' */
-    for (int i = 0; i <= 1; i++) 
+    for (int i = 0; i <= 1; i++)
     {
       Q2.row(i) = (Q1.row(i+1) - Q1.row(i)) * 2.0;
     }
@@ -101,7 +101,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
     const Eigen::RowVectorXd Q2_u = bezier_eval(Q2, u);
     /* Compute f(u)/f'(u) */
     const double numerator = ((Q_u-P).array() * Q1_u.array()).array().sum();
-    const double denominator = 
+    const double denominator =
       Q1_u.squaredNorm() + ((Q_u-P).array() * Q2_u.array()).array().sum();
     /* u = u - f(u)/f'(u) */
     return u - (numerator/denominator);
@@ -117,7 +117,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
     Eigen::VectorXd E(last - (first+1));
     splitPoint = (last-first + 1)/2;
     double maxDist = 0.0;
-    for (int i = first + 1; i < last; i++) 
+    for (int i = first + 1; i < last; i++)
     {
       Eigen::RowVectorXd P = bezier_eval(bezCurve, u(i-first));
       const double dist = (P-d.row(i)).squaredNorm();
@@ -131,7 +131,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
     }
     //const double half_total = E.array().sum()/2;
     //double run = 0;
-    //for (int i = first + 1; i < last; i++) 
+    //for (int i = first + 1; i < last; i++)
     //{
     //  run += E(i-(first+1));
     //  if(run>half_total)
@@ -195,13 +195,13 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
     C(1,1) = 0.0;
     X(0)    = 0.0;
     X(1)    = 0.0;
-    for( int i = 0; i < nPts; i++) 
+    for( int i = 0; i < nPts; i++)
     {
       C(0,0) += A[i][0].dot(A[i][0]);
       C(0,1) += A[i][0].dot(A[i][1]);
       C(1,0) = C(0,1);
       C(1,1) += A[i][1].dot(A[i][1]);
-      const Eigen::RowVectorXd tmp = 
+      const Eigen::RowVectorXd tmp =
         d.row(first+i)-(
               d.row(first)*B0(uPrime(i))+
               d.row(first)*B1(uPrime(i))+
@@ -215,7 +215,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
     const double det_C0_X  = C(0,0) * X(1)    - C(0,1) * X(0);
     const double det_X_C1  = X(0)    * C(1,1) - X(1)    * C(0,1);
     /* Finally, derive alpha values	*/
-    if (det_C0_C1 == 0.0) 
+    if (det_C0_C1 == 0.0)
     {
       det_C0_C1 = (C(0,0) * C(1,1)) * 10e-12;
     }
@@ -224,7 +224,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
     /*  If alpha negative, use the Wu/Barsky heuristic (see text) */
         /* (if alpha is 0, you get coincident control points that lead to
          * divide by zero in any subsequent NewtonRaphsonRootFind() call. */
-    if (alpha_l < 1.0e-6 || alpha_r < 1.0e-6) 
+    if (alpha_l < 1.0e-6 || alpha_r < 1.0e-6)
     {
       return Straight(d,first,last,tHat1,tHat2,bezCurve);
     }
@@ -254,7 +254,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
   {
     u(i-first) = u(i-first-1) + (d.row(i)-d.row(i-1)).norm();
   }
-  for (int i = first + 1; i <= last; i++) 
+  for (int i = first + 1; i <= last; i++)
   {
     u(i-first) = u(i-first) / u(last-first);
   }
@@ -273,12 +273,12 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
   /*  and iteration */
   if (maxError < iterationError)
   {
-    for (int i = 0; i < maxIterations; i++) 
+    for (int i = 0; i < maxIterations; i++)
     {
       Eigen::VectorXd uPrime;
       // Reparameterize
       uPrime.resize(last-first+1);
-      for (int i = first; i <= last; i++) 
+      for (int i = first; i <= last; i++)
       {
         uPrime(i-first) = NewtonRaphsonRootFind(bezCurve, d.row(i), u(i- first));
       }
@@ -293,7 +293,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
   }
 
   /* Fitting failed -- split at max error point and fit recursively */
-  const Eigen::RowVectorXd tHatCenter = 
+  const Eigen::RowVectorXd tHatCenter =
     (d.row(splitPoint-1)-d.row(splitPoint+1)).normalized();
   //foobar
   fit_cubic_bezier_substring(

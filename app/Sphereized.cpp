@@ -42,18 +42,20 @@
 
  */
 
-#include "SphereTreeURDFGenerator.h"
-#include "irmv/bot_common/log/singleton_logger.h"
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
+#include "SphereTreeURDFGenerator.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     // Initialize logger
     irmv_core::logging::SingletonLogger::getInstance().initialize("URDFApproxGeom");
     if (argc < 4) {
-        IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] [-c <sphere_config.yml>] [--simplify <0|1>]", argv[0]);
+        IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...] "
+                   "[-c <sphere_config.yml>] [--simplify <0|1>]",
+                   argv[0]);
         return 1;
     }
 
@@ -76,7 +78,7 @@ int main(int argc, char *argv[]) {
             std::string key = argv[++i];
             std::string value = argv[++i];
             replacements.emplace_back(key, value);
-        }else if (arg == "--simplify" && i + 1 < argc) {
+        } else if (arg == "--simplify" && i + 1 < argc) {
             simplify = std::stoi(argv[++i]);
         } else if ((arg == "-c" || arg == "--config") && i + 1 < argc) {
             sphereConfig = argv[++i];
@@ -105,4 +107,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-

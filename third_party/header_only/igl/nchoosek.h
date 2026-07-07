@@ -13,7 +13,7 @@
 
 #include <Eigen/Core>
 
-namespace igl 
+namespace igl
 {
   /// Binomial coefficient. Like matlab's nchoosek.
   ///
@@ -22,7 +22,7 @@ namespace igl
   /// @return number of k-size combinations out of the set [1,...,n]
   IGL_INLINE double nchoosek(const int n, const int k);
   /// All combinations . Like matlab's nchoosek.
-  /// 
+  ///
   /// @param[in] V  n-long vector of elements
   /// @param[in] k  size of sub-set to consider
   /// @param[out] U  nchoosek by k long matrix where each row is a unique k-size

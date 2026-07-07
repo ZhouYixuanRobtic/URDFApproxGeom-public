@@ -1,7 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
 // Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
-// 
+//
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
@@ -164,7 +164,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
             Kernel::Triangle_3 >::iterator > > > > trees(num_components);
   std::vector< std::vector<Kernel::Triangle_3 > >
     triangle_lists(num_components);
-  // O(num_components * num_faces) 
+  // O(num_components * num_faces)
   // In general, extract_cells appears to have O(num_components * num_faces)
   // performance. This could be painfully tested by a processing a cloud of
   // tetrahedra.

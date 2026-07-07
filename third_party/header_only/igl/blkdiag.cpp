@@ -1,15 +1,15 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "blkdiag.h"
 
 template <typename Scalar>
 IGL_INLINE void igl::blkdiag(
-  const std::vector<Eigen::SparseMatrix<Scalar>> & L, 
+  const std::vector<Eigen::SparseMatrix<Scalar>> & L,
   Eigen::SparseMatrix<Scalar> & Y)
 {
   int nr = 0;
@@ -41,7 +41,7 @@ IGL_INLINE void igl::blkdiag(
 
 template <typename DerivedY>
 IGL_INLINE void igl::blkdiag(
-  const std::vector<DerivedY> & L, 
+  const std::vector<DerivedY> & L,
   Eigen::PlainObjectBase<DerivedY> & Y)
 {
   int nr = 0;

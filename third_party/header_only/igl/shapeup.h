@@ -50,7 +50,7 @@ namespace igl
 
   // Alec: I'm not sure why these are using PlainObjectBase but then not
   // templating.
-      
+
   /// Every function here defines a local projection for ShapeUp, and must have
   /// the following structure to qualify:
   ///
@@ -66,19 +66,19 @@ namespace igl
   /// \fileinfo
   //typedef std::function<
   //  bool(
-  //      const Eigen::PlainObjectBase<Eigen::MatrixXd>&, 
-  //      const Eigen::PlainObjectBase<Eigen::VectorXi>&, 
-  //      const Eigen::PlainObjectBase<Eigen::MatrixXi>&, 
-  //      Eigen::PlainObjectBase<Eigen::MatrixXd>&)> 
+  //      const Eigen::PlainObjectBase<Eigen::MatrixXd>&,
+  //      const Eigen::PlainObjectBase<Eigen::VectorXi>&,
+  //      const Eigen::PlainObjectBase<Eigen::MatrixXi>&,
+  //      Eigen::PlainObjectBase<Eigen::MatrixXd>&)>
   //  shapeup_projection_function;
-  using 
+  using
     shapeup_projection_function
     =
     std::function<
     bool(
-        const Eigen::PlainObjectBase<Eigen::MatrixXd>&, 
-        const Eigen::PlainObjectBase<Eigen::VectorXi>&, 
-        const Eigen::PlainObjectBase<Eigen::MatrixXi>&, 
+        const Eigen::PlainObjectBase<Eigen::MatrixXd>&,
+        const Eigen::PlainObjectBase<Eigen::VectorXi>&,
+        const Eigen::PlainObjectBase<Eigen::MatrixXi>&,
         Eigen::PlainObjectBase<Eigen::MatrixXd>&)> ;
   /// This projection does nothing but render points into projP. Mostly used for
   /// "echoing" the global step
@@ -94,11 +94,11 @@ namespace igl
   ///
   /// \fileinfo
   IGL_INLINE bool shapeup_identity_projection(
-    const Eigen::PlainObjectBase<Eigen::MatrixXd>& P, 
-    const Eigen::PlainObjectBase<Eigen::VectorXi>& SC, 
-    const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,  
+    const Eigen::PlainObjectBase<Eigen::MatrixXd>& P,
+    const Eigen::PlainObjectBase<Eigen::VectorXi>& SC,
+    const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,
     Eigen::PlainObjectBase<Eigen::MatrixXd>& projP);
-  
+
   /// the projection assumes that the sets are vertices of polygons in cyclic
   /// order
   ///
@@ -113,9 +113,9 @@ namespace igl
   ///
   /// \fileinfo
   IGL_INLINE bool shapeup_regular_face_projection(
-    const Eigen::PlainObjectBase<Eigen::MatrixXd>& P, 
-    const Eigen::PlainObjectBase<Eigen::VectorXi>& SC, 
-    const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,  
+    const Eigen::PlainObjectBase<Eigen::MatrixXd>& P,
+    const Eigen::PlainObjectBase<Eigen::VectorXi>& SC,
+    const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,
     Eigen::PlainObjectBase<Eigen::MatrixXd>& projP);
   /// This function precomputation the necessary matrices for the ShapeUp
   /// process, and prefactorizes them.
@@ -174,7 +174,7 @@ namespace igl
     const ShapeupData & sudata,
     const bool quietIterations,
     Eigen::PlainObjectBase<DerivedP>& P);
-  
+
 }
 
 #ifndef IGL_STATIC_LIBRARY

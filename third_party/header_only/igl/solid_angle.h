@@ -5,10 +5,10 @@
 namespace igl
 {
   /// Compute the signed solid angle subtended by the oriented 3d triangle (A,B,C) at some point P
-  /// 
-  /// @param[in] A  3D position of corner 
-  /// @param[in] B  3D position of corner 
-  /// @param[in] C  3D position of corner 
+  ///
+  /// @param[in] A  3D position of corner
+  /// @param[in] B  3D position of corner
+  /// @param[in] C  3D position of corner
   /// @param[in] P  3D position of query point
   /// @return signed solid angle
   template <

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2012-2021 Istituto Italiano di Tecnologia (IIT)
-# SPDX-FileCopyrightText: 2000-2014 Kitware Inc.
-# SPDX-License-Identifier: BSD-3-Clause
+# SPDX-FileCopyrightText: 2000-2014 Kitware Inc. SPDX-License-Identifier:
+# BSD-3-Clause
 
 #[=======================================================================[.rst:
 GitInfo
@@ -143,7 +143,6 @@ Extract information from a git repository.
   if required.
 #]=======================================================================]
 
-
 if(DEFINED __GIT_INFO_INCLUDED)
   return()
 endif()
@@ -156,7 +155,8 @@ macro(_check_git_and_repo _source_dir _fatal)
   if(NOT EXISTS "${_source_dir}/.git")
     # This is not a git folder.
     if(${_fatal})
-      message(FATAL_ERROR "Source dir \"${_source_dir}\" is not a git repository.")
+      message(
+        FATAL_ERROR "Source dir \"${_source_dir}\" is not a git repository.")
     else()
       if(GIT_INFO_DEBUG)
         message(STATUS "Source dir \"${_source_dir}\" is not a git repository.")
@@ -184,21 +184,24 @@ function(git_commit_info)
 
   # Parse arguments and check values
   set(_options FATAL)
-  set(_oneValueArgs SOURCE_DIR
-                    PREFIX
-                    REVISION)
+  set(_oneValueArgs SOURCE_DIR PREFIX REVISION)
   set(_multiValueArgs)
-  cmake_parse_arguments(_GCI "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" "${ARGN}")
+  cmake_parse_arguments(_GCI "${_options}" "${_oneValueArgs}"
+                        "${_multiValueArgs}" "${ARGN}")
 
   if(NOT DEFINED _GCI_SOURCE_DIR)
     if(NOT DEFINED PROJECT_NAME)
-      message(FATAL_ERROR "SOURCE_DIR parameter is missing and project not defined.")
+      message(
+        FATAL_ERROR "SOURCE_DIR parameter is missing and project not defined.")
     endif()
   endif()
 
   if(NOT DEFINED _GCI_PREFIX)
     if(NOT DEFINED PROJECT_NAME)
-      message(AUTHOR_WARNING "PREFIX parameter is missing and project not defined. The variable prefix will be empty.")
+      message(
+        AUTHOR_WARNING
+          "PREFIX parameter is missing and project not defined. The variable prefix will be empty."
+      )
     endif()
   endif()
 
@@ -282,10 +285,12 @@ function(git_commit_info)
 
   # Get TAG_REVISION
   if("${${_GCI_PREFIX}_GIT_COMMIT_TAG}" STREQUAL "")
-    set(${_GCI_PREFIX}_GIT_COMMIT_TAG_REVISION "${${_GCI_PREFIX}_GIT_COMMIT_REVISION}")
+    set(${_GCI_PREFIX}_GIT_COMMIT_TAG_REVISION
+        "${${_GCI_PREFIX}_GIT_COMMIT_REVISION}")
   endif()
   execute_process(
-    COMMAND ${GIT_EXECUTABLE} rev-list --count ${${_GCI_PREFIX}_GIT_COMMIT_TAG}..${_GCI_REVISION}
+    COMMAND ${GIT_EXECUTABLE} rev-list --count
+            ${${_GCI_PREFIX}_GIT_COMMIT_TAG}..${_GCI_REVISION}
     OUTPUT_VARIABLE ${_GCI_PREFIX}_GIT_COMMIT_TAG_REVISION
     OUTPUT_STRIP_TRAILING_WHITESPACE
     WORKING_DIRECTORY "${_GCI_SOURCE_DIR}")
@@ -297,7 +302,8 @@ function(git_commit_info)
     OUTPUT_STRIP_TRAILING_WHITESPACE
     WORKING_DIRECTORY "${_GCI_SOURCE_DIR}")
 
-  string(REGEX MATCH "AuthorDate: +([0-9-]+) ([0-9:]+) ([+-][0-9]+)" _unused ${_log_message})
+  string(REGEX MATCH "AuthorDate: +([0-9-]+) ([0-9:]+) ([+-][0-9]+)" _unused
+               ${_log_message})
   set(${_GCI_PREFIX}_GIT_COMMIT_AUTHOR_DATE "${CMAKE_MATCH_1}")
   set(${_GCI_PREFIX}_GIT_COMMIT_AUTHOR_TIME "${CMAKE_MATCH_2}")
   set(${_GCI_PREFIX}_GIT_COMMIT_AUTHOR_TZ "${CMAKE_MATCH_3}")
@@ -306,7 +312,8 @@ function(git_commit_info)
   set(${_GCI_PREFIX}_GIT_COMMIT_AUTHOR_NAME "${CMAKE_MATCH_1}")
   set(${_GCI_PREFIX}_GIT_COMMIT_AUTHOR_EMAIL "${CMAKE_MATCH_2}")
 
-  string(REGEX MATCH "CommitDate: +([0-9-]+) ([0-9:]+) ([+-][0-9]+)" _unused ${_log_message})
+  string(REGEX MATCH "CommitDate: +([0-9-]+) ([0-9:]+) ([+-][0-9]+)" _unused
+               ${_log_message})
   set(${_GCI_PREFIX}_GIT_COMMIT_COMMITTER_DATE "${CMAKE_MATCH_1}")
   set(${_GCI_PREFIX}_GIT_COMMIT_COMMITTER_TIME "${CMAKE_MATCH_2}")
   set(${_GCI_PREFIX}_GIT_COMMIT_COMMITTER_TZ "${CMAKE_MATCH_3}")
@@ -317,7 +324,10 @@ function(git_commit_info)
 
   # Get DATE_REVISION
   execute_process(
-    COMMAND ${GIT_EXECUTABLE} rev-list --count "--since=\"${${_GCI_PREFIX}_GIT_COMMIT_AUTHOR_DATE} 1 day\"" ${_GCI_REVISION}
+    COMMAND
+      ${GIT_EXECUTABLE} rev-list --count
+      "--since=\"${${_GCI_PREFIX}_GIT_COMMIT_AUTHOR_DATE} 1 day\""
+      ${_GCI_REVISION}
     OUTPUT_VARIABLE ${_GCI_PREFIX}_GIT_COMMIT_DATE_REVISION
     OUTPUT_STRIP_TRAILING_WHITESPACE
     WORKING_DIRECTORY "${_GCI_SOURCE_DIR}")
@@ -337,51 +347,61 @@ function(git_commit_info)
     WORKING_DIRECTORY "${_GCI_SOURCE_DIR}")
 
   # Export variables to the parent scope
-  foreach(_var DESCRIBE
-               DESCRIBE_CONTAINS
-               TAG
-               REVISION
-               TAG_REVISION
-               DATE_REVISION
-               AUTHOR_DATE
-               AUTHOR_TIME
-               AUTHOR_TZ
-               AUTHOR_NAME
-               AUTHOR_EMAIL
-               COMMITTER_DATE
-               COMMITTER_TIME
-               COMMITTER_TZ
-               COMMITTER_NAME
-               COMMITTER_EMAIL
-               HASH
-               HASH_SHORT
-               SUBJECT
-               BODY)
-    set(${_GCI_PREFIX}_GIT_COMMIT_${_var} "${${_GCI_PREFIX}_GIT_COMMIT_${_var}}" PARENT_SCOPE)
+  foreach(
+    _var
+    DESCRIBE
+    DESCRIBE_CONTAINS
+    TAG
+    REVISION
+    TAG_REVISION
+    DATE_REVISION
+    AUTHOR_DATE
+    AUTHOR_TIME
+    AUTHOR_TZ
+    AUTHOR_NAME
+    AUTHOR_EMAIL
+    COMMITTER_DATE
+    COMMITTER_TIME
+    COMMITTER_TZ
+    COMMITTER_NAME
+    COMMITTER_EMAIL
+    HASH
+    HASH_SHORT
+    SUBJECT
+    BODY)
+    set(${_GCI_PREFIX}_GIT_COMMIT_${_var}
+        "${${_GCI_PREFIX}_GIT_COMMIT_${_var}}"
+        PARENT_SCOPE)
     if(GIT_INFO_DEBUG OR GIT_INFO_DEBUG_${_GCI_PREFIX})
-      message(STATUS "${_GCI_PREFIX}_GIT_COMMIT_${_var} = \"${${_GCI_PREFIX}_GIT_COMMIT_${_var}}\"")
+      message(
+        STATUS
+          "${_GCI_PREFIX}_GIT_COMMIT_${_var} = \"${${_GCI_PREFIX}_GIT_COMMIT_${_var}}\""
+      )
     endif()
   endforeach()
 endfunction()
 
-
 function(git_wt_info)
   # Parse arguments and check values
   set(_options FATAL)
-  set(_oneValueArgs SOURCE_DIR
-                    PREFIX)
+  set(_oneValueArgs SOURCE_DIR PREFIX)
   set(_multiValueArgs)
-  cmake_parse_arguments(_GWTI "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" "${ARGN}")
+  cmake_parse_arguments(_GWTI "${_options}" "${_oneValueArgs}"
+                        "${_multiValueArgs}" "${ARGN}")
 
   if(NOT DEFINED _GWTI_SOURCE_DIR)
     if(NOT DEFINED PROJECT_NAME)
-      message(FATAL_ERROR "SOURCE_DIR parameter is missing and project not defined.")
+      message(
+        FATAL_ERROR "SOURCE_DIR parameter is missing and project not defined.")
     endif()
   endif()
 
   if(NOT DEFINED _GWTI_PREFIX)
     if(NOT DEFINED PROJECT_NAME)
-      message(AUTHOR_WARNING "PREFIX parameter is missing and project not defined. The variable prefix will be empty.")
+      message(
+        AUTHOR_WARNING
+          "PREFIX parameter is missing and project not defined. The variable prefix will be empty."
+      )
     endif()
   endif()
 
@@ -398,38 +418,43 @@ function(git_wt_info)
   _check_git_and_repo("${_GWTI_SOURCE_DIR}" ${_GWTI_FATAL})
 
   # Get info about the HEAD commit
-  git_commit_info(SOURCE_DIR "${_GWTI_SOURCE_DIR}"
-                  PREFIX ${_GWTI_PREFIX}
-                  REVISION HEAD
-                  ${_fatal})
-  foreach(_var DESCRIBE
-               DESCRIBE_CONTAINS
-               TAG
-               REVISION
-               TAG_REVISION
-               DATE_REVISION
-               AUTHOR_DATE
-               AUTHOR_TIME
-               AUTHOR_TZ
-               AUTHOR_NAME
-               AUTHOR_EMAIL
-               COMMITTER_DATE
-               COMMITTER_TIME
-               COMMITTER_TZ
-               COMMITTER_NAME
-               COMMITTER_EMAIL
-               HASH
-               HASH_SHORT
-               SUBJECT
-               BODY)
+  git_commit_info(
+    SOURCE_DIR
+    "${_GWTI_SOURCE_DIR}"
+    PREFIX
+    ${_GWTI_PREFIX}
+    REVISION
+    HEAD
+    ${_fatal})
+  foreach(
+    _var
+    DESCRIBE
+    DESCRIBE_CONTAINS
+    TAG
+    REVISION
+    TAG_REVISION
+    DATE_REVISION
+    AUTHOR_DATE
+    AUTHOR_TIME
+    AUTHOR_TZ
+    AUTHOR_NAME
+    AUTHOR_EMAIL
+    COMMITTER_DATE
+    COMMITTER_TIME
+    COMMITTER_TZ
+    COMMITTER_NAME
+    COMMITTER_EMAIL
+    HASH
+    HASH_SHORT
+    SUBJECT
+    BODY)
     set(${_GWTI_PREFIX}_GIT_WT_${_var} "${${_GWTI_PREFIX}_GIT_COMMIT_${_var}}")
   endforeach()
 
   # Get more info
   set(${_GWTI_PREFIX}_GIT_WT_DIRTY 0)
-  execute_process(
-    COMMAND ${GIT_EXECUTABLE} update-index -q --refresh
-    WORKING_DIRECTORY "${_GWTI_SOURCE_DIR}")
+  execute_process(COMMAND ${GIT_EXECUTABLE} update-index -q --refresh
+                  WORKING_DIRECTORY "${_GWTI_SOURCE_DIR}")
 
   execute_process(
     COMMAND ${GIT_EXECUTABLE} diff-index --name-only HEAD --
@@ -442,30 +467,37 @@ function(git_wt_info)
 
   # Export variables to the parent scope
 
-  foreach(_var DESCRIBE
-               DESCRIBE_CONTAINS
-               TAG
-               REVISION
-               TAG_REVISION
-               DATE_REVISION
-               AUTHOR_DATE
-               AUTHOR_TIME
-               AUTHOR_TZ
-               AUTHOR_NAME
-               AUTHOR_EMAIL
-               COMMITTER_DATE
-               COMMITTER_TIME
-               COMMITTER_TZ
-               COMMITTER_NAME
-               COMMITTER_EMAIL
-               HASH
-               HASH_SHORT
-               SUBJECT
-               BODY
-               DIRTY)
-    set(${_GWTI_PREFIX}_GIT_WT_${_var} "${${_GWTI_PREFIX}_GIT_WT_${_var}}" PARENT_SCOPE)
+  foreach(
+    _var
+    DESCRIBE
+    DESCRIBE_CONTAINS
+    TAG
+    REVISION
+    TAG_REVISION
+    DATE_REVISION
+    AUTHOR_DATE
+    AUTHOR_TIME
+    AUTHOR_TZ
+    AUTHOR_NAME
+    AUTHOR_EMAIL
+    COMMITTER_DATE
+    COMMITTER_TIME
+    COMMITTER_TZ
+    COMMITTER_NAME
+    COMMITTER_EMAIL
+    HASH
+    HASH_SHORT
+    SUBJECT
+    BODY
+    DIRTY)
+    set(${_GWTI_PREFIX}_GIT_WT_${_var}
+        "${${_GWTI_PREFIX}_GIT_WT_${_var}}"
+        PARENT_SCOPE)
     if(GIT_INFO_DEBUG OR GIT_INFO_DEBUG_${_GWTI_PREFIX})
-      message(STATUS "${_GWTI_PREFIX}_GIT_WT_${_var} = \"${${_GWTI_PREFIX}_GIT_WT_${_var}}\"")
+      message(
+        STATUS
+          "${_GWTI_PREFIX}_GIT_WT_${_var} = \"${${_GWTI_PREFIX}_GIT_WT_${_var}}\""
+      )
     endif()
   endforeach()
 

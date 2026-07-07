@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "minkowski_sum.h"
 #include "mesh_boolean.h"
@@ -41,7 +41,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   using namespace std;
   using namespace Eigen;
   assert(FA.cols() == 3 && "FA must contain a closed triangle mesh");
-  assert(FB.cols() <= FA.cols() && 
+  assert(FB.cols() <= FA.cols() &&
     "FB must contain lower diemnsional simplices than FA");
   const auto tictoc = []()->double
   {
@@ -159,7 +159,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   const Eigen::MatrixBase<DerivedFA> & FA,
   const Eigen::Matrix<sType,1,sCols,sOptions> & s,
   const Eigen::Matrix<dType,1,dCols,dOptions> & d,
-  const bool resolve_overlaps, 
+  const bool resolve_overlaps,
   Eigen::PlainObjectBase<DerivedW> & W,
   Eigen::PlainObjectBase<DerivedG> & G,
   Eigen::PlainObjectBase<DerivedJ> & J)
@@ -242,7 +242,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   BA << slice_mask(FA,P,1).rowwise().reverse(), slice_mask(FA,N,1);
   // Quads along **all** sides
   MatrixXI GQ((mp+mn)*3,4);
-  GQ<< 
+  GQ<<
     BA.col(1), BA.col(0), BA.col(0).array()+n, BA.col(1).array()+n,
     BA.col(2), BA.col(1), BA.col(1).array()+n, BA.col(2).array()+n,
     BA.col(0), BA.col(2), BA.col(2).array()+n, BA.col(0).array()+n;
@@ -341,9 +341,9 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   }
 
   G.resize(GT.rows()+2*GQ.rows(),3);
-  G<< 
+  G<<
     GT,
-    GQ.col(0), GQ.col(1), GQ.col(2), 
+    GQ.col(0), GQ.col(1), GQ.col(2),
     GQ.col(0), GQ.col(2), GQ.col(3);
   J.resize(JT.rows()+2*GQ.rows(),1);
   J<<JT,DerivedJ::Constant(2*GQ.rows(),1,2*m+1);

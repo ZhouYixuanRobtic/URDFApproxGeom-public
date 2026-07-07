@@ -27,8 +27,7 @@
 
 namespace urdf_approx_geom {
 
-double pointToSegmentDistance(const Eigen::Vector3d& p,
-                              const Eigen::Vector3d& a,
+double pointToSegmentDistance(const Eigen::Vector3d& p, const Eigen::Vector3d& a,
                               const Eigen::Vector3d& b) {
     Eigen::Vector3d d = b - a;
     double denom = d.squaredNorm();
@@ -38,7 +37,10 @@ double pointToSegmentDistance(const Eigen::Vector3d& p,
 
 // ---- minimum enclosing circle (2D), Welzl move-to-front -----------------
 using V2 = Eigen::Vector2d;
-struct Circle2 { V2 c; double r; };
+struct Circle2 {
+    V2 c;
+    double r;
+};
 
 static Circle2 circle_from(const V2& a, const V2& b) {
     return {0.5 * (a + b), 0.5 * (a - b).norm()};
@@ -48,15 +50,20 @@ static Circle2 circle_from(const V2& a, const V2& b, const V2& c) {
     double d = 2.0 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
     if (std::abs(d) < 1e-18) {
         // degenerate: pick the farthest pair
-        double dab = (a - b).squaredNorm(), dac = (a - c).squaredNorm(), dbc = (b - c).squaredNorm();
-        if (dab >= dac && dab >= dbc) return circle_from(a, b);
-        if (dac >= dbc) return circle_from(a, c);
+        double dab = (a - b).squaredNorm(), dac = (a - c).squaredNorm(),
+               dbc = (b - c).squaredNorm();
+        if (dab >= dac && dab >= dbc)
+            return circle_from(a, b);
+        if (dac >= dbc)
+            return circle_from(a, c);
         return circle_from(b, c);
     }
     double ux = ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) +
-                 (cx * cx + cy * cy) * (ay - by)) / d;
+                 (cx * cx + cy * cy) * (ay - by)) /
+                d;
     double uy = ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) +
-                 (cx * cx + cy * cy) * (bx - ax)) / d;
+                 (cx * cx + cy * cy) * (bx - ax)) /
+                d;
     V2 ctr(ux, uy);
     return {ctr, (a - ctr).norm()};
 }
@@ -80,7 +87,8 @@ static Circle2 min_enclosing_circle(std::vector<V2> P) {
             }
         }
     }
-    if (C.r < 0.0) C = {V2::Zero(), 0.0};
+    if (C.r < 0.0)
+        C = {V2::Zero(), 0.0};
     return C;
 }
 
@@ -88,10 +96,11 @@ static Circle2 min_enclosing_circle(std::vector<V2> P) {
 // lateral center = MEC of projected centers (axis offset), then
 // R = max_i( |proj_i - c_perp| + r_i ); segment spans the axial extent.
 static Capsule capsule_for_axis(const std::vector<Eigen::Vector3d>& centers,
-                                const std::vector<double>& radii,
-                                const Eigen::Vector3d& c, Eigen::Vector3d u) {
+                                const std::vector<double>& radii, const Eigen::Vector3d& c,
+                                Eigen::Vector3d u) {
     u.normalize();
-    Eigen::Vector3d ref = std::abs(u.x()) < 0.9 ? Eigen::Vector3d::UnitX() : Eigen::Vector3d::UnitY();
+    Eigen::Vector3d ref =
+        std::abs(u.x()) < 0.9 ? Eigen::Vector3d::UnitX() : Eigen::Vector3d::UnitY();
     Eigen::Vector3d e1 = u.cross(ref).normalized();
     Eigen::Vector3d e2 = u.cross(e1).normalized();
 
@@ -123,8 +132,8 @@ static Capsule capsule_for_axis(const std::vector<Eigen::Vector3d>& centers,
     return cap;
 }
 
-static Eigen::Vector3d rotate_around(const Eigen::Vector3d& u,
-                                     const Eigen::Vector3d& axis, double ang) {
+static Eigen::Vector3d rotate_around(const Eigen::Vector3d& u, const Eigen::Vector3d& axis,
+                                     double ang) {
     double c = std::cos(ang), s = std::sin(ang);
     return (u * c + axis.cross(u) * s + axis * (axis.dot(u)) * (1.0 - c)).normalized();
 }
@@ -134,16 +143,19 @@ static Eigen::Vector3d rotate_around(const Eigen::Vector3d& u,
 static Capsule fit_axis_search(const std::vector<Eigen::Vector3d>& centers,
                                const std::vector<double>& radii) {
     Eigen::Vector3d c = Eigen::Vector3d::Zero();
-    for (const auto& p : centers) c += p;
+    for (const auto& p : centers)
+        c += p;
     c /= double(centers.size());
 
     // candidate directions: PCA eigenvectors, cardinals, diameter, fibonacci sphere.
     Eigen::MatrixXd Cn(centers.size(), 3);
-    for (size_t i = 0; i < centers.size(); ++i) Cn.row(i) = centers[i].transpose() - c.transpose();
+    for (size_t i = 0; i < centers.size(); ++i)
+        Cn.row(i) = centers[i].transpose() - c.transpose();
     Eigen::Matrix3d cov = (Cn.transpose() * Cn) / double(centers.size());
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> es(cov);
     std::vector<Eigen::Vector3d> dirs;
-    for (int k = 0; k < 3; ++k) dirs.push_back(es.eigenvectors().col(k));
+    for (int k = 0; k < 3; ++k)
+        dirs.push_back(es.eigenvectors().col(k));
     dirs.emplace_back(Eigen::Vector3d::UnitX());
     dirs.emplace_back(Eigen::Vector3d::UnitY());
     dirs.emplace_back(Eigen::Vector3d::UnitZ());
@@ -181,14 +193,17 @@ static Capsule fit_axis_search(const std::vector<Eigen::Vector3d>& centers,
 
     // local refinement (pattern search on the sphere) for the true minimum.
     Eigen::Vector3d u = (best.p1 - best.p0).normalized();
-    if (u.hasNaN() || (best.p1 - best.p0).norm() < 1e-12) u = Eigen::Vector3d::UnitX();
+    if (u.hasNaN() || (best.p1 - best.p0).norm() < 1e-12)
+        u = Eigen::Vector3d::UnitX();
     double step = 0.25;
     while (step > 1e-3) {
         bool improved = false;
-        Eigen::Vector3d ref = std::abs(u.x()) < 0.9 ? Eigen::Vector3d::UnitX() : Eigen::Vector3d::UnitY();
+        Eigen::Vector3d ref =
+            std::abs(u.x()) < 0.9 ? Eigen::Vector3d::UnitX() : Eigen::Vector3d::UnitY();
         Eigen::Vector3d e1 = u.cross(ref).normalized();
         Eigen::Vector3d e2 = u.cross(e1).normalized();
-        std::vector<Eigen::Vector3d> rot_axes = {e1, e2, Eigen::Vector3d(-e1), Eigen::Vector3d(-e2)};
+        std::vector<Eigen::Vector3d> rot_axes = {e1, e2, Eigen::Vector3d(-e1),
+                                                 Eigen::Vector3d(-e2)};
         for (const Eigen::Vector3d& ax : rot_axes) {
             Capsule cand = capsule_for_axis(centers, radii, c, rotate_around(u, ax, step));
             if (cand.radius < best_r - 1e-9) {
@@ -198,23 +213,28 @@ static Capsule fit_axis_search(const std::vector<Eigen::Vector3d>& centers,
                 improved = true;
             }
         }
-        if (!improved) step *= 0.5;
+        if (!improved)
+            step *= 0.5;
     }
     return best;
 }
 
 Capsule fitCapsuleCoveringDisks(const std::vector<Eigen::Vector3d>& centers,
                                 const std::vector<double>& radii) {
-    if (centers.empty()) return {Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), 0.0};
+    if (centers.empty())
+        return {Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(), 0.0};
     std::vector<double> r = radii;
-    if (r.size() != centers.size()) r.assign(centers.size(), 0.0);
-    if (centers.size() == 1) return {centers[0], centers[0], r[0]};
+    if (r.size() != centers.size())
+        r.assign(centers.size(), 0.0);
+    if (centers.size() == 1)
+        return {centers[0], centers[0], r[0]};
     return fit_axis_search(centers, r);
 }
 
 Capsule fitCoveringCapsule(const Eigen::MatrixXd& V) {
     std::vector<Eigen::Vector3d> centers(V.rows());
-    for (int i = 0; i < V.rows(); ++i) centers[i] = V.row(i).transpose();
+    for (int i = 0; i < V.rows(); ++i)
+        centers[i] = V.row(i).transpose();
     std::vector<double> zeros(V.rows(), 0.0);
     return fitCapsuleCoveringDisks(centers, zeros);
 }
@@ -224,15 +244,25 @@ Capsule fitCoveringCapsule(const Eigen::MatrixXd& V) {
 namespace {
 struct UnionFind {
     std::vector<int> parent;
-    explicit UnionFind(int n) : parent(n) { for (int i = 0; i < n; ++i) parent[i] = i; }
-    int find(int x) { while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; }
-    void unite(int a, int b) { parent[find(a)] = find(b); }
+    explicit UnionFind(int n) : parent(n) {
+        for (int i = 0; i < n; ++i)
+            parent[i] = i;
+    }
+    int find(int x) {
+        while (parent[x] != x) {
+            parent[x] = parent[parent[x]];
+            x = parent[x];
+        }
+        return x;
+    }
+    void unite(int a, int b) {
+        parent[find(a)] = find(b);
+    }
 };
 
 // Cluster sphere indices by proximity (centers within r_i+r_j+gap).
 std::vector<std::vector<int>> clusterSpheres(const std::vector<Eigen::Vector3d>& centers,
-                                             const std::vector<double>& radii,
-                                             double cluster_gap) {
+                                             const std::vector<double>& radii, double cluster_gap) {
     const int n = static_cast<int>(centers.size());
     UnionFind uf(n);
     for (int i = 0; i < n; ++i)
@@ -240,23 +270,28 @@ std::vector<std::vector<int>> clusterSpheres(const std::vector<Eigen::Vector3d>&
             if ((centers[i] - centers[j]).norm() <= radii[i] + radii[j] + cluster_gap)
                 uf.unite(i, j);
     std::map<int, std::vector<int>> comps;
-    for (int i = 0; i < n; ++i) comps[uf.find(i)].push_back(i);
+    for (int i = 0; i < n; ++i)
+        comps[uf.find(i)].push_back(i);
     std::vector<std::vector<int>> out;
     out.reserve(comps.size());
-    for (auto& kv : comps) out.push_back(std::move(kv.second));
+    for (auto& kv : comps)
+        out.push_back(std::move(kv.second));
     return out;
 }
 
 // Recursive tight point-fit + k-means fat-split on a vertex block.
-void fit_recursive_points(const Eigen::MatrixXd& V, int budget,
-                          int min_cluster_size, double fat_split_ratio,
-                          std::vector<Capsule>& out) {
-    if (V.rows() == 0) return;
+void fit_recursive_points(const Eigen::MatrixXd& V, int budget, int min_cluster_size,
+                          double fat_split_ratio, std::vector<Capsule>& out) {
+    if (V.rows() == 0)
+        return;
     Capsule cap = fitCoveringCapsule(V);  // tight: radius = true surface dist
     double seg_len = (cap.p1 - cap.p0).norm();
     bool fat = seg_len > 1e-9 && cap.radius > fat_split_ratio * seg_len;
     bool can_split = budget > 1 && V.rows() >= 2 * min_cluster_size;
-    if (!fat || !can_split) { out.push_back(cap); return; }
+    if (!fat || !can_split) {
+        out.push_back(cap);
+        return;
+    }
 
     // k-means(k=2) on vertices: a spatial split reduces a perpendicular spread
     // (an axial cut cannot tighten a wide/short region).
@@ -265,32 +300,44 @@ void fit_recursive_points(const Eigen::MatrixXd& V, int budget,
     double bestd = -1.0;
     for (int i = 0; i < V.rows(); ++i) {
         double d = (V.row(i).transpose() - s0).squaredNorm();
-        if (d > bestd) { bestd = d; s1 = V.row(i).transpose(); }
+        if (d > bestd) {
+            bestd = d;
+            s1 = V.row(i).transpose();
+        }
     }
     std::vector<int> L, R;
     for (int iter = 0; iter < 5; ++iter) {
-        L.clear(); R.clear();
+        L.clear();
+        R.clear();
         for (int i = 0; i < V.rows(); ++i) {
             Eigen::Vector3d p = V.row(i).transpose();
             ((p - s0).squaredNorm() <= (p - s1).squaredNorm() ? L : R).push_back(i);
         }
-        if (L.empty() || R.empty()) break;
+        if (L.empty() || R.empty())
+            break;
         Eigen::Vector3d m0 = Eigen::Vector3d::Zero(), m1 = Eigen::Vector3d::Zero();
-        for (int i : L) m0 += V.row(i).transpose();
-        for (int i : R) m1 += V.row(i).transpose();
+        for (int i : L)
+            m0 += V.row(i).transpose();
+        for (int i : R)
+            m1 += V.row(i).transpose();
         s0 = m0 / double(L.size());
         s1 = m1 / double(R.size());
     }
-    if (L.empty() || R.empty()) { out.push_back(cap); return; }
+    if (L.empty() || R.empty()) {
+        out.push_back(cap);
+        return;
+    }
 
     Eigen::MatrixXd VL(L.size(), 3), VR(R.size(), 3);
-    for (size_t k = 0; k < L.size(); ++k) VL.row(k) = V.row(L[k]);
-    for (size_t k = 0; k < R.size(); ++k) VR.row(k) = V.row(R[k]);
+    for (size_t k = 0; k < L.size(); ++k)
+        VL.row(k) = V.row(L[k]);
+    for (size_t k = 0; k < R.size(); ++k)
+        VR.row(k) = V.row(R[k]);
     int bl = (budget + 1) / 2, br = budget / 2;
     fit_recursive_points(VL, bl, min_cluster_size, fat_split_ratio, out);
     fit_recursive_points(VR, br, min_cluster_size, fat_split_ratio, out);
 }
-    // (dedupe_nested lives in the urdf_approx_geom namespace, below.)
+// (dedupe_nested lives in the urdf_approx_geom namespace, below.)
 }  // namespace
 
 // Drop capsules fully nested inside another (a k-means split can leave a small
@@ -301,12 +348,15 @@ void fit_recursive_points(const Eigen::MatrixXd& V, int budget,
 std::vector<Capsule> dedupeNestedCapsules(const std::vector<Capsule>& caps) {
     std::vector<char> removed(caps.size(), 0);
     for (size_t i = 0; i < caps.size(); ++i) {
-        if (removed[i]) continue;
+        if (removed[i])
+            continue;
         for (size_t j = 0; j < caps.size(); ++j) {
-            if (i == j) continue;
+            if (i == j)
+                continue;
             const Capsule& C = caps[i];
             const Capsule& D = caps[j];
-            if (D.radius < C.radius - 1e-9) continue;  // D must be at least as big
+            if (D.radius < C.radius - 1e-9)
+                continue;  // D must be at least as big
             double d0 = pointToSegmentDistance(C.p0, D.p0, D.p1);
             double d1 = pointToSegmentDistance(C.p1, D.p0, D.p1);
             if (d0 + C.radius <= D.radius + 1e-9 && d1 + C.radius <= D.radius + 1e-9) {
@@ -317,19 +367,19 @@ std::vector<Capsule> dedupeNestedCapsules(const std::vector<Capsule>& caps) {
     }
     std::vector<Capsule> out;
     for (size_t i = 0; i < caps.size(); ++i)
-        if (!removed[i]) out.push_back(caps[i]);
+        if (!removed[i])
+            out.push_back(caps[i]);
     return out;
 }
 
 std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
                                          const std::vector<Eigen::Vector3d>& centers,
-                                         const std::vector<double>& radii,
-                                         double cluster_gap,
-                                         int min_cluster_size,
-                                         double fat_split_ratio,
+                                         const std::vector<double>& radii, double cluster_gap,
+                                         int min_cluster_size, double fat_split_ratio,
                                          int max_capsules) {
     std::vector<Capsule> out;
-    if (V.rows() == 0) return out;
+    if (V.rows() == 0)
+        return out;
 
     // No spheres -> single tight capsule over all vertices.
     if (centers.empty()) {
@@ -341,7 +391,8 @@ std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
     // Assign each vertex to its nearest sphere, then to that sphere's cluster.
     std::vector<int> sph2comp(centers.size(), -1);
     for (int ci = 0; ci < static_cast<int>(comps.size()); ++ci)
-        for (int s : comps[ci]) sph2comp[s] = ci;
+        for (int s : comps[ci])
+            sph2comp[s] = ci;
     int ncomp = static_cast<int>(comps.size());
     std::vector<std::vector<int>> compverts(ncomp);
     for (int i = 0; i < V.rows(); ++i) {
@@ -350,7 +401,10 @@ std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
         int bests = 0;
         for (int s = 0; s < static_cast<int>(centers.size()); ++s) {
             double d = (centers[s] - p).squaredNorm();
-            if (d < bestd) { bestd = d; bests = s; }
+            if (d < bestd) {
+                bestd = d;
+                bests = s;
+            }
         }
         compverts[sph2comp[bests]].push_back(i);
     }
@@ -359,12 +413,15 @@ std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
     // clusters get a (possibly degenerate) capsule rather than being dropped.
     for (int ci = 0; ci < ncomp; ++ci) {
         const auto& idxs = compverts[ci];
-        if (idxs.empty()) continue;
+        if (idxs.empty())
+            continue;
         Eigen::MatrixXd Vc(idxs.size(), 3);
-        for (size_t k = 0; k < idxs.size(); ++k) Vc.row(k) = V.row(idxs[k]);
+        for (size_t k = 0; k < idxs.size(); ++k)
+            Vc.row(k) = V.row(idxs[k]);
         fit_recursive_points(Vc, max_capsules, min_cluster_size, fat_split_ratio, out);
     }
-    if (out.empty()) fit_recursive_points(V, max_capsules, min_cluster_size, fat_split_ratio, out);
+    if (out.empty())
+        fit_recursive_points(V, max_capsules, min_cluster_size, fat_split_ratio, out);
     return dedupeNestedCapsules(out);
 }
 

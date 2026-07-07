@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="flat_plate">
+    <link name="world"/>
+    <link name="flat_plate">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0"/>
+            <geometry>
+                <mesh filename="/home/admin1/projects/SpherizedURDFGenerator/doc/paper/artifacts/synthetic-morphology-benchmark/meshes/flat_plate.obj"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="-7.88334e-10 -2.39948e-13 -6.85793e-15" rpy="0 1.5708 -0.00020292"/>
+            <geometry>
+                <cylinder radius="0.077183" length="0.165013"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-0.0825063 8.37107e-06 2.39247e-07" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.077183"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="0.0825063 -8.37107e-06 -2.39247e-07" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.077183"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="joint_world_flat_plate" type="fixed">
+        <parent link="world"/>
+        <child link="flat_plate"/>
+        <origin xyz="0 0 0" rpy="0 -0 0"/>
+    </joint>
+</robot>

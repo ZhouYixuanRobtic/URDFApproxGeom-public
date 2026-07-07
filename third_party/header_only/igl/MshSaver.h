@@ -1,11 +1,11 @@
-// based on MSH writer from PyMesh 
+// based on MSH writer from PyMesh
 
-// Copyright (c) 2015 Qingnan Zhou <qzhou@adobe.com>           
-// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com> 
+// Copyright (c) 2015 Qingnan Zhou <qzhou@adobe.com>
+// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com>
 //
-// This Source Code Form is subject to the terms of the Mozilla 
-// Public License v. 2.0. If a copy of the MPL was not distributed 
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_MSH_SAVER_H
 #define IGL_MSH_SAVER_H
 #include "igl_inline.h"
@@ -38,18 +38,18 @@ class MshSaver {
 
     public:
         // Only these element types are supported right now
-        enum {ELEMENT_LINE=1, ELEMENT_TRI=2, ELEMENT_QUAD=3, 
+        enum {ELEMENT_LINE=1, ELEMENT_TRI=2, ELEMENT_QUAD=3,
               ELEMENT_TET=4,  ELEMENT_HEX=5, ELEMENT_PRISM=6 };
 
     public:
         // save mesh geometry
         void save_mesh(
-            const FloatVector& nodes, 
-            const IndexVector& elements, 
+            const FloatVector& nodes,
+            const IndexVector& elements,
             const IntVector& element_lengths,
             const IntVector& element_type,
             const IntVector& element_tags );
-        
+
         // save additional fields associated with the mesh
 
         // add node scalar field
@@ -66,7 +66,7 @@ class MshSaver {
     protected:
         void save_header();
         void save_nodes(const FloatVector& nodes);
-        void save_elements(const IndexVector& elements, 
+        void save_elements(const IndexVector& elements,
             const IntVector& element_lengths,
             const IntVector& element_type,
             const IntVector& element_tags);

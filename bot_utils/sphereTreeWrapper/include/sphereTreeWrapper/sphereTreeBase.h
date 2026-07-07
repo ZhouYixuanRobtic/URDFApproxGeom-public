@@ -45,97 +45,91 @@
 #ifndef URDFAPPROXGEOM_SPHERETREEBASE_H
 #define URDFAPPROXGEOM_SPHERETREEBASE_H
 
-#include "irmv/bot_common/state/error_code.h"
-#include <memory>
 #include <SphereTree/SphereTree.h>
 #include <Eigen/Dense>
+#include <memory>
 #include "Surface/Surface.h"
+#include "irmv/bot_common/state/error_code.h"
 
 namespace SphereTreeMethod {
 
-    enum Optimiser {
-        NONE,
-        SIMPLEX,
-        BALANCE
-    };
+enum Optimiser { NONE, SIMPLEX, BALANCE };
 
-    class Sphere {
-    public:
-        Sphere() = default;
+class Sphere {
+  public:
+    Sphere() = default;
 
-        Sphere(double x, double y, double z, double r);
+    Sphere(double x, double y, double z, double r);
 
-        ~Sphere() = default;
+    ~Sphere() = default;
 
-    protected:
-        Eigen::Vector4d data;
+  protected:
+    Eigen::Vector4d data;
 
-    public:
-        const Eigen::Vector4d &getData() const;
+  public:
+    const Eigen::Vector4d& getData() const;
 
-        const double &X() const;
+    const double& X() const;
 
-        const double &Y() const;
+    const double& Y() const;
 
-        const double &Z() const;
+    const double& Z() const;
 
-        const double &R() const;
+    const double& R() const;
 
-        void setByRaw(double x, double y, double z, double r);
-    };
+    void setByRaw(double x, double y, double z, double r);
+};
 
-    class MySphereTree {
-    public:
-        MySphereTree() = default;
+class MySphereTree {
+  public:
+    MySphereTree() = default;
 
-        MySphereTree(const SphereTree &tree, double scale);
+    MySphereTree(const SphereTree& tree, double scale);
 
-        ~MySphereTree() = default;
+    ~MySphereTree() = default;
 
-    public:
-        ulong levels, degree;
-        Sphere biggest_sphere;
-        std::vector<Sphere> sub_spheres;
-    public:
-        void setBySphereTree(const SphereTree &tree, double scale);
-    };
+  public:
+    ulong levels, degree;
+    Sphere biggest_sphere;
+    std::vector<Sphere> sub_spheres;
 
-    enum STMethodType{
-        Grid,
-        Hubbard,
-        Medial,
-        Octree,
-        Spawn
-    };
+  public:
+    void setBySphereTree(const SphereTree& tree, double scale);
+};
 
-    class SphereTreeMethodBase {
-    public:
-        SphereTreeMethodBase() = default;
+enum STMethodType { Grid, Hubbard, Medial, Octree, Spawn };
 
-        virtual ~SphereTreeMethodBase() = default;
+class SphereTreeMethodBase {
+  public:
+    SphereTreeMethodBase() = default;
 
-    public:
-        virtual irmv_core::bot_common::ErrorInfo constructTree(const std::string &file, MySphereTree &tree);
+    virtual ~SphereTreeMethodBase() = default;
 
-        virtual irmv_core::bot_common::ErrorInfo constructTree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, MySphereTree &tree);
+  public:
+    virtual irmv_core::bot_common::ErrorInfo constructTree(const std::string& file,
+                                                           MySphereTree& tree);
 
-        virtual irmv_core::bot_common::ErrorInfo constructTree(Surface &sur, MySphereTree &tree) = 0;
+    virtual irmv_core::bot_common::ErrorInfo constructTree(const Eigen::MatrixXd& V,
+                                                           const Eigen::MatrixXi& F,
+                                                           MySphereTree& tree);
 
-        const std::string &getMethodName();
+    virtual irmv_core::bot_common::ErrorInfo constructTree(Surface& sur, MySphereTree& tree) = 0;
 
-        void setBranch(int branch);
-    protected:
-        std::string m_method_name;
+    const std::string& getMethodName();
 
-        static void loadOBJFromEigen(Surface *sur, const Eigen::MatrixXd & V, const Eigen::MatrixXi& F, float boxSize = -1);
+    void setBranch(int branch);
 
-        int branch = 8;             ///<  branching factor of the sphere-tree
+  protected:
+    std::string m_method_name;
 
+    static void loadOBJFromEigen(Surface* sur, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F,
+                                 float boxSize = -1);
 
-    };
+    int branch = 8;  ///<  branching factor of the sphere-tree
+};
 
-    typedef std::shared_ptr<SphereTreeMethodBase> SphereTreePtr;
-    typedef std::unique_ptr<SphereTreeMethodBase> SphereTreeUniquePtr;
-}
+typedef std::shared_ptr<SphereTreeMethodBase> SphereTreePtr;
+typedef std::unique_ptr<SphereTreeMethodBase> SphereTreeUniquePtr;
+}  // namespace SphereTreeMethod
 
-#endif //URDFAPPROXGEOM_SPHERETREEBASE_H
+#endif  // URDFAPPROXGEOM_SPHERETREEBASE_H

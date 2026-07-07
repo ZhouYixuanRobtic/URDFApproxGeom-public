@@ -16,14 +16,14 @@ namespace igl
   namespace stb
   {
     /// Writes an image to a file
-    /// 
+    ///
     /// Supported file formats (based on STB):
-    ///  
-    ///    JPEG 
-    ///    PNG 
-    ///    TGA 
-    ///    BMP 
-    /// 
+    ///
+    ///    JPEG
+    ///    PNG
+    ///    TGA
+    ///    BMP
+    ///
     /// @param[in] R  red channel
     /// @param[in] G  green channel
     /// @param[in] B  blue channel

@@ -44,16 +44,25 @@ def test_cli_visualize_robot_viewer_no_launch(tmp_path):
     bundle_dir = tmp_path / "cli_bundle"
     proc = subprocess.run(
         [
-            sys.executable, "-m", "urdf_approx_geom.cli", "visualize",
-            "--mode", "capsule",
-            "--urdf", str(result.output_urdf),
-            "--viewer", "robot_viewer",
-            "--bundle-dir", str(bundle_dir),
+            sys.executable,
+            "-m",
+            "urdf_approx_geom.cli",
+            "visualize",
+            "--mode",
+            "capsule",
+            "--urdf",
+            str(result.output_urdf),
+            "--viewer",
+            "robot_viewer",
+            "--bundle-dir",
+            str(bundle_dir),
             "--no-launch",
         ],
-        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
-        env={**__import__("os").environ,
-             "PYTHONPATH": "/workspace/python:/workspace/build/python"},
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+        env={**__import__("os").environ, "PYTHONPATH": "/workspace/python:/workspace/build/python"},
     )
     assert proc.returncode == 0, proc.stdout
     assert "bundle ready" in proc.stdout

@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2019 Lawson Fulton lawsonfulton@gmail.com
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/
 #ifndef IGL_PATH_TO_EDGES_H
 #define IGL_PATH_TO_EDGES_H
@@ -23,7 +23,7 @@ namespace igl
   /// @param[in] I  #I list of vertex indices
   /// @param[in] make_loop bool If true, include an edge connecting I[N-1] to I[0]
   /// @param[out] E  #I-1 by 2 list of edges
-  /// 
+  ///
   template <typename DerivedI, typename DerivedE>
   IGL_INLINE void path_to_edges(
     const Eigen::MatrixBase<DerivedI> & I,

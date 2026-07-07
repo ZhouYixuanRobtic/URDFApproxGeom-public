@@ -10,7 +10,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-namespace igl 
+namespace igl
 {
   /// Compute a Least-squares conformal map parametrization (equivalently
   /// derived in "Intrinsic Parameterizations of Surface Meshes" [Desbrun et al.
@@ -41,4 +41,4 @@ namespace igl
 #include "lscm_hessian.cpp"
 #endif
 
-#endif 
+#endif

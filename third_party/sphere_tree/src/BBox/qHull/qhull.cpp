@@ -1007,12 +1007,12 @@ Convex hull of %d points in %d-d:\n\n",
   {realT stddev, ave;
   fprintf(fp, "  average new facet balance: %2.2g\n",
 	  wval_(Wnewbalance)/zval_(Zprocessed));
-  stddev= qh_stddev (zval_(Zprocessed), wval_(Wnewbalance), 
+  stddev= qh_stddev (zval_(Zprocessed), wval_(Wnewbalance),
                                  wval_(Wnewbalance2), &ave);
   fprintf(fp, "  new facet standard deviation: %2.2g\n", stddev);
   fprintf(fp, "  average partition balance: %2.2g\n",
 	  wval_(Wpbalance)/zval_(Zpbalance));
-  stddev= qh_stddev (zval_(Zpbalance), wval_(Wpbalance), 
+  stddev= qh_stddev (zval_(Zpbalance), wval_(Wpbalance),
                                  wval_(Wpbalance2), &ave);
   fprintf(fp, "  partition standard deviation: %2.2g\n", stddev);
   }

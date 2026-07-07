@@ -93,8 +93,8 @@ namespace igl
   ///   TT[i][c][0] is an edge-neighbor of face i incident on the edge of face
   ///   TT[i][c][0] opposite corner j, and TT[i][c][1] " corner k, etc.
   template <
-    typename DerivedF, 
-    typename TTIndex, 
+    typename DerivedF,
+    typename TTIndex,
     typename TTiIndex>
     IGL_INLINE void triangle_triangle_adjacency(
       const Eigen::MatrixBase<DerivedF> & F,
@@ -110,8 +110,8 @@ namespace igl
   // be "hidden").
   // @param[in] construct_TTi  whether to compute TTi
   template <
-    typename DerivedF, 
-    typename TTIndex, 
+    typename DerivedF,
+    typename TTIndex,
     typename TTiIndex>
     IGL_INLINE void triangle_triangle_adjacency(
       const Eigen::MatrixBase<DerivedF> & F,
@@ -129,10 +129,10 @@ namespace igl
   ///
   /// \see unique_edge_map, oriented_facets
   template <
-    typename DerivedE, 
+    typename DerivedE,
     typename DerivedEMAP,
     typename uE2EType,
-    typename TTIndex, 
+    typename TTIndex,
     typename TTiIndex>
     IGL_INLINE void triangle_triangle_adjacency(
       const Eigen::MatrixBase<DerivedE> & E,
@@ -152,7 +152,7 @@ namespace igl
     typename DerivedEMAP,
     typename DeriveduEC,
     typename DeriveduEE,
-    typename TTIndex, 
+    typename TTIndex,
     typename TTiIndex>
   IGL_INLINE void triangle_triangle_adjacency(
     const Eigen::MatrixBase<DerivedEMAP> & EMAP,

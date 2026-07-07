@@ -19,16 +19,16 @@ igl::orient_halfedges(
   Eigen::PlainObjectBase<DerivedOE>& oE)
 {
   assert(F.cols()==3 && "This only works for triangle meshes.");
-  
+
   using Int = typename DerivedF::Scalar;
-  
+
   const Eigen::Index m = F.rows();
-  
+
   DerivedE allE, EE;
   oriented_facets(F, allE);
   Eigen::Matrix<Int, Eigen::Dynamic, 1> IA, IC;
   unique_simplices(allE, EE, IA, IC);
-  
+
   E.resize(m, 3);
   oE.resize(m, 3);
   for(Eigen::Index f=0; f<m; ++f) {

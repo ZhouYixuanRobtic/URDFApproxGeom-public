@@ -117,7 +117,7 @@ IGL_INLINE bool ImGuiPlugin::mouse_down(int button, int modifier)
   ImGui_ImplGlfw_MouseButtonCallback(viewer->window, button, GLFW_PRESS, modifier);
   if(ImGui::GetIO().WantCaptureMouse){ return true; }
   for( auto & widget : widgets)
-  { 
+  {
     if(widget->mouse_down(button, modifier)) { return true; }
   }
   return false;
@@ -128,7 +128,7 @@ IGL_INLINE bool ImGuiPlugin::mouse_up(int button, int modifier)
   //return ImGui::GetIO().WantCaptureMouse;
   // !! Should not steal mouse up
   for( auto & widget : widgets)
-  { 
+  {
     widget->mouse_up(button, modifier);
   }
   return false;
@@ -138,7 +138,7 @@ IGL_INLINE bool ImGuiPlugin::mouse_move(int mouse_x, int mouse_y)
 {
   if(ImGui::GetIO().WantCaptureMouse){ return true; }
   for( auto & widget : widgets)
-  { 
+  {
     if(widget->mouse_move(mouse_x, mouse_y)) { return true; }
   }
   return false;
@@ -156,7 +156,7 @@ IGL_INLINE bool ImGuiPlugin::key_pressed(unsigned int key, int modifiers)
   ImGui_ImplGlfw_CharCallback(nullptr, key);
   if(ImGui::GetIO().WantCaptureKeyboard) { return true; }
   for(auto & widget : widgets)
-  { 
+  {
     if(widget->key_pressed(key,modifiers)) {return true; }
   }
   return false;
@@ -167,7 +167,7 @@ IGL_INLINE bool ImGuiPlugin::key_down(int key, int modifiers)
   ImGui_ImplGlfw_KeyCallback(viewer->window, key, 0, GLFW_PRESS, modifiers);
   if(ImGui::GetIO().WantCaptureKeyboard) { return true; }
   for(auto & widget : widgets)
-  { 
+  {
     if(widget->key_down(key,modifiers)) {return true; }
   }
   return false;
@@ -178,7 +178,7 @@ IGL_INLINE bool ImGuiPlugin::key_up(int key, int modifiers)
   ImGui_ImplGlfw_KeyCallback(viewer->window, key, 0, GLFW_RELEASE, modifiers);
   if(ImGui::GetIO().WantCaptureKeyboard) { return true; }
   for(auto & widget : widgets)
-  { 
+  {
     if(widget->key_up(key,modifiers)) { return true; }
   }
   return false;
@@ -208,4 +208,3 @@ IGL_INLINE float ImGuiPlugin::hidpi_scaling()
 } // end namespace
 } // end namespace
 } // end namespace
-

@@ -119,7 +119,7 @@ public:
     ROTATION_TYPE_TRACKBALL = 0,
     /// Fixed up rotation (like Blender, Maya, etc.)
     ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
-    /// No rotation suitable for 2D 
+    /// No rotation suitable for 2D
     ROTATION_TYPE_NO_ROTATION = 2,
     /// Total number of rotation types
     NUM_ROTATION_TYPES = 3

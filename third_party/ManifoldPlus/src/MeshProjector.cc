@@ -188,7 +188,7 @@ void MeshProjector::ComputeIndependentSet() {
 			std::random_shuffle(group.begin(), group.end());
 		}
 		group_id += 1;
-	}	
+	}
 }
 
 void MeshProjector::Project(const MatrixD& V, const MatrixI& F,
@@ -240,7 +240,7 @@ void MeshProjector::Project(const MatrixD& V, const MatrixI& F,
 		}
 	}
 	out_V->conservativeResize(num_v, 3);
-	out_F->conservativeResize(num_f, 3);	
+	out_F->conservativeResize(num_f, 3);
 }
 
 void MeshProjector::UpdateNearestDistance()
@@ -264,7 +264,7 @@ void MeshProjector::UpdateFaceNormal(int i)
 		Vector3 d1 = out_V_.row(v2) - out_V_.row(v0);
 		d0.normalize();
 		d1.normalize();
-		auto vn = d0.cross(d1);		
+		auto vn = d0.cross(d1);
 		double l = vn.norm();
 		if (l > 0)
 			vn /= l;
@@ -439,7 +439,7 @@ void MeshProjector::IterativeOptimize(FT len, bool initialized) {
 					I_[vid] = I[i];
 				} else {
 					sqrD_[vid] = (target_V_.row(vid)
-						- out_V_.row(vid)).squaredNorm();					
+						- out_V_.row(vid)).squaredNorm();
 				}
 			}
 		}
@@ -522,7 +522,7 @@ void MeshProjector::AdaptiveRefine(FT len, FT ratio) {
 		if (dis > max_dis)
 			max_dis = dis;
 	}
-	
+
 	auto AddVertex = [&](const Vector3& p, const Vector3& n,
 		const Vector3& tar_p, const FT& sqr_dis, int face_index, int sharp) {
 		if (num_V_ >= out_V_.rows()) {
@@ -556,7 +556,7 @@ void MeshProjector::AdaptiveRefine(FT len, FT ratio) {
 	};
 
 	MatrixD origin_FN;
-	igl::per_face_normals(V_, F_, origin_FN);	
+	igl::per_face_normals(V_, F_, origin_FN);
 
 	for (int iter = 0; iter < 2; ++iter) {
 		// Collect dedges to split
@@ -596,7 +596,7 @@ void MeshProjector::AdaptiveRefine(FT len, FT ratio) {
 			candidates.resize(top);
 			if (repeat == 1)
 				break;
-			
+
 			EdgeFlipRefine(candidates);
 		}
 
@@ -840,7 +840,7 @@ void MeshProjector::AdaptiveRefine(FT len, FT ratio) {
 		os.open(buffer);
 		for (int i = 0; i < num_V_; ++i) {
 			Vector3 v = out_V_.row(i);
-			os << "v " << v[0] << " " << v[1] << " " << v[2] << "\n";			
+			os << "v " << v[0] << " " << v[1] << " " << v[2] << "\n";
 		}
 		for (int i = 0; i < num_F_; ++i) {
 			Vector3i f = out_F_.row(i);
@@ -948,7 +948,7 @@ void MeshProjector::EdgeFlipRefine(std::vector<int>& candidates) {
 				PairDedge(e1_br, f1 * 3 + 2);
 				PairDedge(e2_ar, f1 * 3);
 				update = true;
-				
+
 				dedge_to_index[f1 * 3 + 2] = i;
 				candidates[i] = f1 * 3 + 2;
 			}
@@ -1017,7 +1017,7 @@ void MeshProjector::EdgeFlipRefine(std::vector<int>& candidates) {
 		out_F_.row(e2 / 3) = Vector3i(-1, -1, -1);
 		V2E_[v2] = (out_F_(e1_ar / 3, e1_ar % 3) == -1) ? -1 : e1_ar;
 		V2E_[v0] = (out_F_(e1_br / 3, e1_br % 3) == -1) ? -1 : e1_br;
-		V2E_[v3] = (out_F_(e2_ar / 3, e2_ar % 3) == -1) ? -1 : e2_ar; 
+		V2E_[v3] = (out_F_(e2_ar / 3, e2_ar % 3) == -1) ? -1 : e2_ar;
 		V2E_[v1] = (out_F_(e2_br / 3, e2_br % 3) == -1) ? -1 : e2_br;
 	}
 
@@ -1053,7 +1053,7 @@ void MeshProjector::OptimizePosition(int v, const Vector3& p, FT len, bool debug
 			Vector3 d = (out_V_.row(v2) - out_V_.row(v1));
 			d = d.cross(vn[i]).normalized();
 			FT b = d.dot(out_V_.row(v1) - out_V_.row(v0));
-			
+
 			//b -= len * 0.05;
 
 			A.push_back(d);
@@ -1066,7 +1066,7 @@ void MeshProjector::OptimizePosition(int v, const Vector3& p, FT len, bool debug
 	std::vector<int> attached_dimensions(A.size(), 0);
 	std::vector<Vector3> constraints;
 	constraints.reserve(3);
-	
+
 	for (int i = 0; i < A.size(); ++i) {
 		Vector3 offset = p - Vector3(out_V_.row(v));
 
@@ -1084,7 +1084,7 @@ void MeshProjector::OptimizePosition(int v, const Vector3& p, FT len, bool debug
 				return;
 			tar_step *= n;
 			tar_dir /= n;
-		} 
+		}
 		else if (constraints.size() == 2) {
 			Vector3 dir = constraints[0].cross(constraints[1]).normalized();
 			tar_dir = tar_dir.dot(dir) * dir;
@@ -1092,7 +1092,7 @@ void MeshProjector::OptimizePosition(int v, const Vector3& p, FT len, bool debug
 			if (n < ZERO_THRES)
 				return;
 			tar_step *= n;
-			tar_dir /= n;			
+			tar_dir /= n;
 		}
 		else if (constraints.size() == 3) {
 			return;
@@ -1202,7 +1202,7 @@ void MeshProjector::OptimizePosition(int v, const Vector3& p, FT len, bool debug
 					if (std::abs(n.normalized().dot(A[j])) < ZERO_THRES) {
 						linear_dependent = true;
 					}
-				} 
+				}
 				if (!linear_dependent) {
 					if (new_element == 0) {
 						constraints.push_back(A[j]);
@@ -1261,7 +1261,7 @@ void MeshProjector::PreserveSharpFeatures(FT len_thres) {
 		if (src_f0 == src_f1)
 			return true;
 		Vector3 n1 = origin_FN.row(src_f0);
-		Vector3 n2 = origin_FN.row(src_f1);		
+		Vector3 n2 = origin_FN.row(src_f1);
 		FT norm_angle = std::abs(n1.dot(n2));
 		if (norm_angle < std::cos(30 / 180.0 * 3.141592654)) {
 			return false;
@@ -1322,7 +1322,7 @@ void MeshProjector::PreserveSharpFeatures(FT len_thres) {
 		if (src_f0 == src_f1)
 			return true;
 		Vector3 n1 = origin_FN.row(src_f0);
-		Vector3 n2 = origin_FN.row(src_f1);		
+		Vector3 n2 = origin_FN.row(src_f1);
 		FT norm_angle = std::abs(n1.dot(n2));
 		if (norm_angle < std::cos(60 / 180.0 * 3.141592654)) {
 			return false;

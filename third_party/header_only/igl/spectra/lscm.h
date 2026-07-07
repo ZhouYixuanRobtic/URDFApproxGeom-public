@@ -12,7 +12,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-namespace igl 
+namespace igl
 {
 namespace spectra
 {
@@ -32,8 +32,8 @@ namespace spectra
   /// @return true only on solver success.
   ///
   template <
-    typename DerivedV, 
-    typename DerivedF, 
+    typename DerivedV,
+    typename DerivedF,
     typename DerivedV_uv>
   IGL_INLINE bool lscm(
     const Eigen::MatrixBase<DerivedV> & V,
@@ -47,4 +47,3 @@ namespace spectra
 #endif
 
 #endif
-

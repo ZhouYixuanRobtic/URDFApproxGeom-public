@@ -8,8 +8,8 @@ namespace igl
   /// Global optimization via grid search. Solve the problem:
   ///
   ///   minimize f(x)
-  ///   subject to lb ≤ x ≤ ub 
-  /// 
+  ///   subject to lb ≤ x ≤ ub
+  ///
   /// by exhaustive grid search.
   ///
   /// @param[in] f  function to minimize
@@ -20,10 +20,10 @@ namespace igl
   /// @return f(X)
   ///
   template <
-    typename Scalar, 
-    typename DerivedX, 
-    typename DerivedLB, 
-    typename DerivedUB, 
+    typename Scalar,
+    typename DerivedX,
+    typename DerivedLB,
+    typename DerivedUB,
     typename DerivedI>
   IGL_INLINE Scalar grid_search(
     const std::function< Scalar (DerivedX &) > f,

@@ -43,12 +43,12 @@
  */
 
 #include "ConvexHullCollisionURDFGenerator.h"
-#include <urdf_model/model.h>
-#include <filesystem>
-#include <vector>
-#include <string>
 #include <igl/copyleft/cgal/convex_hull.h>
 #include <igl/moments.h>
+#include <urdf_model/model.h>
+#include <filesystem>
+#include <string>
+#include <vector>
 
 #include "irmv/bot_common/log/singleton_logger.h"
 
@@ -61,73 +61,75 @@ ConvexHullCollisionURDFGenerator::~ConvexHullCollisionURDFGenerator() {
     m_model = nullptr;
 }
 
-irmv_core::bot_common::ErrorInfo
-ConvexHullCollisionURDFGenerator::run(const std::string &urdf_path, const std::string &output_path,
-                                      const std::vector<std::pair<std::string, std::string>>& replace_pairs) {
+irmv_core::bot_common::ErrorInfo ConvexHullCollisionURDFGenerator::run(
+    const std::string& urdf_path, const std::string& output_path,
+    const std::vector<std::pair<std::string, std::string>>& replace_pairs) {
     auto ret = loadURDF(urdf_path, m_model);
-    if(!ret.isOk()){
+    if (!ret.isOk()) {
         IRMV_ERROR("{}", ret.message());
         return ret;
     }
-    for (auto &link_pair: m_model->links_) {
-        if(link_pair.second->collision_array.size() > 1){
-            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "We only accept one collision mesh"};
-        }else{
+    for (auto& link_pair : m_model->links_) {
+        if (link_pair.second->collision_array.size() > 1) {
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                    "We only accept one collision mesh"};
+        } else {
             auto& collision = link_pair.second->collision;
-            if(collision != nullptr){
+            if (collision != nullptr) {
                 switch (collision->geometry->type) {
-                    case urdf::Geometry::MESH: {
-                        auto *mesh = dynamic_cast<urdf::Mesh *>(collision->geometry.get());
-                        std::string filename_raw = mesh->filename;
-                        for(const auto& replace_pair : replace_pairs){
-                            replaceWith(filename_raw, replace_pair.first, replace_pair.second);
-                        }
-                        std::filesystem::path filename = filename_raw;
-                        Eigen::MatrixXd V;
-                        Eigen::MatrixXi F, N;
-                        bool alreadyOBJ = false;
-                        ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
+                case urdf::Geometry::MESH: {
+                    auto* mesh = dynamic_cast<urdf::Mesh*>(collision->geometry.get());
+                    std::string filename_raw = mesh->filename;
+                    for (const auto& replace_pair : replace_pairs) {
+                        replaceWith(filename_raw, replace_pair.first, replace_pair.second);
+                    }
+                    std::filesystem::path filename = filename_raw;
+                    Eigen::MatrixXd V;
+                    Eigen::MatrixXi F, N;
+                    bool alreadyOBJ = false;
+                    ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
+                    if (!ret.isOk()) {
+                        IRMV_ERROR("{}", ret.message());
+                        return ret;
+                    } else {
+                        Eigen::MatrixXd CH_V;
+                        Eigen::MatrixXi CH_F;
+
+                        igl::copyleft::cgal::convex_hull(V, CH_V, CH_F);
+
+                        ret = saveCollisionGeometry(filename, CH_V, CH_F);
                         if (!ret.isOk()) {
                             IRMV_ERROR("{}", ret.message());
                             return ret;
                         } else {
-                            Eigen::MatrixXd CH_V;
-                            Eigen::MatrixXi CH_F;
-
-                            igl::copyleft::cgal::convex_hull(V, CH_V, CH_F);
-
-                            ret = saveCollisionGeometry(filename, CH_V, CH_F);
-                            if (!ret.isOk()) {
-                                IRMV_ERROR("{}", ret.message());
-                                return ret;
-                            }else{
-                                // compute inertia and write collision into URDF
-                                mesh->filename = filename.string();
-                                for(const auto& replace_pair : replace_pairs){
-                                    replaceWith(mesh->filename, replace_pair.second, replace_pair.first);
-                                }
-                                double volume;
-                                Eigen::Vector3d centroid;
-                                Eigen::Matrix3d inertia;
-                                igl::moments(CH_V, CH_F, volume, centroid, inertia);
-                                if(link_pair.second->inertial)
-                                    inertia *= link_pair.second->inertial->mass;
-                                else
-                                    link_pair.second->inertial = std::make_shared<urdf::Inertial>();
-                                auto& inertia_out = link_pair.second->inertial;
-                                inertia_out->ixx = inertia(0, 0);
-                                inertia_out->ixy = inertia(0, 1);
-                                inertia_out->ixz = inertia(0, 2);
-                                inertia_out->iyy = inertia(1, 1);
-                                inertia_out->iyz = inertia(1, 2);
-                                inertia_out->izz = inertia(2, 2);
+                            // compute inertia and write collision into URDF
+                            mesh->filename = filename.string();
+                            for (const auto& replace_pair : replace_pairs) {
+                                replaceWith(mesh->filename, replace_pair.second,
+                                            replace_pair.first);
                             }
+                            double volume;
+                            Eigen::Vector3d centroid;
+                            Eigen::Matrix3d inertia;
+                            igl::moments(CH_V, CH_F, volume, centroid, inertia);
+                            if (link_pair.second->inertial)
+                                inertia *= link_pair.second->inertial->mass;
+                            else
+                                link_pair.second->inertial = std::make_shared<urdf::Inertial>();
+                            auto& inertia_out = link_pair.second->inertial;
+                            inertia_out->ixx = inertia(0, 0);
+                            inertia_out->ixy = inertia(0, 1);
+                            inertia_out->ixz = inertia(0, 2);
+                            inertia_out->iyy = inertia(1, 1);
+                            inertia_out->iyz = inertia(1, 2);
+                            inertia_out->izz = inertia(2, 2);
                         }
-                        break;
                     }
-                    //do nothing for simple geometry primitives
-                    default:
-                        break;
+                    break;
+                }
+                // do nothing for simple geometry primitives
+                default:
+                    break;
                 }
             }
         }

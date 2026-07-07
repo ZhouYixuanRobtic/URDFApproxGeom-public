@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2022 Vladimir S. FONOV <vladimir.fonov@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/
 #include "fast_find_self_intersections.h"
 #include "AABB.h"
@@ -57,10 +57,10 @@ IGL_INLINE bool igl::fast_find_self_intersections(
 
       for(int j=0;j<3;++j)
         tri_box.extend( V.row( F(i,j) ).transpose() );
-      
+
       // find leaf nodes containing intersecting tri_box
       // need to declare full type to enable recursion
-      std::function<bool(const AABBTree &,int)> check_intersect = 
+      std::function<bool(const AABBTree &,int)> check_intersect =
         [&](const AABBTree &t,int d) -> bool
       {
         if(t.m_primitive != -1) //check for the actual intersection (is_leaf)
@@ -138,9 +138,9 @@ IGL_INLINE bool igl::fast_find_self_intersections(
 
       for(int j=0;j<3;++j)
         tri_box.extend( V.row( F(i,j) ).transpose() );
-      
+
       // find leaf nodes containing intersecting tri_box
-      std::function<bool(const AABBTree &,int)> check_intersect = 
+      std::function<bool(const AABBTree &,int)> check_intersect =
         [&](const AABBTree &t,int d) -> bool
       {
         if(t.m_primitive != -1) //check for the actual intersection //t.is_leaf()

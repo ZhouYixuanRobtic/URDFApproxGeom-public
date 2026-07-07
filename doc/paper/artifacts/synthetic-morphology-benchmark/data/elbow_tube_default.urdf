@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="elbow_tube">
+    <link name="world"/>
+    <link name="elbow_tube">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0"/>
+            <geometry>
+                <mesh filename="/home/admin1/projects/SpherizedURDFGenerator/doc/paper/artifacts/synthetic-morphology-benchmark/meshes/elbow_tube.obj"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="-0.0531285 0.0668806 -2.33013e-07" rpy="1.57077 0.784617 0.7846"/>
+            <geometry>
+                <cylinder radius="0.050783" length="0.104284"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-0.0899695 0.103779 -1.13209e-06" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.050783"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-0.0162874 0.029982 6.66062e-07" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.050783"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="joint_world_elbow_tube" type="fixed">
+        <parent link="world"/>
+        <child link="elbow_tube"/>
+        <origin xyz="0 0 0" rpy="0 -0 0"/>
+    </joint>
+</robot>

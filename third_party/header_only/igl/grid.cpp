@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "grid.h"
 #include <cassert>
@@ -12,13 +12,13 @@ template <
   typename Derivedres,
   typename DerivedGV>
 IGL_INLINE void igl::grid(
-  const Eigen::MatrixBase<Derivedres> & res, 
+  const Eigen::MatrixBase<Derivedres> & res,
   Eigen::PlainObjectBase<DerivedGV> & GV)
 {
   using namespace Eigen;
   typedef typename DerivedGV::Scalar Scalar;
   GV.resize(res.array().prod(),res.size());
-  const auto lerp = 
+  const auto lerp =
     [&res](const Scalar di, const int d)->Scalar{return di/(Scalar)(res(d)-1);};
   int gi = 0;
   Derivedres sub;

@@ -60,10 +60,10 @@ namespace igl
     /// \overload
     /// @param[in] value_fun a function that takes a 3D point and returns a scalar value
     template <
-      typename DerivedValue, 
+      typename DerivedValue,
       typename DerivedPoint,
-      typename DerivedPoints, 
-      typename DerivedVertices, 
+      typename DerivedPoints,
+      typename DerivedVertices,
       typename DerivedFaces>
     IGL_INLINE void marching_cubes(
         const std::function< DerivedValue(const DerivedPoint & ) > & value_fun,
@@ -71,7 +71,7 @@ namespace igl
         const unsigned x_res,
         const unsigned y_res,
         const unsigned z_res,
-        const double isovalue, 
+        const double isovalue,
         Eigen::PlainObjectBase<DerivedVertices> &vertices,
         Eigen::PlainObjectBase<DerivedFaces> &faces);
     /// Perform marching cubes reconstruction on the sparse grid cells defined by (indices, points).

@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mosek_linprog.h"
 #include "../mosek/mosek_guarded.h"
@@ -70,7 +70,7 @@ IGL_INLINE bool igl::mosek::mosek_linprog(
   }
   mosek_guarded(MSK_appendvars(task,n));
 
-  
+
   const auto & key = [](const double lxj, const double uxj) ->
     MSKboundkeye
   {
@@ -139,20 +139,20 @@ IGL_INLINE bool igl::mosek::mosek_linprog(
   bool success = false;
   switch(solsta)
   {
-    case MSK_SOL_STA_OPTIMAL:   
+    case MSK_SOL_STA_OPTIMAL:
 #if MSK_VERSION_MAJOR <= 8
     case MSK_SOL_STA_NEAR_OPTIMAL:
 #endif
       x.resize(n);
-      /* Request the basic solution. */ 
-      MSK_getxx(task,MSK_SOL_BAS,x.data()); 
+      /* Request the basic solution. */
+      MSK_getxx(task,MSK_SOL_BAS,x.data());
       success = true;
       break;
     case MSK_SOL_STA_DUAL_INFEAS_CER:
     case MSK_SOL_STA_PRIM_INFEAS_CER:
 #if MSK_VERSION_MAJOR <= 8
     case MSK_SOL_STA_NEAR_DUAL_INFEAS_CER:
-    case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:  
+    case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:
 #endif
       //printf("Primal or dual infeasibility certificate found.\n");
       break;

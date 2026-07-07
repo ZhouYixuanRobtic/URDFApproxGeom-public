@@ -18,7 +18,7 @@ IGL_INLINE bool igl::predicates::segment_segment_intersect(
 )
 {
   typename DerivedP::Scalar Scalar;
-  
+
   auto t1 = igl::predicates::orient2d(a,b,c);
   auto t2 = igl::predicates::orient2d(b,c,d);
   auto t3 = igl::predicates::orient2d(a,b,d);
@@ -35,14 +35,14 @@ IGL_INLINE bool igl::predicates::segment_segment_intersect(
               (p(1) >= std::min(m(1),n(1))) &&
               (p(1) <= std::max(m(1),n(1))));
   };
-  
+
   // colinear case
   if((t1 == igl::predicates::Orientation::COLLINEAR && on_segment(a,b,c)) ||
      (t2 == igl::predicates::Orientation::COLLINEAR && on_segment(c,d,b)) ||
      (t3 == igl::predicates::Orientation::COLLINEAR && on_segment(a,b,d)) ||
-     (t4 == igl::predicates::Orientation::COLLINEAR && on_segment(c,d,a))) 
+     (t4 == igl::predicates::Orientation::COLLINEAR && on_segment(c,d,a)))
      return true;
-  
+
   // ordinary case
   return (t1 != t3 && t2 != t4);
 }

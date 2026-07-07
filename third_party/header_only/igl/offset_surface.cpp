@@ -30,7 +30,7 @@ void igl::offset_surface(
   typedef typename DerivedF::Scalar Index;
   igl::voxel_grid(V,isolevel,s,1,GV,side);
 
-  const Scalar h = 
+  const Scalar h =
     (GV.col(0).maxCoeff()-GV.col(0).minCoeff())/((Scalar)(side(0)-1));
   const Scalar lower_bound = isolevel-sqrt(3.0)*h;
   const Scalar upper_bound = isolevel+sqrt(3.0)*h;
@@ -41,7 +41,7 @@ void igl::offset_surface(
       GV,V,F,signed_distance_type,lower_bound,upper_bound,S,I,C,N);
   }
   igl::flood_fill(side,S);
-  
+
   DerivedS SS = S.array()-isolevel;
   igl::marching_cubes(SS,GV,side(0),side(1),side(2),0,SV,SF);
 }

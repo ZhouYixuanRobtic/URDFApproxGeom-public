@@ -70,7 +70,7 @@ igl::cr_vector_curvature_correction_intrinsic(
   Eigen::Matrix<typename DerivedL_sq::Scalar,Eigen::Dynamic,Eigen::Dynamic>
   theta;
   internal_angles_using_squared_edge_lengths(l_sq, theta);
-  
+
   cr_vector_curvature_correction_intrinsic(F, l_sq, theta, E, oE, K);
 }
 
@@ -104,7 +104,7 @@ igl::cr_vector_curvature_correction_intrinsic(
       kappa(v) = 0;
     }
   }
-    
+
   cr_vector_curvature_correction_intrinsic(F, l_sq, theta, kappa, E, oE, K);
 }
 
@@ -128,10 +128,10 @@ igl::cr_vector_curvature_correction_intrinsic(
    oE.cols()==F.cols() && "Wrong dimension in edge vectors");
   assert(kappa.rows()==F.maxCoeff()+1 &&
    "Wrong dimension in theta or kappa");
-  
+
   const Eigen::Index m = F.rows();
   const typename DerivedE::Scalar nE = E.maxCoeff() + 1;
-  
+
   //Divide kappa by the actual angle sum to weigh consistently.
   Derivedtheta angleSum = Derivedtheta::Zero(kappa.rows(), 1);
   for(Eigen::Index i=0; i<F.rows(); ++i) {
@@ -141,7 +141,7 @@ igl::cr_vector_curvature_correction_intrinsic(
   }
   const Eigen::Matrix<typename Derivedkappa::Scalar, Eigen::Dynamic, 1>
   scaledKappa = kappa.array() / angleSum.array();
-  
+
   std::vector<Eigen::Triplet<ScalarK> > tripletList;
   tripletList.reserve(10*3*m);
   for(Eigen::Index f=0; f<m; ++f) {
@@ -153,21 +153,21 @@ igl::cr_vector_curvature_correction_intrinsic(
       const typename DerivedF::Scalar i=F(f,(e+1)%3), j=F(f,(e+2)%3), k=F(f,e);
       const ScalarK ki=scaledKappa(i)*theta(f,(e+1)%3),
       kj=scaledKappa(j)*theta(f,(e+2)%3), kk=scaledKappa(k)*theta(f,e);
-      
+
       const ScalarK costhetaidiv = (eij-ejk+eki)/(2.*lens);
       const ScalarK sinthetaidiv = sqrt( (1.-pow(eij-ejk+eki,2)/
         (4.*eij*eki)) );
-      
+
       const ScalarK Corrijij = (ki+kj+kk);
       tripletList.emplace_back(E(f,e), E(f,e), Corrijij);
       tripletList.emplace_back(E(f,e)+nE, E(f,e)+nE, Corrijij);
-      
+
       const ScalarK Corrijki = -o*(ki-kj-kk)*costhetaidiv;
       tripletList.emplace_back(E(f,e), E(f,(e+2)%3), Corrijki);
       tripletList.emplace_back(E(f,(e+2)%3), E(f,e), Corrijki);
       tripletList.emplace_back(E(f,e)+nE, E(f,(e+2)%3)+nE, Corrijki);
       tripletList.emplace_back(E(f,(e+2)%3)+nE, E(f,e)+nE, Corrijki);
-      
+
       const ScalarK Corrijkiperp = o*(ki-kj-kk)*sinthetaidiv;
       tripletList.emplace_back(E(f,e), E(f,(e+2)%3)+nE, Corrijkiperp);
       tripletList.emplace_back(E(f,(e+2)%3)+nE, E(f,e), Corrijkiperp);
@@ -175,7 +175,7 @@ igl::cr_vector_curvature_correction_intrinsic(
       tripletList.emplace_back(E(f,(e+2)%3), E(f,e)+nE, -Corrijkiperp);
     }
   }
-  
+
   K.resize(2*nE, 2*nE);
   K.setFromTriplets(tripletList.begin(), tripletList.end());
 }

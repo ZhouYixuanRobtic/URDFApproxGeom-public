@@ -122,7 +122,7 @@ IGL_INLINE bool igl::readOBJ(
           fclose(obj_file);
           return false;
         }
-      
+
         V.push_back(vertex);
       }else if(type == vn)
       {
@@ -283,14 +283,14 @@ IGL_INLINE bool igl::readOBJ(
   std::vector<std::vector<Scalar > > TC,N;
   std::vector<std::vector<Index > > FTC,FN;
   std::vector<std::tuple<std::string, Index, Index >> FM;
-  
+
   return readOBJ(obj_file_name,V,TC,N,F,FTC,FN);
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedTC, 
-  typename DerivedCN, 
+  typename DerivedV,
+  typename DerivedTC,
+  typename DerivedCN,
   typename DerivedF,
   typename DerivedFTC,
   typename DerivedFN>

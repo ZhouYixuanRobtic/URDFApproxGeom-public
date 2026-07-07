@@ -10,7 +10,7 @@ namespace igl
   /// \param[in] X  m by n matrix
   /// \param[in] dim  dimension along which to take max
   /// @param[out] Y
-  ///   n-long vector (if dim == 1) 
+  ///   n-long vector (if dim == 1)
   ///   Y  m-long vector (if dim == 2)
   /// @param[out] I  vector the same size as Y containing the indices along dim of minimum
   ///     entries

@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "infinite_cost_stopping_condition.h"
 
@@ -11,7 +11,7 @@ IGL_INLINE void igl::infinite_cost_stopping_condition(
   const decimate_cost_and_placement_callback & cost_and_placement,
   decimate_stopping_condition_callback & stopping_condition)
 {
-  stopping_condition = 
+  stopping_condition =
     [&cost_and_placement]
     (
     const Eigen::MatrixXd & V,
@@ -44,4 +44,3 @@ IGL_INLINE igl::decimate_stopping_condition_callback
   infinite_cost_stopping_condition(cost_and_placement,stopping_condition);
   return stopping_condition;
 }
-

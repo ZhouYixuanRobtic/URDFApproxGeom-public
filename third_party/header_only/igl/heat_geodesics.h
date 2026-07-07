@@ -60,7 +60,7 @@ namespace igl
   ///
   /// @param[in] data  precomputation data (see heat_geodesics_precompute)
   /// @param[in] gamma  #gamma list of indices into V of source vertices
-  /// @param[out] D  #V list of distances to gamma 
+  /// @param[out] D  #V list of distances to gamma
   ///
   /// \fileinfo
   template < typename Scalar, typename Derivedgamma, typename DerivedD>

@@ -89,10 +89,13 @@ def _prepare_visual_meshes(
         return pairs, None
 
     import trimesh  # lazy: only required when .dae (or similar) visuals exist
+
     _repo_root = pathlib.Path(__file__).resolve().parents[2]
     tmp = pathlib.Path(tempfile.mkdtemp(prefix="urdf_approx_visual_"))
     for fn in unique:
-        local_fn = str(_repo_root / fn.removeprefix("/workspace/")) if fn.startswith("/workspace/") else fn
+        local_fn = (
+            str(_repo_root / fn.removeprefix("/workspace/")) if fn.startswith("/workspace/") else fn
+        )
         mesh = trimesh.load(local_fn, force="mesh")
         out = tmp / (pathlib.Path(fn).stem + ".obj")
         mesh.export(out)
@@ -143,11 +146,15 @@ def generate(
         pairs, _ = _prepare_visual_meshes(input_path, pairs)
 
     if normal == "capsule":
-        message = _extension().capsuleized(str(input_path), str(output_path), str(config_path), pairs, mesh_source)
+        message = _extension().capsuleized(
+            str(input_path), str(output_path), str(config_path), pairs, mesh_source
+        )
         json_path = _sidecar_json(output_path)
         primitive_count = _count_json_primitives(json_path, "capsules")
     elif normal == "sphere":
-        message = _extension().spherized(str(input_path), str(output_path), str(config_path), pairs, bool(simplify), mesh_source)
+        message = _extension().spherized(
+            str(input_path), str(output_path), str(config_path), pairs, bool(simplify), mesh_source
+        )
         json_path = _sidecar_json(output_path)
         primitive_count = _count_json_primitives(json_path, "spheres")
     else:
@@ -191,16 +198,35 @@ def generate_sphere_pair(
         pairs, _ = _prepare_visual_meshes(input_path, pairs)
     config_path = pathlib.Path(config) if config else resolve_preset("sphere", preset)
     message = _extension().spherized_pair(
-        str(input_path), str(default_path), str(single_path), str(config_path),
-        pairs, bool(simplify), mesh_source,
+        str(input_path),
+        str(default_path),
+        str(single_path),
+        str(config_path),
+        pairs,
+        bool(simplify),
+        mesh_source,
     )
     default_json = _sidecar_json(default_path)
     single_json = _sidecar_json(single_path)
     return (
-        GenerateResult("sphere", input_path, default_path, default_json, config_path, message,
-                       _count_json_primitives(default_json, "spheres")),
-        GenerateResult("sphere", input_path, single_path, single_json, config_path, message,
-                       _count_json_primitives(single_json, "spheres")),
+        GenerateResult(
+            "sphere",
+            input_path,
+            default_path,
+            default_json,
+            config_path,
+            message,
+            _count_json_primitives(default_json, "spheres"),
+        ),
+        GenerateResult(
+            "sphere",
+            input_path,
+            single_path,
+            single_json,
+            config_path,
+            message,
+            _count_json_primitives(single_json, "spheres"),
+        ),
     )
 
 
@@ -234,8 +260,15 @@ def generate_capsule_multi(
         out_path = pathlib.Path(out)
         json_path = _sidecar_json(out_path)
         results.append(
-            GenerateResult("capsule", input_path, out_path, json_path, cfg, message,
-                           _count_json_primitives(json_path, "capsules"))
+            GenerateResult(
+                "capsule",
+                input_path,
+                out_path,
+                json_path,
+                cfg,
+                message,
+                _count_json_primitives(json_path, "capsules"),
+            )
         )
     return results
 

@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_ARAP_H
 #define IGL_ARAP_H
@@ -68,7 +68,7 @@ namespace igl
     {
     };
   };
-  
+
   /// Compute necessary information to start using an ARAP deformation using
   /// local-global solver as described in "As-rigid-as-possible surface
   /// modeling" [Sorkine and Alexa 2007].
@@ -100,7 +100,7 @@ namespace igl
   ///
   /// \fileinfo
   ///
-  /// \note While the libigl guidelines require outputs to be of type 
+  /// \note While the libigl guidelines require outputs to be of type
   /// PlainObjectBase so that the user does not need to worry about allocating
   /// memory for the output, in this case, the user is required to give an initial
   /// guess and hence fix the size of the problem domain.

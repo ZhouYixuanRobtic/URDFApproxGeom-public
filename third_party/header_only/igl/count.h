@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_COUNT_H
 #define IGL_COUNT_H
@@ -23,10 +23,10 @@ namespace igl
   /// \note If your looking for dense matrix matlab like sum for eigen matrics
   /// just use:
   ///      M.colwise().count() or M.rowwise().count()
-  /// 
+  ///
   template <typename XType, typename SType>
   IGL_INLINE void count(
-    const Eigen::SparseMatrix<XType>& X, 
+    const Eigen::SparseMatrix<XType>& X,
     const int dim,
     Eigen::SparseVector<SType>& S);
   /// \overload
@@ -34,7 +34,7 @@ namespace igl
   /// \brief Outputs a dense vector.
   template <typename XType, typename DerivedS>
   IGL_INLINE void count(
-    const Eigen::SparseMatrix<XType>& X, 
+    const Eigen::SparseMatrix<XType>& X,
     const int dim,
     Eigen::PlainObjectBase<DerivedS>& S);
 }
@@ -44,4 +44,3 @@ namespace igl
 #endif
 
 #endif
-

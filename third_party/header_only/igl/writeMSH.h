@@ -1,10 +1,10 @@
-// high level interface for MshSaver 
+// high level interface for MshSaver
 //
-// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com> 
+// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com>
 //
-// This Source Code Form is subject to the terms of the Mozilla 
-// Public License v. 2.0. If a copy of the MPL was not distributed 
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_WRITE_MSH_H
 #define IGL_WRITE_MSH_H
 #include "igl_inline.h"
@@ -24,7 +24,7 @@ namespace igl
   /// @param[in] TriTag #Tri eigen integer vector of tags associated with surface faces
   /// @param[in] TetTag #Tet eigen integer vector of tags associated with volume elements
   /// @param[in] XFields #XFields list of strings with field names associated with nodes
-  /// @param[in] XF      #XFields list of eigen double matrices, fields associated with nodes 
+  /// @param[in] XF      #XFields list of eigen double matrices, fields associated with nodes
   /// @param[in] EFields #EFields list of strings with field names associated with elements
   /// @param[in] TriF    #EFields list of eigen double matrices, fields associated with surface elements
   /// @param[in] TetF    #EFields list of eigen double matrices, fields associated with volume elements
@@ -47,7 +47,7 @@ namespace igl
     const std::vector<std::string>     &EFields,
     const std::vector<Eigen::MatrixXd> &TriF,
     const std::vector<Eigen::MatrixXd> &TetF);
-  
+
 }
 
 #ifndef IGL_STATIC_LIBRARY

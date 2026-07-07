@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_DECIMATE_H
 #define IGL_DECIMATE_H
@@ -11,7 +11,7 @@
 #include "decimate_callback_types.h"
 #include <Eigen/Core>
 
-/// @file decimate.h 
+/// @file decimate.h
 ///
 /// igl::decimate implements a customizable greedy edge collapser using a priority-queue:
 ///
@@ -19,12 +19,12 @@
 ///      for each edge e
 ///        cost[e], placement[e] ← cost_and_placement(e)
 ///        Q.update( e, cost[e] )
-///      
+///
 ///      while Q not empty
 ///         e ← Q.pop()
-///         if cost[e] is finite 
+///         if cost[e] is finite
 ///            collapse_happened_flag = false
-///            if pre_collapse( e ) 
+///            if pre_collapse( e )
 ///              collapse_happened_flag = collapse_edge( e )
 ///            post_collapse( e, collapse_happened_flag )
 ///            if collapse_happened_flag
@@ -36,17 +36,17 @@
 ///            else
 ///               cost[ e ] = ∞
 ///                Q.update( e, cost[e] )
-///          
+///
 ///
 /// There are four important callbacks that can be customized (decimate_callback_types.h). Note that any of these functions can capture user-defined book-keeping variables.
-/// 
+///
 /// `cost_and_placement` This function is called for every original edge before
 /// the queue processing starts and then on the “neighbors” (edges in the
 /// two-ring) of a successfully collapsed edge. The function should output a
 /// cost that would be paid if the given edge were to be collapsed to a single
 /// vertex and the positional placement of that new vertex. Outputting a cost of
 /// ∞ guarantees that the edge will not be collapsed.
-/// 
+///
 /// `pre_collapse` This function is called just before `collapse_edge` is
 /// attempted. If this function returns false then the collapse is aborted. This
 /// callback is an opportunity for callers to conduct a final check whether the
@@ -54,14 +54,14 @@
 /// information, which may not be available at the time that
 /// `cost_and_placement` was called). This is rarely necessary and its preferred
 /// to use cost_and_placement to assign uncollapsible edges ∞ cost if possible.
-/// 
+///
 /// `post_collapse` This function is called after `collapse_edge` is attempted.
 /// Since this collapse may have failed (e.g., it would create a non-manifold
 /// mesh). This callback is provided a flag whether the attempted collapse
 /// actually occurred. This callback is an opportunity for callers to update any
 /// data-structures/book-keeping to acknowledge the successful (or failed)
 /// collapse.
-/// 
+///
 /// `stopping_condition` This function is called after a successful call to
 /// `collapse_edge`. If this function returns true then the entire
 /// queue-processing ends (e.g., if the number of remaining faces is below a
@@ -184,4 +184,3 @@ namespace igl
 #  include "decimate.cpp"
 #endif
 #endif
-

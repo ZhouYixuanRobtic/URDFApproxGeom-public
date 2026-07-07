@@ -91,7 +91,7 @@ def point_to_seg_with_t(p, a, b):
 
 def capsule_volume(p0, p1, radius):
     length = float(np.linalg.norm(p1 - p0))
-    return math.pi * radius * radius * length + (4.0 / 3.0) * math.pi * radius ** 3
+    return math.pi * radius * radius * length + (4.0 / 3.0) * math.pi * radius**3
 
 
 def capsule_bounds(capsules):
@@ -123,7 +123,7 @@ def estimate_capsule_union_volume(capsules, samples_per_axis=64, chunk_size=2000
 
     n = max(1, int(samples_per_axis))
     coords = [lo[d] + (np.arange(n, dtype=float) + 0.5) * ext[d] / n for d in range(3)]
-    total = n ** 3
+    total = n**3
     inside = 0
     for start in range(0, total, chunk_size):
         stop = min(total, start + chunk_size)
@@ -250,8 +250,9 @@ def evaluate_capsules(caps_json, urdf_path, mesh_source="visual", volume_samples
         worst = float(signed.max())
         covered = worst <= 1e-6
         all_ok &= covered
-        inflation, radius_ratio, union_volume, primitive_sum, primitive_inflation = tightness_metrics(
-            V, capsules, assigned, volume_samples=volume_samples)
+        inflation, radius_ratio, union_volume, primitive_sum, primitive_inflation = (
+            tightness_metrics(V, capsules, assigned, volume_samples=volume_samples)
+        )
         axis_overhang, axis_overhang_ratio = axis_overhang_metrics(V, capsules, assigned)
 
         p0L = np.array(body["capsules"][0]["p0"], dtype=float)
@@ -264,32 +265,35 @@ def evaluate_capsules(caps_json, urdf_path, mesh_source="visual", volume_samples
         long_axis[int(np.argmax(ext))] = 1.0
         align = abs(float(cap_axis @ long_axis))
 
-        rows.append({
-            "link": link,
-            "capsules": len(body["capsules"]),
-            "covered": bool(covered),
-            "worst": worst,
-            "radius": float(max(c[2] for c in capsules)),
-            "maxd": float(raw.max()),
-            "capV_aabb": float(inflation),
-            "r_binMed": float(radius_ratio),
-            "capsule_union_volume": float(union_volume),
-            "capsule_primitive_volume_sum": float(primitive_sum),
-            "capsule_primitiveV_aabb": float(primitive_inflation),
-            "volume_samples": volume_samples,
-            "mesh_source": mesh_source,
-            "axis_overhang": float(axis_overhang),
-            "axis_overhang_r": float(axis_overhang_ratio),
-            "axis": [float(cap_axis[0]), float(cap_axis[1]), float(cap_axis[2])],
-            "axis_length": seg_len,
-            "bbox_long_axis": [int(long_axis[0]), int(long_axis[1]), int(long_axis[2])],
-            "axis_bbox_align": align,
-        })
+        rows.append(
+            {
+                "link": link,
+                "capsules": len(body["capsules"]),
+                "covered": bool(covered),
+                "worst": worst,
+                "radius": float(max(c[2] for c in capsules)),
+                "maxd": float(raw.max()),
+                "capV_aabb": float(inflation),
+                "r_binMed": float(radius_ratio),
+                "capsule_union_volume": float(union_volume),
+                "capsule_primitive_volume_sum": float(primitive_sum),
+                "capsule_primitiveV_aabb": float(primitive_inflation),
+                "volume_samples": volume_samples,
+                "mesh_source": mesh_source,
+                "axis_overhang": float(axis_overhang),
+                "axis_overhang_r": float(axis_overhang_ratio),
+                "axis": [float(cap_axis[0]), float(cap_axis[1]), float(cap_axis[2])],
+                "axis_length": seg_len,
+                "bbox_long_axis": [int(long_axis[0]), int(long_axis[1]), int(long_axis[2])],
+                "axis_bbox_align": align,
+            }
+        )
     return {"all_covered": bool(all_ok), "links": rows}
 
 
 def main():
     import argparse
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--caps-json", default=CAPS_JSON)
     ap.add_argument("--urdf", default=FR3_URDF)
@@ -298,25 +302,29 @@ def main():
     ap.add_argument("--json", action="store_true", help="emit machine-readable metrics")
     args = ap.parse_args()
 
-    result = evaluate_capsules(args.caps_json, args.urdf,
-                               mesh_source=args.mesh_source,
-                               volume_samples=args.volume_samples)
+    result = evaluate_capsules(
+        args.caps_json, args.urdf, mesh_source=args.mesh_source, volume_samples=args.volume_samples
+    )
     if args.json:
         print(json.dumps(result, indent=2, sort_keys=True))
         return
 
-    print(f"{'link':16} {'caps':>4} {'covered':8} {'worst':>9} {'radius':>8} "
-          f"{'maxd':>8} {'capV/aabb':>9} {'r/binMed':>8} {'over/r':>8} | "
-          f"{'PCA axis (link)':26} {'bbox long axis':26}")
+    print(
+        f"{'link':16} {'caps':>4} {'covered':8} {'worst':>9} {'radius':>8} "
+        f"{'maxd':>8} {'capV/aabb':>9} {'r/binMed':>8} {'over/r':>8} | "
+        f"{'PCA axis (link)':26} {'bbox long axis':26}"
+    )
     for row in result["links"]:
         axis = row["axis"]
         bbox = row["bbox_long_axis"]
-        print(f"{row['link']:16} {row['capsules']:4} {str(row['covered']):8} "
-              f"{row['worst']:9.6f} {row['radius']:8.4f} {row['maxd']:8.4f} "
-              f"{row['capV_aabb']:9.4f} {row['r_binMed']:8.2f} {row['axis_overhang_r']:8.2f} | "
-              f"axis=[{axis[0]:+.2f} {axis[1]:+.2f} {axis[2]:+.2f}] "
-              f"len={row['axis_length']:.3f} bbox_long=[{bbox[0]} {bbox[1]} {bbox[2]}] "
-              f"align={row['axis_bbox_align']:.2f}")
+        print(
+            f"{row['link']:16} {row['capsules']:4} {str(row['covered']):8} "
+            f"{row['worst']:9.6f} {row['radius']:8.4f} {row['maxd']:8.4f} "
+            f"{row['capV_aabb']:9.4f} {row['r_binMed']:8.2f} {row['axis_overhang_r']:8.2f} | "
+            f"axis=[{axis[0]:+.2f} {axis[1]:+.2f} {axis[2]:+.2f}] "
+            f"len={row['axis_length']:.3f} bbox_long=[{bbox[0]} {bbox[1]} {bbox[2]}] "
+            f"align={row['axis_bbox_align']:.2f}"
+        )
     print(f"\nALL COVERED: {result['all_covered']}")
 
 

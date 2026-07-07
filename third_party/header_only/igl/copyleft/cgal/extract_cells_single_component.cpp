@@ -1,7 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
 // Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
-// 
+//
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
@@ -100,13 +100,13 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
     {
       //for (size_t j=0; j<num_adj_faces; j++) {
       //  const auto aj = adj_faces[j];
-      for (size_t ij=uEC(i); ij<uEC(i+1); ij++) 
+      for (size_t ij=uEC(i); ij<uEC(i+1); ij++)
       {
         const auto aj = uEE(ij);
         const size_t patch_j = P[e2f(aj)];
         //for (size_t k=j+1; k<num_adj_faces; k++) {
         //  const auto ak = adj_faces[k];
-        for (size_t ik=ij+1; ik<uEC(i+1); ik++) 
+        for (size_t ik=ij+1; ik<uEC(i+1); ik++)
         {
           const auto ak = uEE(ik);
           const size_t patch_k = P[e2f(ak)];
@@ -134,9 +134,9 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
   size_t label_count=0;
   size_t order_facets_around_edge_calls = 0;
   // bottleneck appears to be `order_facets_around_edge`
-  for (size_t i=0; i<num_patches; i++) 
+  for (size_t i=0; i<num_patches; i++)
   {
-    for (const auto& entry : patch_adj[i]) 
+    for (const auto& entry : patch_adj[i])
     {
       const size_t neighbor_patch = entry.first;
       const size_t uei = entry.second;
@@ -166,7 +166,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
         // order[f] will reveal the order of face f in signed_adj_faces
         order_facets_around_edge(V, F, s, d, signed_adj_faces, order);
         order_facets_around_edge_calls++;
-        for (size_t j=0; j<num_adj_faces; j++) 
+        for (size_t j=0; j<num_adj_faces; j++)
         {
           const size_t curr_idx = j;
           const size_t next_idx = (j+1)%num_adj_faces;
@@ -186,7 +186,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
   }
 #ifdef EXTRACT_CELLS_SINGLE_COMPONENT_TIMING
   log_time("equivalent_cells");
-#endif 
+#endif
 
   size_t count=0;
   cells.resize(num_patches, 2);

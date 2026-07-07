@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_CONNECT_BOUNDARY_TO_INFINITY_H
 #define IGL_CONNECT_BOUNDARY_TO_INFINITY_H
@@ -42,11 +42,11 @@ namespace igl
   /// @param[out] VO  #V+1 by 3 list of vertex positions, original V are guaranteed to
   ///     come first. Last point is inf, inf, inf
   /// @param[out] FO  #F+#O by 3 list of face indices into VO
-  /// 
+  ///
   template <
-    typename DerivedV, 
-    typename DerivedF, 
-    typename DerivedVO, 
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedVO,
     typename DerivedFO>
   IGL_INLINE void connect_boundary_to_infinity(
     const Eigen::MatrixBase<DerivedV> & V,

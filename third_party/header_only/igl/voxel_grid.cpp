@@ -68,7 +68,7 @@ template <
   typename DerivedGV,
   typename Derivedside>
 IGL_INLINE void igl::voxel_grid(
-  const Eigen::MatrixBase<DerivedV> & V, 
+  const Eigen::MatrixBase<DerivedV> & V,
   const typename DerivedV::Scalar offset,
   const int s,
   const int pad_count,

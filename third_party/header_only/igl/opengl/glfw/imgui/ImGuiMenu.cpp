@@ -22,7 +22,7 @@ namespace imgui
 {
 
   // Is this needed?
-IGL_INLINE void ImGuiMenu::init( Viewer *_viewer, ImGuiPlugin *_plugin) 
+IGL_INLINE void ImGuiMenu::init( Viewer *_viewer, ImGuiPlugin *_plugin)
   { viewer = _viewer; plugin = _plugin; }
 
 IGL_INLINE void ImGuiMenu::shutdown() { }

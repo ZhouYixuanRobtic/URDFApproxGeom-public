@@ -57,4 +57,4 @@ namespace igl
 #  include "sharp_edges.cpp"
 #endif
 
-#endif 
+#endif

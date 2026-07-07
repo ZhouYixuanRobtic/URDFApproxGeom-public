@@ -29,7 +29,7 @@ namespace igl
   /// Traverse a **directed** graph represented by an adjacency list using.
   /// breadth first search; inputs adjacency lists, outputs lists.
   ///
-  /// @param[in] A  #V list of adjacency lists  
+  /// @param[in] A  #V list of adjacency lists
   /// @param[in] s  starting node (index into A)
   /// @param[out] D  #V list of indices into rows of A in the order in which graph nodes
   ///     are discovered.
@@ -60,4 +60,3 @@ namespace igl
 #  include "bfs.cpp"
 #endif
 #endif
-

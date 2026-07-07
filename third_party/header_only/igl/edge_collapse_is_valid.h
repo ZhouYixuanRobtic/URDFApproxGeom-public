@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_EDGE_COLLAPSE_IS_VALID_H
 #define IGL_EDGE_COLLAPSE_IS_VALID_H
@@ -38,7 +38,7 @@ namespace igl
     const Eigen::MatrixXi & EI);
   /// Tests whether collapsing exactly two faces and exactly 3 edges from E (e
   /// and one side of each face gets collapsed to the other) will result in a
-  /// mesh with the same topology. 
+  /// mesh with the same topology.
   ///
   /// @param[in] Nsv  #Nsv list of "next" vertices circulating around starting vertex of
   ///     edge

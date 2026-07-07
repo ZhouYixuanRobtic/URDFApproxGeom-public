@@ -1,10 +1,10 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2021 Alec Jacobson <alecjacobson@gmail.com>
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PER_CORNER_NORMALS_H
 #define IGL_PER_CORNER_NORMALS_H
@@ -76,7 +76,7 @@ namespace igl
   ///
   /// @param[in] NV  #NV by 3 list of index normal vectors
   /// @param[in] NF  #F by nc list of indices into rows of NV
-  /// @param[out] CN  #F*nc by 3 list of per-corner normals so that 
+  /// @param[out] CN  #F*nc by 3 list of per-corner normals so that
   ///     CN.row(i*nc+c) = NV.row(NF(i,c))
   template <typename DerivedNV, typename DerivedNF, typename DerivedCN>
   IGL_INLINE void per_corner_normals(
@@ -97,9 +97,9 @@ namespace igl
   /// @param[out] J  #I list of indices into original polygons
   /// @param[out] NN  #FF by 3 list of normals for each auxiliary triangle
   template <
-    typename DerivedV, 
-    typename DerivedI, 
-    typename DerivedC, 
+    typename DerivedV,
+    typename DerivedI,
+    typename DerivedC,
     typename DerivedN,
     typename DerivedVV,
     typename DerivedFF,

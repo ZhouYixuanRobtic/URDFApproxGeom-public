@@ -152,7 +152,7 @@ IGL_INLINE void igl::sparse_voxel_grid(const Eigen::MatrixBase<DerivedP0>& p0,
       auto nbr = visited.find(nkey);
       if (nbr != visited.end()) { // We've already visited this neighbor, use references to its vertices instead of duplicating them
         vertexAlreadyAdded |= zv[n];
-        for (int i = 0; i < 4; i++) 
+        for (int i = 0; i < 4; i++)
         {
           if (zvv[n][i]!=-1)
           {

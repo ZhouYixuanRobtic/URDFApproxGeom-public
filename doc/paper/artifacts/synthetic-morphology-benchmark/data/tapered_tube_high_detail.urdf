@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="tapered_tube">
+    <link name="world"/>
+    <link name="tapered_tube">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 -0 0"/>
+            <geometry>
+                <mesh filename="/home/admin1/projects/SpherizedURDFGenerator/doc/paper/artifacts/synthetic-morphology-benchmark/meshes/tapered_tube.obj"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="-1.77855e-07 -4.72124e-06 0.0643375" rpy="-0.000107427 4.05016e-06 -2.17548e-10"/>
+            <geometry>
+                <cylinder radius="0.061083" length="0.105882"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-3.92275e-07 -1.04085e-05 0.0113963" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.061083"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="3.65651e-08 9.66063e-07 0.117279" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.061083"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="5.9337e-08 1.56844e-06 0.171757" rpy="4.78492e-06 -1.7909e-07 -4.28464e-13"/>
+            <geometry>
+                <cylinder radius="0.050035" length="0.005327"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="5.98139e-08 1.58118e-06 0.169094" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.050035"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="5.886e-08 1.5557e-06 0.174421" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.050035"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="4.58042e-08 1.21081e-06 0.246561" rpy="4.77706e-06 -1.82649e-07 -4.36264e-13"/>
+            <geometry>
+                <cylinder radius="0.038780" length="0.120128"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="5.67748e-08 1.49774e-06 0.186497" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.038780"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="3.48335e-08 9.23882e-07 0.306625" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.038780"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="3.44914e-08 9.15932e-07 0.308288" rpy="4.77734e-06 -1.84948e-07 -4.4178e-13"/>
+            <geometry>
+                <cylinder radius="0.024976" length="0.033331"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="3.75736e-08 9.95548e-07 0.291623" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.024976"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="3.14092e-08 8.36316e-07 0.324954" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.024976"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="4.86519e-07 8.55359e-06 0.417591" rpy="-0.000186581 1.08897e-05 -1.01591e-09"/>
+            <geometry>
+                <cylinder radius="0.018230" length="0.133397"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-2.39807e-07 -3.89102e-06 0.350893" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.018230"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="1.21284e-06 2.09982e-05 0.48429" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.018230"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="2.76416e-08 7.38995e-07 0.345325" rpy="4.77734e-06 -1.84948e-07 -4.4178e-13"/>
+            <geometry>
+                <cylinder radius="0.021944" length="0.003151"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="2.79329e-08 7.46522e-07 0.34375" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.021944"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="2.73502e-08 7.31469e-07 0.3469" rpy="0 -0 0"/>
+            <geometry>
+                <sphere radius="0.021944"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="joint_world_tapered_tube" type="fixed">
+        <parent link="world"/>
+        <child link="tapered_tube"/>
+        <origin xyz="0 0 0" rpy="0 -0 0"/>
+    </joint>
+</robot>

@@ -21,7 +21,8 @@ macro(myproject_enable_cppcheck WARNINGS_AS_ERRORS CPPCHECK_OPTIONS)
           # We cannot act on a bug/missing feature of cppcheck
           --suppress=cppcheckError
           --suppress=internalAstError
-          # if a file does not have an internalAstError, we get an unmatchedSuppression error
+          # if a file does not have an internalAstError, we get an
+          # unmatchedSuppression error
           --suppress=unmatchedSuppression
           # noisy and incorrect sometimes
           --suppress=passedByValue
@@ -31,15 +32,15 @@ macro(myproject_enable_cppcheck WARNINGS_AS_ERRORS CPPCHECK_OPTIONS)
           --inconclusive
           --suppress=${SUPPRESS_DIR})
     else()
-      # if the user provides a CPPCHECK_OPTIONS with a template specified, it will override this template
-      set(CMAKE_CXX_CPPCHECK ${CPPCHECK} --template=${CPPCHECK_TEMPLATE} ${CPPCHECK_OPTIONS})
+      # if the user provides a CPPCHECK_OPTIONS with a template specified, it
+      # will override this template
+      set(CMAKE_CXX_CPPCHECK ${CPPCHECK} --template=${CPPCHECK_TEMPLATE}
+                             ${CPPCHECK_OPTIONS})
     endif()
 
-    if(NOT
-       "${CMAKE_CXX_STANDARD}"
-       STREQUAL
-       "")
-      set(CMAKE_CXX_CPPCHECK ${CMAKE_CXX_CPPCHECK} --std=c++${CMAKE_CXX_STANDARD})
+    if(NOT "${CMAKE_CXX_STANDARD}" STREQUAL "")
+      set(CMAKE_CXX_CPPCHECK ${CMAKE_CXX_CPPCHECK}
+                             --std=c++${CMAKE_CXX_STANDARD})
     endif()
     if(${WARNINGS_AS_ERRORS})
       list(APPEND CMAKE_CXX_CPPCHECK --error-exitcode=2)
@@ -53,10 +54,7 @@ macro(myproject_enable_clang_tidy target WARNINGS_AS_ERRORS)
 
   find_program(CLANGTIDY clang-tidy)
   if(CLANGTIDY)
-    if(NOT
-       CMAKE_CXX_COMPILER_ID
-       MATCHES
-       ".*Clang")
+    if(NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
 
       get_target_property(TARGET_PCH ${target} INTERFACE_PRECOMPILE_HEADERS)
 
@@ -67,26 +65,24 @@ macro(myproject_enable_clang_tidy target WARNINGS_AS_ERRORS)
       if(NOT ("${TARGET_PCH}" STREQUAL "TARGET_PCH-NOTFOUND"))
         message(
           SEND_ERROR
-            "clang-tidy cannot be enabled with non-clang compiler and PCH, clang-tidy fails to handle gcc's PCH file")
+            "clang-tidy cannot be enabled with non-clang compiler and PCH, clang-tidy fails to handle gcc's PCH file"
+        )
       endif()
     endif()
 
     # construct the clang-tidy command line
     set(CLANG_TIDY_OPTIONS
-        ${CLANGTIDY}
-        -extra-arg=-Wno-unknown-warning-option
+        ${CLANGTIDY} -extra-arg=-Wno-unknown-warning-option
         -extra-arg=-Wno-ignored-optimization-argument
-        -extra-arg=-Wno-unused-command-line-argument
-        -p)
+        -extra-arg=-Wno-unused-command-line-argument -p)
     # set standard
-    if(NOT
-       "${CMAKE_CXX_STANDARD}"
-       STREQUAL
-       "")
+    if(NOT "${CMAKE_CXX_STANDARD}" STREQUAL "")
       if("${CLANG_TIDY_OPTIONS_DRIVER_MODE}" STREQUAL "cl")
-        set(CLANG_TIDY_OPTIONS ${CLANG_TIDY_OPTIONS} -extra-arg=/std:c++${CMAKE_CXX_STANDARD})
+        set(CLANG_TIDY_OPTIONS ${CLANG_TIDY_OPTIONS}
+                               -extra-arg=/std:c++${CMAKE_CXX_STANDARD})
       else()
-        set(CLANG_TIDY_OPTIONS ${CLANG_TIDY_OPTIONS} -extra-arg=-std=c++${CMAKE_CXX_STANDARD})
+        set(CLANG_TIDY_OPTIONS ${CLANG_TIDY_OPTIONS}
+                               -extra-arg=-std=c++${CMAKE_CXX_STANDARD})
       endif()
     endif()
 
@@ -107,6 +103,7 @@ macro(myproject_enable_include_what_you_use)
   if(INCLUDE_WHAT_YOU_USE)
     set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${INCLUDE_WHAT_YOU_USE})
   else()
-    message(${WARNING_MESSAGE} "include-what-you-use requested but executable not found")
+    message(${WARNING_MESSAGE}
+            "include-what-you-use requested but executable not found")
   endif()
 endmacro()

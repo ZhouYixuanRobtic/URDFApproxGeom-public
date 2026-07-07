@@ -19,7 +19,7 @@ namespace igl
     typename Derivediso_color,
     typename DerivedICM >
   IGL_INLINE void isolines_map(
-    const Eigen::MatrixBase<DerivedCM> & CM, 
+    const Eigen::MatrixBase<DerivedCM> & CM,
     const Eigen::MatrixBase<Derivediso_color> & iso_color,
     const int interval_thickness,
     const int iso_thickness,
@@ -29,7 +29,7 @@ namespace igl
     typename DerivedCM,
     typename DerivedICM>
   IGL_INLINE void isolines_map(
-    const Eigen::MatrixBase<DerivedCM> & CM, 
+    const Eigen::MatrixBase<DerivedCM> & CM,
     Eigen::PlainObjectBase<DerivedICM> & ICM);
 }
 

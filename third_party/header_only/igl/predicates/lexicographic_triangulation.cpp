@@ -18,8 +18,8 @@ IGL_INLINE void igl::predicates::lexicographic_triangulation(
     const Eigen::MatrixBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F)
 {
-  const auto orient2d = 
-    [](const double *pa, const double *pb, const double *pc) 
+  const auto orient2d =
+    [](const double *pa, const double *pb, const double *pc)
   {
     Eigen::Vector2d pav; pav << pa[0], pa[1];
     Eigen::Vector2d pbv; pbv << pb[0], pb[1];

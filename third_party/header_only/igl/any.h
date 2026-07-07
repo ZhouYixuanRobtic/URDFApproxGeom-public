@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_ANY_H
 #define IGL_ANY_H
@@ -18,12 +18,12 @@ namespace igl
   ///
   /// @param[in]  A  m by n sparse matrix
   /// @param[in] dim  dimension along which to check for any (1 or 2)
-  /// @param[out] B  n-long vector (if dim == 1) 
+  /// @param[out] B  n-long vector (if dim == 1)
   ///   or m-long vector (if dim == 2)
   ///
   template <typename AType, typename DerivedB>
   IGL_INLINE void any(
-    const Eigen::SparseMatrix<AType> & A, 
+    const Eigen::SparseMatrix<AType> & A,
     const int dim,
     Eigen::PlainObjectBase<DerivedB>& B);
 }
@@ -31,4 +31,3 @@ namespace igl
 #  include "any.cpp"
 #endif
 #endif
-

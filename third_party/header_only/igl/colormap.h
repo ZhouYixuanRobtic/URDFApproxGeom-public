@@ -14,7 +14,7 @@
 
 namespace igl {
 
-  // Common colormap types. 
+  // Common colormap types.
   enum ColorMapType
   {
     COLOR_MAP_TYPE_INFERNO = 0,

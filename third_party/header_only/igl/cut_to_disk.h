@@ -8,13 +8,13 @@
 
 namespace igl
 {
-  /// Given a triangle mesh, computes a set of edge cuts sufficient to carve the 
+  /// Given a triangle mesh, computes a set of edge cuts sufficient to carve the
   /// mesh into a topological disk, without disconnecting any connected components.
   /// Nothing else about the cuts (including number, total length, or smoothness)
   /// is guaranteed to be optimal.
   ///
   /// Simply-connected components without boundary (topological spheres) are left
-  /// untouched (delete any edge if you really want a disk). 
+  /// untouched (delete any edge if you really want a disk).
   /// All other connected components are cut into disks. Meshes with boundary are
   /// supported; boundary edges will be included as cuts.
   ///
@@ -36,7 +36,7 @@ namespace igl
     typename Index>
   IGL_INLINE void cut_to_disk(
     const Eigen::MatrixBase<DerivedF> &F,
-    std::vector<std::vector<Index> > &cuts);    
+    std::vector<std::vector<Index> > &cuts);
 };
 
 #ifndef IGL_STATIC_LIBRARY

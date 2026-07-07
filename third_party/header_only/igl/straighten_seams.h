@@ -12,7 +12,7 @@ namespace igl
   /// "straighten" them, remapping vertices along the boundary and in the
   /// interior. This will be careful to consistently straighten multiple seams
   /// in the texture-mesh corresponding to the same edge chains in the
-  /// surface-mesh. 
+  /// surface-mesh.
   ///
   ///
   /// @param[in] V  #V by 3 list of vertices
@@ -23,7 +23,7 @@ namespace igl
   ///   of the curves bounding box diagonal (see dpsimplify)
   /// @param[out] UE  #UE by 2 list of indices into VT of coarse output polygon edges
   /// @param[out] UT  #VT by 3 list of new texture coordinates
-  /// @param[out] OT  #OT by 2 list of indices into VT of boundary edges 
+  /// @param[out] OT  #OT by 2 list of indices into VT of boundary edges
   ///
   /// \see ramer_douglas_peucker
   template <

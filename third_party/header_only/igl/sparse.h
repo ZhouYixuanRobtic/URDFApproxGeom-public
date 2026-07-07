@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_SPARSE_H
 #define IGL_SPARSE_H
@@ -27,13 +27,13 @@ namespace igl
   /// @param[in] V  nnz vector of non-zeros entries in X
   /// @param[in] m  number of rows
   /// @param[in] n  number of cols
-  /// @param[out] X  m by n matrix of type T whose entries are to be found 
+  /// @param[out] X  m by n matrix of type T whose entries are to be found
   ///
   /// \deprecated just use Eigen::SparseMatrix<>.setFromTriplets()
   template <
-    class IndexVectorI, 
-    class IndexVectorJ, 
-    class ValueVector, 
+    class IndexVectorI,
+    class IndexVectorJ,
+    class ValueVector,
     typename T>
   IGL_INLINE void sparse(
     const IndexVectorI & I,
