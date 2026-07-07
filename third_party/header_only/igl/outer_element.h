@@ -24,7 +24,7 @@ namespace igl
   /// @param[out] v_index  index of outer vertex
   /// @param[out] A  #A list of facets incident to the outer vertex
   ///
-  /// \fileinfo 
+  /// \fileinfo
   template <
       typename DerivedV,
       typename DerivedF,
@@ -53,7 +53,7 @@ namespace igl
   /// @param[out] v2 index of the second end point of outer edge
   /// @param[out] A  #A list of facets incident to the outer edge
   ///
-  /// \fileinfo 
+  /// \fileinfo
   template<
       typename DerivedV,
       typename DerivedF,

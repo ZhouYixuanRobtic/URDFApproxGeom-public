@@ -362,7 +362,7 @@ public:
   static typename DerivedFaces::Scalar add_vertex(
     const Eigen::MatrixBase<DerivedValues> &values,
     const Eigen::MatrixBase<DerivedPoints> &points,
-    const double isovalue, 
+    const double isovalue,
     unsigned int i0,
     unsigned int i1,
     Eigen::PlainObjectBase<DerivedVertices> &vertices,
@@ -398,7 +398,7 @@ public:
   static typename DerivedFaces::Scalar add_vertex(
     const std::function< DerivedValue(const DerivedPoint & ) > & value_fun,
     const Eigen::MatrixBase<DerivedPoints> &points,
-    const double isovalue, 
+    const double isovalue,
     unsigned int i0,
     unsigned int i1,
     Eigen::PlainObjectBase<DerivedVertices> &vertices,
@@ -469,10 +469,10 @@ IGL_INLINE void igl::copyleft::marching_cubes(
 }
 
 template <
-  typename DerivedValue, 
+  typename DerivedValue,
   typename DerivedPoint,
-  typename DerivedPoints, 
-  typename DerivedVertices, 
+  typename DerivedPoints,
+  typename DerivedVertices,
   typename DerivedFaces>
 IGL_INLINE void igl::copyleft::marching_cubes(
     const std::function< DerivedValue(const DerivedPoint & ) > & value_fun,
@@ -480,13 +480,13 @@ IGL_INLINE void igl::copyleft::marching_cubes(
     const unsigned x_res,
     const unsigned y_res,
     const unsigned z_res,
-    const double isovalue, 
+    const double isovalue,
     Eigen::PlainObjectBase<DerivedVertices> &vertices,
     Eigen::PlainObjectBase<DerivedFaces> &faces)
 {
   MarchingCubes<
     Eigen::Matrix<DerivedValue,Eigen::Dynamic,1>, /* unnecessary */
-    DerivedPoints, DerivedVertices, 
+    DerivedPoints, DerivedVertices,
     Eigen::Matrix<int,Eigen::Dynamic,1>, /* unnecessary */
     DerivedFaces> mc(value_fun, points, x_res, y_res, z_res, isovalue, vertices, faces);
 }

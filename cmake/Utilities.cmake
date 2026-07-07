@@ -1,9 +1,5 @@
 # find a substring from a string by a given prefix such as VCVARSALL_ENV_START
-function(
-  find_substring_by_prefix
-  output
-  prefix
-  input)
+function(find_substring_by_prefix output prefix input)
   # find the prefix
   string(FIND "${input}" "${prefix}" prefix_index)
   if("${prefix_index}" STREQUAL "-1")
@@ -13,64 +9,33 @@ function(
   string(LENGTH "${prefix}" prefix_length)
   math(EXPR start_index "${prefix_index} + ${prefix_length}")
 
-  string(
-    SUBSTRING "${input}"
-              "${start_index}"
-              "-1"
-              _output)
+  string(SUBSTRING "${input}" "${start_index}" "-1" _output)
   set("${output}"
       "${_output}"
       PARENT_SCOPE)
 endfunction()
 
-# A function to set environment variables of CMake from the output of `cmd /c set`
+# A function to set environment variables of CMake from the output of `cmd /c
+# set`
 function(set_env_from_string env_string)
   # replace ; in paths with __sep__ so we can split on ;
-  string(
-    REGEX
-    REPLACE ";"
-            "__sep__"
-            env_string_sep_added
-            "${env_string}")
+  string(REGEX REPLACE ";" "__sep__" env_string_sep_added "${env_string}")
 
   # the variables are separated by \r?\n
-  string(
-    REGEX
-    REPLACE "\r?\n"
-            ";"
-            env_list
-            "${env_string_sep_added}")
+  string(REGEX REPLACE "\r?\n" ";" env_list "${env_string_sep_added}")
 
   foreach(env_var ${env_list})
     # split by =
-    string(
-      REGEX
-      REPLACE "="
-              ";"
-              env_parts
-              "${env_var}")
+    string(REGEX REPLACE "=" ";" env_parts "${env_var}")
 
     list(LENGTH env_parts env_parts_length)
     if("${env_parts_length}" EQUAL "2")
       # get the variable name and value
-      list(
-        GET
-        env_parts
-        0
-        env_name)
-      list(
-        GET
-        env_parts
-        1
-        env_value)
+      list(GET env_parts 0 env_name)
+      list(GET env_parts 1 env_value)
 
       # recover ; in paths
-      string(
-        REGEX
-        REPLACE "__sep__"
-                ";"
-                env_value
-                "${env_value}")
+      string(REGEX REPLACE "__sep__" ";" env_value "${env_value}")
 
       # set env_name to env_value
       set(ENV{${env_name}} "${env_value}")
@@ -96,10 +61,7 @@ function(get_all_installable_targets var)
   get_all_targets(targets)
   foreach(_target ${targets})
     get_target_property(_target_type ${_target} TYPE)
-    if(NOT
-       ${_target_type}
-       MATCHES
-       ".*LIBRARY|EXECUTABLE")
+    if(NOT ${_target_type} MATCHES ".*LIBRARY|EXECUTABLE")
       list(REMOVE_ITEM targets ${_target})
     endif()
   endforeach()
@@ -141,15 +103,17 @@ endfunction()
 # Function to format dependencies with "lib" prefix and version requirements
 function(prepare_debian_dependencies dependencies output_var)
   # Check if the input dependencies list is empty
-  if ("${dependencies}" STREQUAL "")
-    set(${output_var} "" PARENT_SCOPE)
+  if("${dependencies}" STREQUAL "")
+    set(${output_var}
+        ""
+        PARENT_SCOPE)
     return()
   endif()
 
   set(result "")
 
   foreach(dep ${dependencies})
-    string(REPLACE " " ";" dep_parts ${dep})  # Split name and version
+    string(REPLACE " " ";" dep_parts ${dep}) # Split name and version
     list(GET dep_parts 0 PKG_NAME)
     list(GET dep_parts 1 PKG_VERSION)
 
@@ -165,37 +129,52 @@ function(prepare_debian_dependencies dependencies output_var)
   endforeach()
 
   # Output to specified variable
-  set(${output_var} "${result}" PARENT_SCOPE)
+  set(${output_var}
+      "${result}"
+      PARENT_SCOPE)
 endfunction()
 
 function(prepare_irmv_dependencies dependencies output_var)
   # Check if the input dependencies list is empty
-  if ("${dependencies}" STREQUAL "")
-    set(${output_var} "" PARENT_SCOPE)
+  if("${dependencies}" STREQUAL "")
+    set(${output_var}
+        ""
+        PARENT_SCOPE)
     return()
   endif()
 
   set(result "")
 
   foreach(dep ${dependencies})
-    string(REPLACE " " ";" dep_parts ${dep})  # Split name and version
+    string(REPLACE " " ";" dep_parts ${dep}) # Split name and version
     list(GET dep_parts 0 PKG_NAME)
     list(GET dep_parts 1 PKG_VERSION)
     set(formatted_dep "${PKG_NAME} (>= ${PKG_VERSION})")
 
     find_package(${PKG_NAME} ${PKG_VERSION} QUIET)
-    get_property(GLOBAL_${PKG_NAME}_LIBRARIES GLOBAL PROPERTY ${PKG_NAME}_LIBRARIES)
-    if (NOT ${PKG_NAME}_FOUND AND "${GLOBAL_${PKG_NAME}_LIBRARIES}" STREQUAL "")
-      message(WARNING "Please install ${PKG_NAME} ${PKG_VERSION} first, try to include source code")
+    get_property(GLOBAL_${PKG_NAME}_LIBRARIES GLOBAL
+                 PROPERTY ${PKG_NAME}_LIBRARIES)
+    if(NOT ${PKG_NAME}_FOUND AND "${GLOBAL_${PKG_NAME}_LIBRARIES}" STREQUAL "")
+      message(
+        WARNING
+          "Please install ${PKG_NAME} ${PKG_VERSION} first, try to include source code"
+      )
       add_subdirectory(${PKG_NAME})
-      set(${PKG_NAME}_LIBRARIES ${PKG_NAME} PARENT_SCOPE)
-      set(${PKG_NAME}_INCLUDE_DIRS "${${PKG_NAME}_INCLUDE_DIRS}" PARENT_SCOPE)
+      set(${PKG_NAME}_LIBRARIES
+          ${PKG_NAME}
+          PARENT_SCOPE)
+      set(${PKG_NAME}_INCLUDE_DIRS
+          "${${PKG_NAME}_INCLUDE_DIRS}"
+          PARENT_SCOPE)
 
       set_property(GLOBAL PROPERTY ${PKG_NAME}_LIBRARIES ${PKG_NAME})
-      set_property(GLOBAL PROPERTY ${PKG_NAME}_INCLUDE_DIRS "${${PKG_NAME}_INCLUDE_DIRS}")
-    elseif (${PKG_NAME}_FOUND)
-      set(${PKG_NAME}_LIBRARIES ${PKG_NAME}::${PKG_NAME} PARENT_SCOPE)
-    endif ()
+      set_property(GLOBAL PROPERTY ${PKG_NAME}_INCLUDE_DIRS
+                                   "${${PKG_NAME}_INCLUDE_DIRS}")
+    elseif(${PKG_NAME}_FOUND)
+      set(${PKG_NAME}_LIBRARIES
+          ${PKG_NAME}::${PKG_NAME}
+          PARENT_SCOPE)
+    endif()
     # Add "lib" prefix, format with version
     set(formatted_dep "${PKG_NAME} (>= ${PKG_VERSION})")
 
@@ -208,7 +187,9 @@ function(prepare_irmv_dependencies dependencies output_var)
   endforeach()
 
   # Output to specified variable
-  set(${output_var} "${result}" PARENT_SCOPE)
+  set(${output_var}
+      "${result}"
+      PARENT_SCOPE)
 endfunction()
 
 function(add_gtest_discover_for_file test_file)
@@ -221,13 +202,16 @@ function(add_gtest_discover_for_file test_file)
   # Create an executable for the test
   add_executable(${test_name} ${test_file})
 
+  # Add include directories (assuming test is in a subdirectory)
+  target_include_directories(${test_name} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
   # Link the executable to GTest, pthread, and any additional libraries
-  target_link_libraries(${test_name} PRIVATE GTest::GTest GTest::Main pthread ${ARG_LINK_LIBRARIES})
+  target_link_libraries(${test_name} PRIVATE GTest::gtest GTest::gtest_main
+                                             pthread ${ARG_LINK_LIBRARIES})
 
   # Add the test to the test suite
   gtest_discover_tests(${test_name})
 endfunction()
-
 
 function(add_benchmark_discover_for_file bench_file)
   # Parse optional LINK_LIBRARIES argument to accept multiple libraries
@@ -240,6 +224,7 @@ function(add_benchmark_discover_for_file bench_file)
   add_executable(${bench_name} ${bench_file})
 
   # Link the executable to GTest, pthread, and any additional libraries
-  target_link_libraries(${bench_name} PRIVATE benchmark::benchmark pthread ${ARG_LINK_LIBRARIES})
+  target_link_libraries(${bench_name} PRIVATE benchmark::benchmark pthread
+                                              ${ARG_LINK_LIBRARIES})
 
 endfunction()

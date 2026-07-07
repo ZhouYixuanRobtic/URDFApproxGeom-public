@@ -42,18 +42,19 @@
 
  */
 
-#include "ConvexHullCollisionURDFGenerator.h"
-#include "irmv/bot_common/log/singleton_logger.h"
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
+#include "ConvexHullCollisionURDFGenerator.h"
+#include "irmv/bot_common/log/singleton_logger.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     // Initialize logger
     irmv_core::logging::SingletonLogger::getInstance().initialize("URDFApproxGeom");
     if (argc < 3) {
-        IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...]", argv[0]);
+        IRMV_ERROR("Usage: {} -i <input_urdf_path> -o <output_urdf_path> [-r <key> <value> ...]",
+                   argv[0]);
         return 1;
     }
 
@@ -93,4 +94,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-

@@ -253,7 +253,7 @@ template <
   typename DerivedEMAP,
   typename DeriveduEC,
   typename DeriveduEE,
-  typename TTIndex, 
+  typename TTIndex,
   typename TTiIndex>
   IGL_INLINE void igl::triangle_triangle_adjacency(
     const Eigen::MatrixBase<DerivedEMAP> & EMAP,

@@ -23,13 +23,13 @@ namespace igl
   ///     seam or not
   ///
   template <
-    typename DerivedV, 
-    typename DerivedF, 
-    typename DerivedM, 
-    typename DerivedO> 
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedM,
+    typename DerivedO>
   IGL_INLINE void cut_mesh_from_singularities(
-    const Eigen::MatrixBase<DerivedV> &V, 
-    const Eigen::MatrixBase<DerivedF> &F, 
+    const Eigen::MatrixBase<DerivedV> &V,
+    const Eigen::MatrixBase<DerivedF> &F,
     const Eigen::MatrixBase<DerivedM> &MMatch,
     Eigen::PlainObjectBase<DerivedO> &seams);
 }

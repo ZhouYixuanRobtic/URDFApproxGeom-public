@@ -36,4 +36,3 @@ namespace igl
 #  include "delaunay_triangulation.cpp"
 #endif
 #endif
-

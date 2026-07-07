@@ -110,4 +110,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Watertight mesh processing with ManifoldPlus
 - Mesh simplification support
 - URDF collision geometry generation
-

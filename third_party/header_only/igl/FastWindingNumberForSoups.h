@@ -1,4 +1,4 @@
-// This header created by issuing: `echo "// This header created by issuing: \`$BASH_COMMAND\` $(echo "" | cat - LICENSE README.md | sed -e "s#^..*#\/\/ &#") $(echo "" | cat - SYS_Types.h SYS_Math.h VM_SSEFunc.h VM_SIMDFunc.h VM_SIMD.h UT_Array.h UT_ArrayImpl.h UT_SmallArray.h UT_FixedVector.h UT_ParallelUtil.h UT_BVH.h UT_BVHImpl.h UT_SolidAngle.h UT_Array.cpp UT_SolidAngle.cpp | sed -e "s/^#.*include  *\".*$//g")" > ~/Repos/libigl/include/igl/FastWindingNumberForSoups.h` 
+// This header created by issuing: `echo "// This header created by issuing: \`$BASH_COMMAND\` $(echo "" | cat - LICENSE README.md | sed -e "s#^..*#\/\/ &#") $(echo "" | cat - SYS_Types.h SYS_Math.h VM_SSEFunc.h VM_SIMDFunc.h VM_SIMD.h UT_Array.h UT_ArrayImpl.h UT_SmallArray.h UT_FixedVector.h UT_ParallelUtil.h UT_BVH.h UT_BVHImpl.h UT_SolidAngle.h UT_Array.cpp UT_SolidAngle.cpp | sed -e "s/^#.*include  *\".*$//g")" > ~/Repos/libigl/include/igl/FastWindingNumberForSoups.h`
 // MIT License
 
 // Copyright (c) 2018 Side Effects Software Inc.
@@ -24,9 +24,9 @@
 
 // https://github.com/alecjacobson/WindingNumber
 
-// Implementation of the _ACM SIGGRAPH_ 2018 paper, 
+// Implementation of the _ACM SIGGRAPH_ 2018 paper,
 
-// "Fast Winding Numbers for Soups and Clouds" 
+// "Fast Winding Numbers for Soups and Clouds"
 
 // Gavin Barill¹, Neil Dickson², Ryan Schmidt³, David I.W. Levin¹, Alec Jacobson¹
 
@@ -48,7 +48,7 @@
 
 // Create a single header using:
 
-//     echo "// This header created by issuing: \`$BASH_COMMAND\` $(echo "" | cat - LICENSE README.md | sed -e "s#^..*#\/\/ &#") $(echo "" | cat - SYS_Types.h SYS_Math.h VM_SSEFunc.h VM_SIMD.h UT_Array.h UT_ArrayImpl.h UT_SmallArray.h UT_FixedVector.h UT_ParallelUtil.h UT_BVH.h UT_BVHImpl.h UT_SolidAngle.h UT_Array.cpp UT_SolidAngle.cpp | sed -e "s/^#.*include  *\".*$//g")" 
+//     echo "// This header created by issuing: \`$BASH_COMMAND\` $(echo "" | cat - LICENSE README.md | sed -e "s#^..*#\/\/ &#") $(echo "" | cat - SYS_Types.h SYS_Math.h VM_SSEFunc.h VM_SIMD.h UT_Array.h UT_ArrayImpl.h UT_SmallArray.h UT_FixedVector.h UT_ParallelUtil.h UT_BVH.h UT_BVHImpl.h UT_SolidAngle.h UT_Array.cpp UT_SolidAngle.cpp | sed -e "s/^#.*include  *\".*$//g")"
 /*
  * Copyright (c) 2018 Side Effects Software Inc.
  *
@@ -162,7 +162,7 @@ union SYS_FPRealUnionT<fpreal32>
     int_type		ival;
     uint_type		uval;
     fpreal_type		fval;
-    
+
     struct
     {
 	uint_type mantissa_val: 23;
@@ -186,7 +186,7 @@ union SYS_FPRealUnionT<fpreal64>
     int_type		ival;
     uint_type		uval;
     fpreal_type		fval;
-    
+
     struct
     {
 	uint_type mantissa_val: 52;
@@ -230,7 +230,7 @@ typedef union SYS_FPRealUnionT<fpreal64>    SYS_FPRealUnionD;
  * SOFTWARE.
  *
  * COMMENTS:
- *      Miscellaneous math functions. 
+ *      Miscellaneous math functions.
  */
 
 #pragma once
@@ -1114,9 +1114,9 @@ static SYS_FORCE_INLINE void VM_E_FLOOR() {}
 
 static SYS_FORCE_INLINE bool vm_allbits(v4si a) {
 	return (
-		(a.v[0] == -1) && 
-		(a.v[1] == -1) && 
-		(a.v[2] == -1) && 
+		(a.v[0] == -1) &&
+		(a.v[1] == -1) &&
+		(a.v[2] == -1) &&
 		(a.v[3] == -1)
 	);
 }
@@ -1403,7 +1403,7 @@ public:
 #ifdef __SSE__
     template <int A, int B, int C, int D>
     SYS_FORCE_INLINE v4uf swizzle() const
-    { 
+    {
         return VM_SHUFFLE<A,B,C,D>(vector);
     }
 #endif
@@ -1699,10 +1699,10 @@ public:
     /// you can rewrite it as:
     /// UT_Array<int> a(otherarray);
     inline explicit UT_Array(const UT_Array<T> &a);
-    
+
     /// Move constructor. Steals the working data from the original.
     inline UT_Array(UT_Array<T> &&a) noexcept;
-    
+
     /// Construct based on given capacity and size
     UT_Array(exint capacity, exint size)
     {
@@ -1736,7 +1736,7 @@ public:
     /// '=', the behaviour of the equality operator on pointers versus objects
     /// is not the same.
     /// Use the subscript operators instead of insert() if you are appending
-    /// to the array, or if  you don't mind overwriting the element already 
+    /// to the array, or if  you don't mind overwriting the element already
     /// inserted at the given index.
     exint           append(void) { return insert(mySize); }
     exint           append(const T &t) { return appendImpl(t); }
@@ -1945,7 +1945,7 @@ public:
     /// Replace the contents with those from the initializer_list ilist
     inline UT_Array<T> &   operator=(std::initializer_list<T> ilist);
 
-    /// Move the contents of array a to this array. 
+    /// Move the contents of array a to this array.
     inline UT_Array<T> &   operator=(UT_Array<T> &&a);
 
     /// Compare two array and return true if they are equal and false otherwise.
@@ -1955,7 +1955,7 @@ public:
     ///       determining whether they are equal.
     inline bool            operator==(const UT_Array<T> &a) const;
     inline bool            operator!=(const UT_Array<T> &a) const;
-     
+
     /// Subscript operator
     /// NOTE: This does NOT do any bounds checking unless paranoid
     ///       asserts are enabled.
@@ -1989,7 +1989,7 @@ public:
 	UT_ASSERT_P(i >= 0 && i < mySize);
 	return myData[i];
     }
-    
+
     /// forcedRef(exint) will grow the array if necessary, initializing any
     /// new elements to zero for POD types and default constructing for
     /// class types.
@@ -2034,34 +2034,34 @@ public:
     { T *data = myData; myData = newdata; return data; }
 
     template <typename IT, bool FORWARD>
-    class base_iterator : 
-	public std::iterator<std::random_access_iterator_tag, T, exint> 
+    class base_iterator :
+	public std::iterator<std::random_access_iterator_tag, T, exint>
     {
         public:
 	    typedef IT&		reference;
 	    typedef IT*		pointer;
-	
+
 	    // Note: When we drop gcc 4.4 support and allow range-based for
 	    // loops, we should also drop atEnd(), which means we can drop
 	    // myEnd here.
 	    base_iterator() : myCurrent(NULL), myEnd(NULL) {}
-	    
+
 	      // Allow iterator to const_iterator conversion
 	    template<typename EIT>
 	    base_iterator(const base_iterator<EIT, FORWARD> &src)
 		: myCurrent(src.myCurrent), myEnd(src.myEnd) {}
-	    
-	    pointer	operator->() const 
+
+	    pointer	operator->() const
 			{ return FORWARD ? myCurrent : myCurrent - 1; }
-	    
+
 	    reference	operator*() const
 			{ return FORWARD ? *myCurrent : myCurrent[-1]; }
 
 	    reference	item() const
 			{ return FORWARD ? *myCurrent : myCurrent[-1]; }
-	    
+
 	    reference	operator[](exint n) const
-			{ return FORWARD ? myCurrent[n] : myCurrent[-n - 1]; } 
+			{ return FORWARD ? myCurrent[n] : myCurrent[-n - 1]; }
 
 	    /// Pre-increment operator
             base_iterator &operator++()
@@ -2090,7 +2090,7 @@ public:
 			    return tmp;
 			}
 
-	    base_iterator &operator+=(exint n)   
+	    base_iterator &operator+=(exint n)
 			{
 			    if (FORWARD)
 				myCurrent += n;
@@ -2105,37 +2105,37 @@ public:
 			    else
 				return base_iterator(myCurrent - n, myEnd);
 			}
-	    
+
             base_iterator &operator-=(exint n)
         		{ return (*this) += (-n); }
             base_iterator operator-(exint n) const
 			{ return (*this) + (-n); }
-            
+
 	    bool	 atEnd() const		{ return myCurrent == myEnd; }
 	    void	 advance()		{ this->operator++(); }
-	    
+
 	    // Comparators
 	    template<typename ITR, bool FR>
 	    bool 	 operator==(const base_iterator<ITR, FR> &r) const
 			 { return myCurrent == r.myCurrent; }
-	    
+
 	    template<typename ITR, bool FR>
 	    bool 	 operator!=(const base_iterator<ITR, FR> &r) const
 			 { return myCurrent != r.myCurrent; }
-	    
+
 	    template<typename ITR>
 	    bool	 operator<(const base_iterator<ITR, FORWARD> &r) const
 	    {
-		if (FORWARD) 
+		if (FORWARD)
 		    return myCurrent < r.myCurrent;
 		else
 		    return r.myCurrent < myCurrent;
 	    }
-	    
+
 	    template<typename ITR>
 	    bool	 operator>(const base_iterator<ITR, FORWARD> &r) const
 	    {
-		if (FORWARD) 
+		if (FORWARD)
 		    return myCurrent > r.myCurrent;
 		else
 		    return r.myCurrent > myCurrent;
@@ -2144,7 +2144,7 @@ public:
 	    template<typename ITR>
 	    bool	 operator<=(const base_iterator<ITR, FORWARD> &r) const
 	    {
-		if (FORWARD) 
+		if (FORWARD)
 		    return myCurrent <= r.myCurrent;
 		else
 		    return r.myCurrent <= myCurrent;
@@ -2153,23 +2153,23 @@ public:
 	    template<typename ITR>
 	    bool	 operator>=(const base_iterator<ITR, FORWARD> &r) const
 	    {
-		if (FORWARD) 
+		if (FORWARD)
 		    return myCurrent >= r.myCurrent;
 		else
 		    return r.myCurrent >= myCurrent;
 	    }
-	    
+
 	    // Difference operator for std::distance
 	    template<typename ITR>
 	    exint	 operator-(const base_iterator<ITR, FORWARD> &r) const
 	    {
-		if (FORWARD) 
+		if (FORWARD)
 		    return exint(myCurrent - r.myCurrent);
 		else
 		    return exint(r.myCurrent - myCurrent);
 	    }
-	    
-	    
+
+
         protected:
 	    friend class UT_Array<T>;
 	    base_iterator(IT *c, IT *e) : myCurrent(c), myEnd(e) {}
@@ -2178,14 +2178,14 @@ public:
 	    IT			*myCurrent;
 	    IT			*myEnd;
     };
-    
+
     typedef base_iterator<T, true>		iterator;
     typedef base_iterator<const T, true>	const_iterator;
     typedef base_iterator<T, false>		reverse_iterator;
     typedef base_iterator<const T, false>	const_reverse_iterator;
     typedef const_iterator	traverser; // For backward compatibility
 
-    /// Begin iterating over the array.  The contents of the array may be 
+    /// Begin iterating over the array.  The contents of the array may be
     /// modified during the traversal.
     iterator		begin()
 			{
@@ -2210,8 +2210,8 @@ public:
 			    return const_iterator(myData + mySize,
 						  myData + mySize);
 			}
-    
-    /// Begin iterating over the array in reverse. 
+
+    /// Begin iterating over the array in reverse.
     reverse_iterator	rbegin()
 			{
 			    return reverse_iterator(myData + mySize,
@@ -2222,7 +2222,7 @@ public:
 			{
 			    return reverse_iterator(myData, myData);
 			}
-    /// Begin iterating over the array in reverse. 
+    /// Begin iterating over the array in reverse.
     const_reverse_iterator rbegin() const
 			{
 			    return const_reverse_iterator(myData + mySize,
@@ -2233,7 +2233,7 @@ public:
 			{
 			    return const_reverse_iterator(myData, myData);
 			}
-    
+
     /// Remove item specified by the reverse_iterator.
     void		removeItem(const reverse_iterator &it)
 			{
@@ -2435,7 +2435,7 @@ private:
 #include <stdlib.h>
 #include <string.h>
 
-namespace igl { 
+namespace igl {
   /// @private
   namespace FastWindingNumber {
 
@@ -2527,7 +2527,7 @@ UT_Array<T>::swap( UT_Array<T> &other )
 
 
 template <typename T>
-inline exint	
+inline exint
 UT_Array<T>::insert(exint index)
 {
     if (index >= mySize)
@@ -2886,7 +2886,7 @@ UT_Array<T>::zero()
 }
 
 template <typename T>
-inline void		
+inline void
 UT_Array<T>::setCapacity(exint capacity)
 {
     // Do nothing when new capacity is the same as the current
@@ -2912,7 +2912,7 @@ UT_Array<T>::setCapacity(exint capacity)
 		memcpy((void *)myData, (void *)prev, sizeof(T) * mySize);
 	    myCapacity = capacity;
 	}
-	else 
+	else
 	{
 	    // Keep myCapacity unchanged in this case
 	    UT_ASSERT_P(capacity >= mySize && capacity <= myCapacity);
@@ -3031,7 +3031,7 @@ UT_Array<T>::operator=(UT_Array<T> &&a)
 	if (isHeapBuffer())
 	    ::free(myData);
     }
-    
+
     // Move the contents of the other array to us and empty the other container
     // so that it destructs cleanly.
     myCapacity = a.myCapacity;
@@ -3136,7 +3136,7 @@ public:
 	UT_Array<T>::unsafeShareData((T*)myBuffer, 0, MAX_ELEMS);
 	UT_SMALL_ARRAY_SIZE_ASSERT();
     }
-    
+
     /// Copy constructor
     /// @{
     explicit UT_SmallArray(const UT_Array<T> &copy)
@@ -3676,7 +3676,7 @@ namespace UT_Thread { inline int getNumProcessors() {
 ////namespace tbb { class split; }
 //
 ///// Declare prior to use.
-//template <typename T> 
+//template <typename T>
 //using UT_BlockedRange = tbb::blocked_range<T>;
 //
 //// Default implementation that calls range.size()
@@ -3698,7 +3698,7 @@ namespace UT_Thread { inline int getNumProcessors() {
 //    return UT_EstimatorNumItems<RANGE>()(range);
 //}
 //
-///// UT_CoarsenedRange: This should be used only inside 
+///// UT_CoarsenedRange: This should be used only inside
 ///// UT_ParallelFor and UT_ParallelReduce
 ///// This class wraps an existing range with a new range.
 ///// This allows us to use simple_partitioner, rather than
@@ -3716,14 +3716,14 @@ namespace UT_Thread { inline int getNumProcessors() {
 //    UT_CoarsenedRange(UT_CoarsenedRange& range, tbb::split spl) :
 //        RANGE(range, spl),
 //        myGrainSize(range.myGrainSize)
-//    {        
+//    {
 //    }
 //
 //    // Inherited: bool empty() const
 //
 //    bool is_divisible() const
 //    {
-//        return 
+//        return
 //            RANGE::is_divisible() &&
 //            (UTestimatedNumItems(static_cast<const RANGE&>(*this)) > myGrainSize);
 //    }
@@ -3734,7 +3734,7 @@ namespace UT_Thread { inline int getNumProcessors() {
 //    UT_CoarsenedRange(const RANGE& base_range, const size_t grain_size) :
 //        RANGE(base_range),
 //        myGrainSize(grain_size)
-//    {        
+//    {
 //    }
 //
 //    template <typename Range, typename Body>
@@ -3745,7 +3745,7 @@ namespace UT_Thread { inline int getNumProcessors() {
 //};
 //
 ///// Run the @c body function over a range in parallel.
-///// UTparallelFor attempts to spread the range out over at most 
+///// UTparallelFor attempts to spread the range out over at most
 ///// subscribe_ratio * num_processor tasks.
 ///// The factor subscribe_ratio can be used to help balance the load.
 ///// UTparallelFor() uses tbb for its implementation.
@@ -3753,13 +3753,13 @@ namespace UT_Thread { inline int getNumProcessors() {
 ///// if UTestimatedNumItems(range) / (subscribe_ratio * num_processor).
 ///// If subscribe_ratio == 0, then a grain size of min_grain_size will be used.
 ///// A range can be split only when UTestimatedNumItems(range) exceeds the
-///// grain size the range is divisible. 
+///// grain size the range is divisible.
 //
 /////
 ///// Requirements for the Range functor are:
 /////   - the requirements of the tbb Range Concept
 /////   - UT_estimatorNumItems<Range> must return the the estimated number of work items
-/////     for the range. When Range::size() is not the correct estimate, then a 
+/////     for the range. When Range::size() is not the correct estimate, then a
 /////     (partial) specialization of UT_estimatorNumItemsimatorRange must be provided
 /////     for the type Range.
 /////
@@ -3804,7 +3804,7 @@ namespace UT_Thread { inline int getNumProcessors() {
 /////         UTparallelFor(UT_BlockedRange<int64>(0, length), Square(array));
 /////     }
 ///// @endcode
-/////	
+/////
 ///// @see UTparallelReduce(), UT_BlockedRange()
 //
 //template <typename Range, typename Body>
@@ -3836,7 +3836,7 @@ namespace UT_Thread { inline int getNumProcessors() {
 //    size_t grain_size(min_grain_size);
 //    if( subscribe_ratio > 0 )
 //        grain_size = std::max(
-//                         grain_size, 
+//                         grain_size,
 //                         est_range_size / (subscribe_ratio * num_processors)
 //                     );
 //
@@ -3899,7 +3899,7 @@ namespace UT_Thread { inline int getNumProcessors() {
 
 #include <limits>
 #include <memory>
-namespace igl { 
+namespace igl {
   /// @private
   namespace FastWindingNumber {
 
@@ -4467,7 +4467,7 @@ using UT_BVH = UT::BVH<N>;
 #include <iostream>
 #include <algorithm>
 
-namespace igl { 
+namespace igl {
   /// @private
   namespace FastWindingNumber {
 namespace HDK_Sample {
@@ -4533,16 +4533,16 @@ struct ut_BoxCentre<UT_FixedVector<T,NAXES,INSTANTIATED>> {
 };
 
 template<typename BOX_TYPE,typename SRC_INT_TYPE,typename INT_TYPE>
-inline INT_TYPE utExcludeNaNInfBoxIndices(const BOX_TYPE* boxes, SRC_INT_TYPE* indices, INT_TYPE& nboxes) noexcept 
+inline INT_TYPE utExcludeNaNInfBoxIndices(const BOX_TYPE* boxes, SRC_INT_TYPE* indices, INT_TYPE& nboxes) noexcept
 {
     constexpr INT_TYPE PARALLEL_THRESHOLD = 65536;
     INT_TYPE ntasks = 1;
-    //if (nboxes >= PARALLEL_THRESHOLD) 
+    //if (nboxes >= PARALLEL_THRESHOLD)
     //{
     //    INT_TYPE nprocessors = UT_Thread::getNumProcessors();
     //    ntasks = (nprocessors > 1) ? SYSmin(4*nprocessors, nboxes/(PARALLEL_THRESHOLD/2)) : 1;
     //}
-    //if (ntasks == 1) 
+    //if (ntasks == 1)
     {
         // Serial: easy case; just loop through.
 
@@ -4550,7 +4550,7 @@ inline INT_TYPE utExcludeNaNInfBoxIndices(const BOX_TYPE* boxes, SRC_INT_TYPE* i
 
         // Loop through forward once
         SRC_INT_TYPE* psrc_index = indices;
-        for (; psrc_index != indices_end; ++psrc_index) 
+        for (; psrc_index != indices_end; ++psrc_index)
         {
             const bool exclude = utBoxExclude(boxes[*psrc_index]);
             if (exclude)
@@ -4561,10 +4561,10 @@ inline INT_TYPE utExcludeNaNInfBoxIndices(const BOX_TYPE* boxes, SRC_INT_TYPE* i
 
         // First NaN or infinite box
         SRC_INT_TYPE* nan_start = psrc_index;
-        for (++psrc_index; psrc_index != indices_end; ++psrc_index) 
+        for (++psrc_index; psrc_index != indices_end; ++psrc_index)
 	{
             const bool exclude = utBoxExclude(boxes[*psrc_index]);
-            if (!exclude) 
+            if (!exclude)
 	    {
                 *nan_start = *psrc_index;
                 ++nan_start;
@@ -5625,7 +5625,7 @@ inline void BVH<N>::split(const Box<T,NAXES>& axes_minmax, const BOX_TYPE* boxes
             parallel_counts.setSize(NSPANS*n);
             for(int t = 0;t<n;t++)
             {
-              for (INT_TYPE i = 0; i < NSPANS; ++i) 
+              for (INT_TYPE i = 0; i < NSPANS; ++i)
               {
                 parallel_boxes[t*NSPANS+i].initBounds();
                 parallel_counts[t*NSPANS+i] = 0;
@@ -6032,7 +6032,7 @@ void BVH<N>::debugDump() const {
 
 #include <memory>
 
-namespace igl { 
+namespace igl {
   /// @private
   namespace FastWindingNumber {
 namespace HDK_Sample {
@@ -6399,7 +6399,7 @@ private:
 
 #include <stdlib.h>
 
-namespace igl { 
+namespace igl {
   /// @private
   namespace FastWindingNumber {
 
@@ -6468,7 +6468,7 @@ inline void ut_ArrayImplFree(void *p)
 
 #define TAYLOR_SERIES_ORDER 2
 
-namespace igl { 
+namespace igl {
   /// @private
   namespace FastWindingNumber {
 

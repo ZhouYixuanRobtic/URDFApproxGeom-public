@@ -42,9 +42,9 @@ namespace igl
     Eigen::PlainObjectBase<DerivedGV> & GV,
     Eigen::PlainObjectBase<Derivedside> & side,
     Eigen::PlainObjectBase<DerivedS> & S);
-  
+
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "offset_surface.cpp"
-#endif 
-#endif 
+#endif
+#endif

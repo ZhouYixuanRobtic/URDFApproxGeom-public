@@ -43,7 +43,7 @@ igl::scalar_to_cr_vector_gradient(
      oE.cols()!=F.cols()) {
     orient_halfedges(F, E, oE);
   }
-  
+
   const Eigen::PlainObjectBase<DerivedE>& cE = E;
   const Eigen::PlainObjectBase<DerivedOE>& coE = oE;
 
@@ -83,11 +83,11 @@ igl::scalar_to_cr_vector_gradient_intrinsic(
   assert(F.cols()==3 && "Faces have three vertices");
   assert(E.rows()==F.rows() && E.cols()==F.cols() && oE.rows()==F.rows() &&
          oE.cols()==F.cols() && "Wrong dimension in edge vectors");
-  
+
   const Eigen::Index m = F.rows();
   const typename DerivedF::Scalar n = F.maxCoeff() + 1;
   const typename DerivedE::Scalar nE = E.maxCoeff() + 1;
-  
+
   std::vector<Eigen::Triplet<ScalarG> > tripletList;
   tripletList.reserve(5*3*m);
   for(Eigen::Index f=0; f<m; ++f) {
@@ -96,7 +96,7 @@ igl::scalar_to_cr_vector_gradient_intrinsic(
       const ScalarG o=oE(f,e),
       eij=l_sq(f,e), ejk=l_sq(f,(e+1)%3), eki=l_sq(f,(e+2)%3); //These are squared quantities.
       const ScalarG s_eij = sqrt(eij);
-      
+
       tripletList.emplace_back(E(f,e), i, -o*dA(f)/(6.*s_eij));
       tripletList.emplace_back(E(f,e)+nE, i, -o*(eij+ejk-eki)/(12.*s_eij));
       tripletList.emplace_back(E(f,e), j, o*dA(f)/(6.*s_eij));

@@ -1,10 +1,10 @@
-// high level interface for MshLoader 
+// high level interface for MshLoader
 //
-// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com> 
+// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com>
 //
-// This Source Code Form is subject to the terms of the Mozilla 
-// Public License v. 2.0. If a copy of the MPL was not distributed 
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "readMSH.h"
 #include "MshLoader.h"
@@ -24,13 +24,13 @@ IGL_INLINE  bool  igl::readMSH(
   std::vector<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions>> &TriF,
   std::vector<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions>> &TetF)
 {
-    try 
+    try
     {
         igl::MshLoader _loader(msh);
         const int USETAG = 1;
 
         #ifndef NDEBUG
-        std::cout<<"readMSH:Total number of nodes:" << _loader.get_nodes().size()<<std::endl;   
+        std::cout<<"readMSH:Total number of nodes:" << _loader.get_nodes().size()<<std::endl;
         std::cout<<"readMSH:Total number of elements:" << _loader.get_elements().size()<<std::endl;
 
         std::cout<<"readMSH:Node fields:" << std::endl;
@@ -38,7 +38,7 @@ IGL_INLINE  bool  igl::readMSH(
         {
             std::cout << i->c_str() << ":" << _loader.get_node_fields()[i-std::begin(_loader.get_node_fields_names())].size() << std::endl;
         }
-        
+
         std::cout << "readMSH:Element fields:" << std::endl;
         for(auto i=std::begin(_loader.get_element_fields_names()); i!=std::end(_loader.get_element_fields_names()); i++)
         {
@@ -49,12 +49,12 @@ IGL_INLINE  bool  igl::readMSH(
             std::cout<<"readMSH:Element ids map is identity"<<std::endl;
         else
             std::cout<<"readMSH:Element ids map is NOT identity"<<std::endl;
-        
+
         #endif
-        
+
         // convert nodes
-        // hadrcoded for 3D 
-        Eigen::Map< const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > 
+        // hadrcoded for 3D
+        Eigen::Map< const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >
             node_map( _loader.get_nodes().data(), _loader.get_nodes().size()/3, 3 );
 
         X = node_map;
@@ -63,16 +63,16 @@ IGL_INLINE  bool  igl::readMSH(
         XFields = _loader.get_node_fields_names();
         for(size_t i=0;i<_loader.get_node_fields().size();++i)
         {
-            Eigen::Map< const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > 
-                field_map( _loader.get_node_fields()[i].data(), 
-                        _loader.get_node_fields()[i].size()/_loader.get_node_fields_components()[i], 
+            Eigen::Map< const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >
+                field_map( _loader.get_node_fields()[i].data(),
+                        _loader.get_node_fields()[i].size()/_loader.get_node_fields_components()[i],
                         _loader.get_node_fields_components()[i] );
             XF[i] = field_map;
         }
 
-        // calculate number of elements 
+        // calculate number of elements
         std::map<int,int> element_counts;
-       
+
         for(auto i:_loader.get_elements_types())
         {
             auto j=element_counts.insert({i,1});
@@ -85,12 +85,12 @@ IGL_INLINE  bool  igl::readMSH(
         #endif
         int n_tri_el=0;
         int n_tet_el=0;
-        
+
         auto n_tri_el_=element_counts.find(igl::MshLoader::ELEMENT_TRI);
         auto n_tet_el_=element_counts.find(igl::MshLoader::ELEMENT_TET);
-        if(n_tri_el_!=std::end(element_counts)) 
+        if(n_tri_el_!=std::end(element_counts))
             n_tri_el=n_tri_el_->second;
-        if(n_tet_el_!=std::end(element_counts)) 
+        if(n_tet_el_!=std::end(element_counts))
             n_tet_el=n_tet_el_->second;
 
         Tri.resize(n_tri_el,3);
@@ -139,11 +139,11 @@ IGL_INLINE  bool  igl::readMSH(
                 for(size_t j=0;j<_loader.get_element_fields().size();++j)
                     for(size_t k=0;k<_loader.get_element_fields_components()[j];++k)
                         TetF[j](i_tet,k) = _loader.get_element_fields()[j][_loader.get_element_fields_components()[j]*i+k];
-                
+
                 ++i_tet;
             } else {
                 // else: it's unsupported type of the element, ignore for now
-                std::cerr<<"readMSH: unsupported element type: "<<_loader.get_elements_types()[i] << 
+                std::cerr<<"readMSH: unsupported element type: "<<_loader.get_elements_types()[i] <<
                            ", length: "<< _loader.get_elements_lengths()[i] <<std::endl;
             }
 

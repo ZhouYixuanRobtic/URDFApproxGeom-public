@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_ALL_PAIRS_DISTANCES_H
 #define IGL_ALL_PAIRS_DISTANCES_H
@@ -12,9 +12,9 @@
 namespace igl
 {
   /// Compute distances between each point i in V and point j in U
-  /// 
+  ///
   ///     D = all_pairs_distances(V,U)
-  /// 
+  ///
   /// @tparam matrix class like MatrixXd
   /// @param[in] V  #V by dim list of points
   /// @param[in] U  #U by dim list of points
@@ -25,7 +25,7 @@ namespace igl
   IGL_INLINE void all_pairs_distances(
     const Mat & V,
     const Mat & U,
-    const bool squared, 
+    const bool squared,
     Mat & D);
 }
 

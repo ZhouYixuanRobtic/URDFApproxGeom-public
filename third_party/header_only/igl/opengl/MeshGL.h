@@ -102,12 +102,12 @@ public:
 
   // Text Rendering
   struct TextGL
-  { 
+  {
     uint32_t dirty_flag;
     GLuint vao_labels;
     GLuint vbo_labels_pos;
     GLuint vbo_labels_characters;
-    GLuint vbo_labels_offset; 
+    GLuint vbo_labels_offset;
     GLuint vbo_labels_indices;
     RowMatrixXf label_pos_vbo;
     RowMatrixXf label_char_vbo;
@@ -117,7 +117,7 @@ public:
     void free_buffers();
   };
   TextGL vertex_labels;
-  TextGL face_labels;  
+  TextGL face_labels;
   TextGL custom_labels;
   GLuint font_atlas;
 

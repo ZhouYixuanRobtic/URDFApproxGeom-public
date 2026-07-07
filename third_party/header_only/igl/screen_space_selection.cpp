@@ -60,10 +60,10 @@ IGL_INLINE void igl::screen_space_selection(
   Eigen::Matrix<Scalar,Eigen::Dynamic,2> P(L.size(),2);
   Eigen::Matrix<int,Eigen::Dynamic,2> E(L.size(),2);
   for(int i = 0;i<E.rows();i++)
-  { 
+  {
     P.row(i) = L[i].template cast<Scalar>();
-    E(i,0) = i; 
-    E(i,1) = (i+1)%E.rows(); 
+    E(i,0) = i;
+    E(i,1) = (i+1)%E.rows();
   }
   return screen_space_selection(V,model,proj,viewport,P,E,W);
 }

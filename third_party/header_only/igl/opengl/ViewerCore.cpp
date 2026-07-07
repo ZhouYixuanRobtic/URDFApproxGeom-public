@@ -269,11 +269,11 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     glEnable(GL_DEPTH_TEST);
   }
 
-  if(is_set(data.show_vertex_labels)&&data.vertex_labels_positions.rows()>0) 
+  if(is_set(data.show_vertex_labels)&&data.vertex_labels_positions.rows()>0)
     draw_labels(data, data.meshgl.vertex_labels);
-  if(is_set(data.show_face_labels)&&data.face_labels_positions.rows()>0) 
+  if(is_set(data.show_face_labels)&&data.face_labels_positions.rows()>0)
     draw_labels(data, data.meshgl.face_labels);
-  if(is_set(data.show_custom_labels)&&data.labels_positions.rows()>0) 
+  if(is_set(data.show_custom_labels)&&data.labels_positions.rows()>0)
     draw_labels(data, data.meshgl.custom_labels);
 }
 
@@ -282,7 +282,7 @@ IGL_INLINE void igl::opengl::ViewerCore::initialize_shadow_pass()
   // attach buffers
   glBindFramebuffer(GL_FRAMEBUFFER,   shadow_depth_fbo);
   glBindRenderbuffer(GL_RENDERBUFFER, shadow_color_rbo);
-  // clear buffer 
+  // clear buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   // In the libigl viewer setup, each mesh has its own shader program. This is
   // kind of funny because they should all be the same, just different uniform
@@ -483,8 +483,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_labels(
   glUniform3f(glGetUniformLocation(data.meshgl.shader_text, "TextColor"), data.label_color(0), data.label_color(1), data.label_color(2));
   glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "CellSize"), 1.0f / 16, (300.0f / 384) / 6);
   glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "CellOffset"), 0.5 / 256.0, 0.5 / 256.0);
-  glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "RenderSize"), 
-                                    render_scale * 0.75 * 16 / (width), 
+  glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "RenderSize"),
+                                    render_scale * 0.75 * 16 / (width),
                                     render_scale * 0.75 * 33.33 / (height));
   glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "RenderOrigin"), -2, 2);
   data.meshgl.draw_labels(labels);
@@ -637,4 +637,3 @@ IGL_INLINE void igl::opengl::ViewerCore::generate_shadow_buffers()
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-

@@ -42,19 +42,19 @@
 
  */
 
+#include "URDFGenerator.h"
+#include <igl/readOBJ.h>
+#include <igl/readSTL.h>
+#include <igl/writeOBJ.h>
+#include <tinyxml2.h>
 #include <urdf_model/model.h>
 #include <urdf_parser/urdf_parser.h>
-#include <tinyxml2.h>
-#include "URDFGenerator.h"
-#include "irmv/bot_common/log/singleton_logger.h"
 #include <fstream>
-#include <igl/readSTL.h>
-#include <igl/readOBJ.h>
-#include <igl/writeOBJ.h>
 #include <set>
+#include "irmv/bot_common/log/singleton_logger.h"
 
-irmv_core::bot_common::ErrorInfo
-URDFGenerator::loadURDF(const std::string &urdf_path, urdf::ModelInterfaceSharedPtr &robot_model) {
+irmv_core::bot_common::ErrorInfo URDFGenerator::loadURDF(
+    const std::string& urdf_path, urdf::ModelInterfaceSharedPtr& robot_model) {
     std::ifstream urdf_file(urdf_path);
     if (!urdf_file.is_open()) {
         IRMV_ERROR("Could not open URDF file: {}", urdf_path);
@@ -74,15 +74,16 @@ URDFGenerator::loadURDF(const std::string &urdf_path, urdf::ModelInterfaceShared
 }
 
 // Function to create an origin element
-void createOriginElement(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *parent, const urdf::Pose &origin) {
-    tinyxml2::XMLElement *origin_elem = doc.NewElement("origin");
+void createOriginElement(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement* parent,
+                         const urdf::Pose& origin) {
+    tinyxml2::XMLElement* origin_elem = doc.NewElement("origin");
     std::stringstream ss;
     ss << origin.position.x << " " << origin.position.y << " " << origin.position.z;
     origin_elem->SetAttribute("xyz", ss.str().c_str());
 
     double roll, pitch, yaw;
     origin.rotation.getRPY(roll, pitch, yaw);
-    ss.str(""); // Clear the stringstream
+    ss.str("");  // Clear the stringstream
     ss << roll << " " << pitch << " " << yaw;
     origin_elem->SetAttribute("rpy", ss.str().c_str());
 
@@ -90,71 +91,72 @@ void createOriginElement(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *paren
 }
 
 // Function to create a geometry element
-void createGeometryElement(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *parent,
-                           const urdf::GeometrySharedPtr &geometry) {
-    tinyxml2::XMLElement *geometry_elem = doc.NewElement("geometry");
+void createGeometryElement(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement* parent,
+                           const urdf::GeometrySharedPtr& geometry) {
+    tinyxml2::XMLElement* geometry_elem = doc.NewElement("geometry");
     switch (geometry->type) {
-        case urdf::Geometry::BOX: {
-            urdf::Box *box = dynamic_cast<urdf::Box *>(geometry.get());
-            if (box) {
-                tinyxml2::XMLElement *box_elem = doc.NewElement("box");
+    case urdf::Geometry::BOX: {
+        urdf::Box* box = dynamic_cast<urdf::Box*>(geometry.get());
+        if (box) {
+            tinyxml2::XMLElement* box_elem = doc.NewElement("box");
+            std::stringstream ss;
+            ss << box->dim.x << " " << box->dim.y << " " << box->dim.z;
+            box_elem->SetAttribute("size", ss.str().c_str());
+            geometry_elem->InsertEndChild(box_elem);
+        }
+        break;
+    }
+    case urdf::Geometry::CYLINDER: {
+        urdf::Cylinder* cylinder = dynamic_cast<urdf::Cylinder*>(geometry.get());
+        if (cylinder) {
+            tinyxml2::XMLElement* cylinder_elem = doc.NewElement("cylinder");
+            cylinder_elem->SetAttribute("radius", std::to_string(cylinder->radius).c_str());
+            cylinder_elem->SetAttribute("length", std::to_string(cylinder->length).c_str());
+            geometry_elem->InsertEndChild(cylinder_elem);
+        }
+        break;
+    }
+    case urdf::Geometry::SPHERE: {
+        urdf::Sphere* sphere = dynamic_cast<urdf::Sphere*>(geometry.get());
+        if (sphere) {
+            tinyxml2::XMLElement* sphere_elem = doc.NewElement("sphere");
+            sphere_elem->SetAttribute("radius", std::to_string(sphere->radius).c_str());
+            geometry_elem->InsertEndChild(sphere_elem);
+        }
+        break;
+    }
+    case urdf::Geometry::MESH: {
+        urdf::Mesh* mesh = dynamic_cast<urdf::Mesh*>(geometry.get());
+        if (mesh) {
+            tinyxml2::XMLElement* mesh_elem = doc.NewElement("mesh");
+            mesh_elem->SetAttribute("filename", mesh->filename.c_str());
+            if (mesh->scale.x != 1 || mesh->scale.y != 1 || mesh->scale.z != 1) {
                 std::stringstream ss;
-                ss << box->dim.x << " " << box->dim.y << " " << box->dim.z;
-                box_elem->SetAttribute("size", ss.str().c_str());
-                geometry_elem->InsertEndChild(box_elem);
+                ss << mesh->scale.x << " " << mesh->scale.y << " " << mesh->scale.z;
+                mesh_elem->SetAttribute("scale", ss.str().c_str());
             }
-            break;
+            geometry_elem->InsertEndChild(mesh_elem);
         }
-        case urdf::Geometry::CYLINDER: {
-            urdf::Cylinder *cylinder = dynamic_cast<urdf::Cylinder *>(geometry.get());
-            if (cylinder) {
-                tinyxml2::XMLElement *cylinder_elem = doc.NewElement("cylinder");
-                cylinder_elem->SetAttribute("radius", std::to_string(cylinder->radius).c_str());
-                cylinder_elem->SetAttribute("length", std::to_string(cylinder->length).c_str());
-                geometry_elem->InsertEndChild(cylinder_elem);
-            }
-            break;
-        }
-        case urdf::Geometry::SPHERE: {
-            urdf::Sphere *sphere = dynamic_cast<urdf::Sphere *>(geometry.get());
-            if (sphere) {
-                tinyxml2::XMLElement *sphere_elem = doc.NewElement("sphere");
-                sphere_elem->SetAttribute("radius", std::to_string(sphere->radius).c_str());
-                geometry_elem->InsertEndChild(sphere_elem);
-            }
-            break;
-        }
-        case urdf::Geometry::MESH: {
-            urdf::Mesh *mesh = dynamic_cast<urdf::Mesh *>(geometry.get());
-            if (mesh) {
-                tinyxml2::XMLElement *mesh_elem = doc.NewElement("mesh");
-                mesh_elem->SetAttribute("filename", mesh->filename.c_str());
-                if (mesh->scale.x != 1 || mesh->scale.y != 1 || mesh->scale.z != 1) {
-                    std::stringstream ss;
-                    ss << mesh->scale.x << " " << mesh->scale.y << " " << mesh->scale.z;
-                    mesh_elem->SetAttribute("scale", ss.str().c_str());
-                }
-                geometry_elem->InsertEndChild(mesh_elem);
-            }
-            break;
-        }
+        break;
+    }
     }
     parent->InsertEndChild(geometry_elem);
 }
 
-void createInertiaElement(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *parent, const urdf::Inertial &inertial) {
-    tinyxml2::XMLElement *inertial_elem = doc.NewElement("inertial");
+void createInertiaElement(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement* parent,
+                          const urdf::Inertial& inertial) {
+    tinyxml2::XMLElement* inertial_elem = doc.NewElement("inertial");
 
     // Add origin element
     createOriginElement(doc, inertial_elem, inertial.origin);
 
     // Add mass element
-    tinyxml2::XMLElement *mass_elem = doc.NewElement("mass");
+    tinyxml2::XMLElement* mass_elem = doc.NewElement("mass");
     mass_elem->SetAttribute("value", std::to_string(inertial.mass).c_str());
     inertial_elem->InsertEndChild(mass_elem);
 
     // Add inertia element
-    tinyxml2::XMLElement *inertia_elem = doc.NewElement("inertia");
+    tinyxml2::XMLElement* inertia_elem = doc.NewElement("inertia");
     std::stringstream ss;
     ss << std::scientific << std::setprecision(6);
 
@@ -186,30 +188,30 @@ void createInertiaElement(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *pare
 }
 
 // Handler for visual or collision elements
-void handleVisualOrCollision(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *link_elem,
-                             const urdf::VisualSharedPtr &visual) {
-    tinyxml2::XMLElement *visual_elem = doc.NewElement("visual");
+void handleVisualOrCollision(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement* link_elem,
+                             const urdf::VisualSharedPtr& visual) {
+    tinyxml2::XMLElement* visual_elem = doc.NewElement("visual");
     createOriginElement(doc, visual_elem, visual->origin);
     createGeometryElement(doc, visual_elem, visual->geometry);
 
     // Add material element if available
     if (visual->material) {
-        tinyxml2::XMLElement *material_elem = doc.NewElement("material");
+        tinyxml2::XMLElement* material_elem = doc.NewElement("material");
         if (!visual->material->name.empty()) {
             material_elem->SetAttribute("name", visual->material->name.c_str());
         } else {
             material_elem->SetAttribute("name", "");
         }
 
-        tinyxml2::XMLElement *color_elem = doc.NewElement("color");
+        tinyxml2::XMLElement* color_elem = doc.NewElement("color");
         std::stringstream ss;
-        ss << visual->material->color.r << " " << visual->material->color.g << " " << visual->material->color.b << " "
-           << visual->material->color.a;
+        ss << visual->material->color.r << " " << visual->material->color.g << " "
+           << visual->material->color.b << " " << visual->material->color.a;
         color_elem->SetAttribute("rgba", ss.str().c_str());
         material_elem->InsertEndChild(color_elem);
 
         if (!visual->material->texture_filename.empty()) {
-            tinyxml2::XMLElement *texture_elem = doc.NewElement("texture");
+            tinyxml2::XMLElement* texture_elem = doc.NewElement("texture");
             texture_elem->SetAttribute("filename", visual->material->texture_filename.c_str());
             material_elem->InsertEndChild(texture_elem);
         }
@@ -219,43 +221,43 @@ void handleVisualOrCollision(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *l
     link_elem->InsertEndChild(visual_elem);
 }
 
-void handleVisualOrCollision(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *link_elem,
-                             const urdf::CollisionSharedPtr &collision) {
-    tinyxml2::XMLElement *collision_elem = doc.NewElement("collision");
+void handleVisualOrCollision(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement* link_elem,
+                             const urdf::CollisionSharedPtr& collision) {
+    tinyxml2::XMLElement* collision_elem = doc.NewElement("collision");
     createOriginElement(doc, collision_elem, collision->origin);
     createGeometryElement(doc, collision_elem, collision->geometry);
     link_elem->InsertEndChild(collision_elem);
 }
 
-
-irmv_core::bot_common::ErrorInfo
-URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfaceSharedPtr &robot_model) {
+irmv_core::bot_common::ErrorInfo URDFGenerator::writeURDF(
+    const std::string& file_path, const urdf::ModelInterfaceSharedPtr& robot_model) {
     tinyxml2::XMLDocument doc;
-    tinyxml2::XMLDeclaration *decl = doc.NewDeclaration("xml version=\"1.0\" encoding=\"utf-8\"");
+    tinyxml2::XMLDeclaration* decl = doc.NewDeclaration("xml version=\"1.0\" encoding=\"utf-8\"");
     doc.InsertFirstChild(decl);
-    tinyxml2::XMLElement *root = doc.NewElement("robot");
+    tinyxml2::XMLElement* root = doc.NewElement("robot");
     root->SetAttribute("name", robot_model->getName().c_str());
     doc.InsertEndChild(root);
 
     // Write links and joints based on the order of joints
     std::set<std::string> processed_links;
-    for (const auto &joint_pair: robot_model->joints_) {
-        const urdf::JointSharedPtr &joint = joint_pair.second;
+    for (const auto& joint_pair : robot_model->joints_) {
+        const urdf::JointSharedPtr& joint = joint_pair.second;
 
         // Write parent link if not already processed
         if (processed_links.find(joint->parent_link_name) == processed_links.end()) {
-            const urdf::LinkConstSharedPtr &parent_link = robot_model->getLink(joint->parent_link_name);
+            const urdf::LinkConstSharedPtr& parent_link =
+                robot_model->getLink(joint->parent_link_name);
             if (parent_link) {
-                tinyxml2::XMLElement *link_elem = doc.NewElement("link");
+                tinyxml2::XMLElement* link_elem = doc.NewElement("link");
                 link_elem->SetAttribute("name", parent_link->name.c_str());
 
                 // Write visual elements
-                for (const auto &visual: parent_link->visual_array) {
+                for (const auto& visual : parent_link->visual_array) {
                     handleVisualOrCollision(doc, link_elem, visual);
                 }
 
                 // Write collision elements
-                for (const auto &collision: parent_link->collision_array) {
+                for (const auto& collision : parent_link->collision_array) {
                     handleVisualOrCollision(doc, link_elem, collision);
                 }
 
@@ -271,18 +273,19 @@ URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfac
 
         // Write child link if not already processed
         if (processed_links.find(joint->child_link_name) == processed_links.end()) {
-            const urdf::LinkConstSharedPtr &child_link = robot_model->getLink(joint->child_link_name);
+            const urdf::LinkConstSharedPtr& child_link =
+                robot_model->getLink(joint->child_link_name);
             if (child_link) {
-                tinyxml2::XMLElement *link_elem = doc.NewElement("link");
+                tinyxml2::XMLElement* link_elem = doc.NewElement("link");
                 link_elem->SetAttribute("name", child_link->name.c_str());
 
                 // Write visual elements
-                for (const auto &visual: child_link->visual_array) {
+                for (const auto& visual : child_link->visual_array) {
                     handleVisualOrCollision(doc, link_elem, visual);
                 }
 
                 // Write collision elements
-                for (const auto &collision: child_link->collision_array) {
+                for (const auto& collision : child_link->collision_array) {
                     handleVisualOrCollision(doc, link_elem, collision);
                 }
 
@@ -297,42 +300,42 @@ URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfac
         }
 
         // Write joint element
-        tinyxml2::XMLElement *joint_elem = doc.NewElement("joint");
+        tinyxml2::XMLElement* joint_elem = doc.NewElement("joint");
         joint_elem->SetAttribute("name", joint->name.c_str());
 
         switch (joint->type) {
-            case urdf::Joint::UNKNOWN:
-                joint_elem->SetAttribute("type", "unknown");
-                break;
-            case urdf::Joint::REVOLUTE:
-                joint_elem->SetAttribute("type", "revolute");
-                break;
-            case urdf::Joint::CONTINUOUS:
-                joint_elem->SetAttribute("type", "continuous");
-                break;
-            case urdf::Joint::PRISMATIC:
-                joint_elem->SetAttribute("type", "prismatic");
-                break;
-            case urdf::Joint::FLOATING:
-                joint_elem->SetAttribute("type", "floating");
-                break;
-            case urdf::Joint::PLANAR:
-                joint_elem->SetAttribute("type", "planar");
-                break;
-            case urdf::Joint::FIXED:
-                joint_elem->SetAttribute("type", "fixed");
-                break;
-            default:
-                joint_elem->SetAttribute("type", "unknown");
-                break;
+        case urdf::Joint::UNKNOWN:
+            joint_elem->SetAttribute("type", "unknown");
+            break;
+        case urdf::Joint::REVOLUTE:
+            joint_elem->SetAttribute("type", "revolute");
+            break;
+        case urdf::Joint::CONTINUOUS:
+            joint_elem->SetAttribute("type", "continuous");
+            break;
+        case urdf::Joint::PRISMATIC:
+            joint_elem->SetAttribute("type", "prismatic");
+            break;
+        case urdf::Joint::FLOATING:
+            joint_elem->SetAttribute("type", "floating");
+            break;
+        case urdf::Joint::PLANAR:
+            joint_elem->SetAttribute("type", "planar");
+            break;
+        case urdf::Joint::FIXED:
+            joint_elem->SetAttribute("type", "fixed");
+            break;
+        default:
+            joint_elem->SetAttribute("type", "unknown");
+            break;
         }
 
         // Add parent and child links
-        tinyxml2::XMLElement *parent_elem = doc.NewElement("parent");
+        tinyxml2::XMLElement* parent_elem = doc.NewElement("parent");
         parent_elem->SetAttribute("link", joint->parent_link_name.c_str());
         joint_elem->InsertEndChild(parent_elem);
 
-        tinyxml2::XMLElement *child_elem = doc.NewElement("child");
+        tinyxml2::XMLElement* child_elem = doc.NewElement("child");
         child_elem->SetAttribute("link", joint->child_link_name.c_str());
         joint_elem->InsertEndChild(child_elem);
 
@@ -340,8 +343,9 @@ URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfac
         createOriginElement(doc, joint_elem, joint->parent_to_joint_origin_transform);
 
         // Add axis element if available
-        if (joint->type != urdf::Joint::FIXED && (joint->axis.x != 0 || joint->axis.y != 0 || joint->axis.z != 0)) {
-            tinyxml2::XMLElement *axis_elem = doc.NewElement("axis");
+        if (joint->type != urdf::Joint::FIXED &&
+            (joint->axis.x != 0 || joint->axis.y != 0 || joint->axis.z != 0)) {
+            tinyxml2::XMLElement* axis_elem = doc.NewElement("axis");
             std::stringstream ss;
             ss << joint->axis.x << " " << joint->axis.y << " " << joint->axis.z;
             axis_elem->SetAttribute("xyz", ss.str().c_str());
@@ -350,7 +354,7 @@ URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfac
 
         // Add limit element if applicable
         if (joint->limits) {
-            tinyxml2::XMLElement *limit_elem = doc.NewElement("limit");
+            tinyxml2::XMLElement* limit_elem = doc.NewElement("limit");
             limit_elem->SetAttribute("lower", std::to_string(joint->limits->lower).c_str());
             limit_elem->SetAttribute("upper", std::to_string(joint->limits->upper).c_str());
             limit_elem->SetAttribute("effort", std::to_string(joint->limits->effort).c_str());
@@ -360,9 +364,11 @@ URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfac
 
         // Add dynamics element if applicable
         if (joint->dynamics) {
-            tinyxml2::XMLElement *dynamics_elem = doc.NewElement("dynamics");
-            dynamics_elem->SetAttribute("damping", std::to_string(joint->dynamics->damping).c_str());
-            dynamics_elem->SetAttribute("friction", std::to_string(joint->dynamics->friction).c_str());
+            tinyxml2::XMLElement* dynamics_elem = doc.NewElement("dynamics");
+            dynamics_elem->SetAttribute("damping",
+                                        std::to_string(joint->dynamics->damping).c_str());
+            dynamics_elem->SetAttribute("friction",
+                                        std::to_string(joint->dynamics->friction).c_str());
 
             joint_elem->InsertEndChild(dynamics_elem);
         }
@@ -379,7 +385,7 @@ URDFGenerator::writeURDF(const std::string &file_path, const urdf::ModelInterfac
     return irmv_core::bot_common::ErrorInfo::ok();
 }
 
-std::string URDFGenerator::toLowerCase(const std::string &str) {
+std::string URDFGenerator::toLowerCase(const std::string& str) {
     std::string result;
     result.reserve(str.size());
     std::transform(str.begin(), str.end(), std::back_inserter(result),
@@ -387,39 +393,41 @@ std::string URDFGenerator::toLowerCase(const std::string &str) {
     return result;
 }
 
-irmv_core::bot_common::ErrorInfo
-URDFGenerator::loadedIntoIGL(const std::filesystem::path &filename, Eigen::MatrixXd &V, Eigen::MatrixXi &F,
-                             Eigen::MatrixXi &N, bool &alreadyOBJ) {
+irmv_core::bot_common::ErrorInfo URDFGenerator::loadedIntoIGL(const std::filesystem::path& filename,
+                                                              Eigen::MatrixXd& V,
+                                                              Eigen::MatrixXi& F,
+                                                              Eigen::MatrixXi& N,
+                                                              bool& alreadyOBJ) {
     const std::string SUFFIX = toLowerCase(filename.extension().string());
-    typedef std::function<bool(const std::filesystem::path &filename, Eigen::MatrixXd &V,
-                               Eigen::MatrixXi &F,
-                               Eigen::MatrixXi &N,
-                               bool &alreadyOBJ)> readFunc_t;
-    static std::unordered_map<std::string, readFunc_t> methods {
-            {".stl", [&](const std::filesystem::path &filename, Eigen::MatrixXd &V, Eigen::MatrixXi &F,
-                         Eigen::MatrixXi &N, bool &alreadyOBJ) -> bool {
-                std::ifstream file_input(filename.string());
-                alreadyOBJ = false;
-                bool ret;
-                try {
-                    ret = igl::readSTL(file_input, V, F, N);
-                } catch (...) {
-                    ret = false;
-                }
-                return ret;
-            }},
-            {".obj", [&](const std::filesystem::path &filename, Eigen::MatrixXd &V, Eigen::MatrixXi &F,
-                         Eigen::MatrixXi &N, bool &alreadyOBJ) -> bool {
-                bool ret;
-                alreadyOBJ = true;
-                try {
-                    ret = igl::readOBJ(filename.string(), V, F);
-                } catch (...) {
-                    ret = false;
-                }
-                return ret;
-            }}
-    };
+    typedef std::function<bool(const std::filesystem::path& filename, Eigen::MatrixXd& V,
+                               Eigen::MatrixXi& F, Eigen::MatrixXi& N, bool& alreadyOBJ)>
+        readFunc_t;
+    static std::unordered_map<std::string, readFunc_t> methods{
+        {".stl",
+         [&](const std::filesystem::path& filename, Eigen::MatrixXd& V, Eigen::MatrixXi& F,
+             Eigen::MatrixXi& N, bool& alreadyOBJ) -> bool {
+             std::ifstream file_input(filename.string());
+             alreadyOBJ = false;
+             bool ret;
+             try {
+                 ret = igl::readSTL(file_input, V, F, N);
+             } catch (...) {
+                 ret = false;
+             }
+             return ret;
+         }},
+        {".obj",
+         [&](const std::filesystem::path& filename, Eigen::MatrixXd& V, Eigen::MatrixXi& F,
+             Eigen::MatrixXi& N, bool& alreadyOBJ) -> bool {
+             bool ret;
+             alreadyOBJ = true;
+             try {
+                 ret = igl::readOBJ(filename.string(), V, F);
+             } catch (...) {
+                 ret = false;
+             }
+             return ret;
+         }}};
 
     auto iter = methods.find(SUFFIX);
     if (iter != methods.end()) {
@@ -432,13 +440,12 @@ URDFGenerator::loadedIntoIGL(const std::filesystem::path &filename, Eigen::Matri
     }
 
     return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
-            std::string {"We only support OBJ/STL type but the given file type is "} + SUFFIX  + filename.string()};
-
+            std::string{"We only support OBJ/STL type but the given file type is "} + SUFFIX +
+                filename.string()};
 }
 
-irmv_core::bot_common::ErrorInfo
-URDFGenerator::saveCollisionGeometry(std::filesystem::path &filename, const Eigen::MatrixXd &V,
-                                     const Eigen::MatrixXi &F) {
+irmv_core::bot_common::ErrorInfo URDFGenerator::saveCollisionGeometry(
+    std::filesystem::path& filename, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F) {
     std::filesystem::path dir = filename.parent_path();
     std::filesystem::path collisionDir = dir / "collision";
 
@@ -446,7 +453,7 @@ URDFGenerator::saveCollisionGeometry(std::filesystem::path &filename, const Eige
         if (!std::filesystem::create_directory(collisionDir)) {
             IRMV_ERROR("cannot create directory {}", collisionDir.string());
             return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
-                    std::string {"Cannot create directory "} + collisionDir.string()};
+                    std::string{"Cannot create directory "} + collisionDir.string()};
         }
     }
 
@@ -458,10 +465,11 @@ URDFGenerator::saveCollisionGeometry(std::filesystem::path &filename, const Eige
         return irmv_core::bot_common::ErrorInfo::ok();
     }
     return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
-            std::string {"cannot save "} + filename.string()};
+            std::string{"cannot save "} + filename.string()};
 }
 
-bool URDFGenerator::replaceWith(std::string &src, const std::string &original, const std::string &now) {
+bool URDFGenerator::replaceWith(std::string& src, const std::string& original,
+                                const std::string& now) {
     size_t pos = src.find(original);
     if (pos != std::string::npos) {
         src.replace(pos, original.length(), now);
@@ -470,30 +478,35 @@ bool URDFGenerator::replaceWith(std::string &src, const std::string &original, c
     return false;
 }
 
-bool URDFGenerator::resolveMeshSource(const urdf::LinkSharedPtr &link, bool use_visual,
-                                      const std::vector<std::pair<std::string, std::string>> &replace_pairs,
-                                      MeshSource &out) {
-    auto extract = [&](const urdf::GeometrySharedPtr &geom, const urdf::Pose &origin) -> bool {
-        if (!geom || geom->type != urdf::Geometry::MESH) return false;
-        auto *mesh = dynamic_cast<urdf::Mesh *>(geom.get());
-        if (!mesh) return false;
+bool URDFGenerator::resolveMeshSource(
+    const urdf::LinkSharedPtr& link, bool use_visual,
+    const std::vector<std::pair<std::string, std::string>>& replace_pairs, MeshSource& out) {
+    auto extract = [&](const urdf::GeometrySharedPtr& geom, const urdf::Pose& origin) -> bool {
+        if (!geom || geom->type != urdf::Geometry::MESH)
+            return false;
+        auto* mesh = dynamic_cast<urdf::Mesh*>(geom.get());
+        if (!mesh)
+            return false;
         std::string fn = mesh->filename;
-        for (const auto &rp : replace_pairs) replaceWith(fn, rp.first, rp.second);
+        for (const auto& rp : replace_pairs)
+            replaceWith(fn, rp.first, rp.second);
         out.filename = fn;
         out.translation = Eigen::Vector3d(origin.position.x, origin.position.y, origin.position.z);
-        out.rotation = Eigen::Quaterniond(origin.rotation.w, origin.rotation.x,
-                                          origin.rotation.y, origin.rotation.z);
+        out.rotation = Eigen::Quaterniond(origin.rotation.w, origin.rotation.x, origin.rotation.y,
+                                          origin.rotation.z);
         out.found = true;
         return true;
     };
 
     if (use_visual) {
-        for (const auto &vis : link->visual_array) {
-            if (vis && extract(vis->geometry, vis->origin)) return true;
+        for (const auto& vis : link->visual_array) {
+            if (vis && extract(vis->geometry, vis->origin))
+                return true;
         }
         IRMV_WARN("link '{}': no usable visual mesh, falling back to collision",
                   link->name.empty() ? std::string{"<unnamed>"} : link->name);
     }
-    if (link->collision && extract(link->collision->geometry, link->collision->origin)) return true;
+    if (link->collision && extract(link->collision->geometry, link->collision->origin))
+        return true;
     return false;
 }

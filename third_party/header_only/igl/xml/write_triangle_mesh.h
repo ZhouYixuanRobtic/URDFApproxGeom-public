@@ -19,7 +19,7 @@ namespace igl
   {
     /// write mesh to a file with automatic detection of file format.  supported:
     /// dae, or any of the formats supported by igl::write_triangle_mesh
-    /// 
+    ///
     /// @tparam Scalar  type for positions and vectors (will be read as double and cast
     ///     to Scalar)
     /// @tparam Index  type for indices (will be read as int and cast to Index)
@@ -41,4 +41,3 @@ namespace igl
 #endif
 
 #endif
-

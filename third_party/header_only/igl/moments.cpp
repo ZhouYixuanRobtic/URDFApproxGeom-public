@@ -1,16 +1,16 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2022 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "moments.h"
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
+  typename DerivedV,
+  typename DerivedF,
   typename Derivedm0,
   typename Derivedm1,
   typename Derivedm2>
@@ -34,25 +34,25 @@ IGL_INLINE void igl::moments(
   for(int f = 0;f<F.rows();f++)
   {
     // "Computing the Moment of Inertia of a Solid Defined by a Triangle Mesh"
-    // (The attached code has a sign bug in I, fixed below.) 
-    const Scalar x1 = V(F(f,0),0); 
-    const Scalar y1 = V(F(f,0),1); 
+    // (The attached code has a sign bug in I, fixed below.)
+    const Scalar x1 = V(F(f,0),0);
+    const Scalar y1 = V(F(f,0),1);
     const Scalar z1 = V(F(f,0),2);
-    const Scalar x2 = V(F(f,1),0); 
-    const Scalar y2 = V(F(f,1),1); 
+    const Scalar x2 = V(F(f,1),0);
+    const Scalar y2 = V(F(f,1),1);
     const Scalar z2 = V(F(f,1),2);
-    const Scalar x3 = V(F(f,2),0); 
-    const Scalar y3 = V(F(f,2),1); 
+    const Scalar x3 = V(F(f,2),0);
+    const Scalar y3 = V(F(f,2),1);
     const Scalar z3 = V(F(f,2),2);
     // Signed volume
-    const Scalar v = 
+    const Scalar v =
       x1*y2*z3 + y1*z2*x3 + x2*y3*z1 - (x3*y2*z1 + x2*y1*z3 + y3*z2*x1);
     // Contribution to the mass
     m0 += v;
     // Contribution to the centroid
-    const Scalar x4 = x1 + x2 + x3; 
-    const Scalar y4 = y1 + y2 + y3; 
-    const Scalar z4 = z1 + z2 + z3; 
+    const Scalar x4 = x1 + x2 + x3;
+    const Scalar y4 = y1 + y2 + y3;
+    const Scalar z4 = z1 + z2 + z3;
     m1(0) += (v * x4);
     m1(1) += (v * y4);
     m1(2) += (v * z4);
@@ -62,7 +62,7 @@ IGL_INLINE void igl::moments(
     _zz += v * (z1*z1 + z2*z2 + z3*z3 + z4*z4);
     _yx += v * (y1*x1 + y2*x2 + y3*x3 + y4*x4);
     _zx += v * (z1*x1 + z2*x2 + z3*x3 + z4*x4);
-    _zy += v * (z1*y1 + z2*y2 + z3*y3 + z4*y4);        
+    _zy += v * (z1*y1 + z2*y2 + z3*y3 + z4*y4);
   }
   m0 /= 6.0;
   m1 /= 24.0;

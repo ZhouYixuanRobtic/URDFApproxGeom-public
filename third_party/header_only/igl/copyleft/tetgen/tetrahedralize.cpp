@@ -223,7 +223,7 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   std::vector<std::vector<int > > & TT,
   std::vector<std::vector<int > > & TF,
   std::vector<std::vector<REAL > > &TR,
-  std::vector<std::vector<int > > & TN, 
+  std::vector<std::vector<int > > & TN,
   std::vector<std::vector<int > > & PT,
   std::vector<std::vector<int > > & FT,
   size_t & numRegions)
@@ -236,12 +236,12 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   {
     return -1;
   }
-  try 
+  try
   {
     char * cswitches = new char[switches.size() + 1];
     strcpy(cswitches, switches.c_str());
-    
-    ::tetrahedralize(cswitches, &in, &out); 
+
+    ::tetrahedralize(cswitches, &in, &out);
     delete[] cswitches;
 }catch(int e)
   {
@@ -251,7 +251,7 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   if(out.numberoftetrahedra == 0)
   {
     cerr<<"^"<<__FUNCTION__<<": Tetgen failed to create tets"<<endl;
-    return 2;	  
+    return 2;
   }
    success = tetgenio_to_tetmesh(out, TV, TT, TF, TR, TN, PT, FT, numRegions
 );
@@ -263,12 +263,12 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
+  typename DerivedV,
+  typename DerivedF,
   typename DerivedH,
   typename DerivedR,
-  typename DerivedTV, 
-  typename DerivedTT, 
+  typename DerivedTV,
+  typename DerivedTT,
   typename DerivedTF,
   typename DerivedTR>
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
@@ -290,12 +290,12 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   vector<vector<REAL> > vV, vH, vR, vTV, vTR;
   vector<vector<int> > vF,vTT,vTF, vTN, vPT, vFT;
   matrix_to_list(V,vV);
-  matrix_to_list(F,vF);	
+  matrix_to_list(F,vF);
   matrix_to_list(H, vH);
   matrix_to_list(R, vR);
-  
+
   int e = tetrahedralize(vV,vF,vH,vR,switches,vTV,vTT,vTF,vTR,vTN,vPT,vFT, numRegions);
-  
+
   if(e == 0)
   {
     bool TV_rect = list_to_matrix(vTV,TV);
@@ -316,23 +316,23 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
     bool TR_rect = list_to_matrix(vTR, TR);
     if(!TR_rect)
     {
-      return 3;	    
+      return 3;
     }
     bool TN_rect = list_to_matrix(vTN, TN);
     if(!TN_rect)
     {
-      return 3;	
-    }	    
+      return 3;
+    }
     bool PT_rect = list_to_matrix(vPT, PT);
     if(!PT_rect)
     {
-      return 3;	    
-    }	    
+      return 3;
+    }
     bool FT_rect = list_to_matrix(vFT, FT);
     if(!FT_rect)
     {
-      return 3;	    
-    }	    
+      return 3;
+    }
   }
   return e;
 }

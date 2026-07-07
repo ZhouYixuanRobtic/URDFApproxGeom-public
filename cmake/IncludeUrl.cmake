@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2012-2021 Istituto Italiano di Tecnologia (IIT)
-# SPDX-FileCopyrightText: 2013-2015 Daniele E. Domenichelli <ddomenichelli@drdanz.it>
-# SPDX-License-Identifier: BSD-3-Clause
+# SPDX-FileCopyrightText: 2013-2015 Daniele E. Domenichelli
+# <ddomenichelli@drdanz.it> SPDX-License-Identifier: BSD-3-Clause
 
 #[=======================================================================[.rst:
 IncludeUrl
@@ -79,57 +79,57 @@ command.  See the documentation of the :command:`include()` and
 argument.
 #]=======================================================================]
 
-
 if(DEFINED __INCLUDE_URL_INCLUDED)
   return()
 endif()
 set(__INCLUDE_URL_INCLUDED TRUE)
 
-
 include(CMakeParseArguments)
 
-# This must be a macro and not a function in order not to enclose in a
-# new scope the variables added by the included files.
+# This must be a macro and not a function in order not to enclose in a new scope
+# the variables added by the included files.
 macro(INCLUDE_URL _remoteFile)
 
   set(_downloadOptions SHOW_PROGRESS)
-  set(_downloadOneValueArgs INACTIVITY_TIMEOUT
-                            TIMEOUT
-                            LOG
-                            EXPECTED_HASH
-                            EXPECTED_MD5
-                            TLS_VERIFY
-                            TLS_CAINFO
-                            RETRIES)
+  set(_downloadOneValueArgs
+      INACTIVITY_TIMEOUT
+      TIMEOUT
+      LOG
+      EXPECTED_HASH
+      EXPECTED_MD5
+      TLS_VERIFY
+      TLS_CAINFO
+      RETRIES)
   set(_includeOptions NO_POLICY_SCOPE)
   set(_includeOneValueArgs RESULT_VARIABLE)
 
-  set(_options DOWNLOAD_ONCE
-               DOWNLOAD_ALWAYS
-               QUIET
-               OPTIONAL
-               ${_downloadOptions}
+  set(_options DOWNLOAD_ONCE DOWNLOAD_ALWAYS QUIET OPTIONAL ${_downloadOptions}
                ${_includeOptions})
-  set(_oneValueArgs DESTINATION
-                    STATUS
-                    ${_downloadOneValueArgs}
+  set(_oneValueArgs DESTINATION STATUS ${_downloadOneValueArgs}
                     ${_includeOneValueArgs})
-  set(_multiValueArgs )
+  set(_multiValueArgs)
 
-  cmake_parse_arguments(_IU "${_options}" "${_oneValueArgs}" "${_multiValueArgs}" "${ARGN}")
+  cmake_parse_arguments(_IU "${_options}" "${_oneValueArgs}"
+                        "${_multiValueArgs}" "${ARGN}")
 
   if(DEFINED _IU_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "Unknown arguments:\n  ${_IU_UNPARSED_ARGUMENTS}\n")
   endif()
 
   if(_IU_DOWNLOAD_ONCE AND _IU_DOWNLOAD_ALWAYS)
-    message(FATAL_ERROR "DOWNLOAD_ONCE and DOWNLOAD_ALWAYS cannot be specified at the same time")
+    message(
+      FATAL_ERROR
+        "DOWNLOAD_ONCE and DOWNLOAD_ALWAYS cannot be specified at the same time"
+    )
   endif()
 
   if(NOT DEFINED _IU_RETRIES)
     set(_retries 3)
   elseif(NOT "${_IU_RETRIES}" MATCHES "^[1-9][0-9]*")
-    message(FATAL_ERROR "RETRIES argument should be a number greater ot equal than 1. Found \"${_IU_RETRIES}\"")
+    message(
+      FATAL_ERROR
+        "RETRIES argument should be a number greater ot equal than 1. Found \"${_IU_RETRIES}\""
+    )
   else()
     set(_retries ${_IU_RETRIES})
   endif()
@@ -165,7 +165,10 @@ macro(INCLUDE_URL _remoteFile)
     set(_localFile "${_tempFolder}/${_filename}")
   else()
     set(_localFile ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_filename})
-    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${_localFile}")
+    set_property(
+      DIRECTORY
+      APPEND
+      PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${_localFile}")
   endif()
 
   if(DEFINED CMAKE_SCRIPT_MODE_FILE)
@@ -185,12 +188,14 @@ macro(INCLUDE_URL _remoteFile)
   foreach(_arg ${_downloadOneValueArgs})
     # If the file is local, the hash check is disabled, since this could fail
     # because of different end of line styles
-    if(DEFINED _IU_${_arg} AND NOT ("${_remoteFile}" MATCHES "^file://" AND "${_arg}" MATCHES "^(EXPECTED_HASH|EXPECTED_MD5)$"))
+    if(DEFINED _IU_${_arg}
+       AND NOT ("${_remoteFile}" MATCHES "^file://"
+                AND "${_arg}" MATCHES "^(EXPECTED_HASH|EXPECTED_MD5)$"))
       list(APPEND _downloadArgs ${_arg} ${_IU_${_arg}})
     endif()
   endforeach()
 
-  set(_includeArgs )
+  set(_includeArgs)
   foreach(_arg OPTIONAL ${_includeOptions})
     if(_IU_${_arg})
       list(APPEND _includeArgs ${_arg})
@@ -205,17 +210,22 @@ macro(INCLUDE_URL _remoteFile)
   set(_shouldCheckHash 0)
   unset(_algorithm)
   unset(_expectedHash)
-  if(DEFINED _IU_EXPECTED_HASH  OR  DEFINED _IU_EXPECTED_MD5)
+  if(DEFINED _IU_EXPECTED_HASH OR DEFINED _IU_EXPECTED_MD5)
     set(_shouldCheckHash 1)
     if(DEFINED _IU_EXPECTED_HASH)
       if("${_IU_EXPECTED_HASH}" MATCHES "^(.+)=([0-9a-fA-F]+)$")
         set(_algorithm ${CMAKE_MATCH_1})
         set(_expectedHash ${CMAKE_MATCH_2})
       else()
-        message(FATAL_ERROR "include_url EXPECTED_HASH expects ALGO=value but got: ${_IU_EXPECTED_HASH}")
+        message(
+          FATAL_ERROR
+            "include_url EXPECTED_HASH expects ALGO=value but got: ${_IU_EXPECTED_HASH}"
+        )
       endif()
       if(NOT ${_algorithm} MATCHES "^(MD5|SHA1|SHA224|SHA256|SHA384|SHA512)$")
-        message(FATAL_ERROR "include_url EXPECTED_HASH given unknown ALGO: ${_algorithm}")
+        message(
+          FATAL_ERROR
+            "include_url EXPECTED_HASH given unknown ALGO: ${_algorithm}")
       endif()
     else()
       set(_algorithm MD5)
@@ -246,19 +256,20 @@ macro(INCLUDE_URL _remoteFile)
 
   if(_shouldDownload)
     if(EXISTS "${_localFile}" AND NOT _IU_DOWNLOAD_ALWAYS)
-      # Unless DOWNLOAD_ALWAYS is specified, a copy of an eventual
-      # existing file is saved and possibly restored later.
+      # Unless DOWNLOAD_ALWAYS is specified, a copy of an eventual existing file
+      # is saved and possibly restored later.
       file(MAKE_DIRECTORY ${_bakDir})
       file(RENAME "${_localFile}" "${_bakFile}")
     endif()
-
 
     set(_attempt 0)
     set(_succeeded 0)
     while(${_attempt} LESS ${_retries} AND NOT ${_succeeded})
       math(EXPR _attempt "${_attempt}+1")
       if(NOT _IU_QUIET)
-        message(STATUS "Downloading ${_filename} - Attempt ${_attempt} of ${_retries}")
+        message(
+          STATUS "Downloading ${_filename} - Attempt ${_attempt} of ${_retries}"
+        )
       endif()
       file(DOWNLOAD ${_remoteFile} "${_localFile}" ${_downloadArgs})
 
@@ -276,21 +287,24 @@ macro(INCLUDE_URL _remoteFile)
 
       if(NOT _downloadResult_0 EQUAL 0)
         list(GET _downloadResult 1 _downloadResult_1)
-        set(_error_message "Downloading ${_filename} - ERROR ${_downloadResult_0}: ${_downloadResult_1}")
+        set(_error_message
+            "Downloading ${_filename} - ERROR ${_downloadResult_0}: ${_downloadResult_1}"
+        )
       else()
-        # CMake does not give a fatal error if hash of the downloaded file
-        # has a wrong hash. A new check is required in order not to include
-        # a "faulty" file (it could be a security issue).
+        # CMake does not give a fatal error if hash of the downloaded file has a
+        # wrong hash. A new check is required in order not to include a "faulty"
+        # file (it could be a security issue).
         if(_shouldCheckHash)
           file(${_algorithm} "${_localFile}" _hash)
           if(NOT "${_hash}" STREQUAL "${_expectedHash}")
             set(_error_message
-"include_url HASH mismatch
+                "include_url HASH mismatch
    for file: [${_localFile}]
     expected hash: [${_expectedHash}]
       actual hash: [${_hash}]
 ")
-            if(NOT ("${_remoteFile}" MATCHES "^file://" AND "${_arg}" MATCHES "^(EXPECTED_HASH|EXPECTED_MD5)$"))
+            if(NOT ("${_remoteFile}" MATCHES "^file://"
+                    AND "${_arg}" MATCHES "^(EXPECTED_HASH|EXPECTED_MD5)$"))
               # Check again he hash using the non-native end-of-line style
               file(READ "${_localFile}" _content)
               if(CMAKE_HOST_WIN32)
@@ -300,8 +314,8 @@ macro(INCLUDE_URL _remoteFile)
               endif()
               string(${_algorithm} _hash "${_content}")
               if("${_hash}" STREQUAL "${_expectedHash}")
-                # This is the same file but with changed end-of-line
-                # Do not print the error message
+                # This is the same file but with changed end-of-line Do not
+                # print the error message
                 unset(_error_message)
               endif()
             endif()
@@ -324,7 +338,7 @@ macro(INCLUDE_URL _remoteFile)
       # There was a problem during download. Remove the faulty file to be sure
       # that we'll never include it
       file(REMOVE "${_localFile}")
-      if(_shouldFail  OR  (NOT EXISTS "${_bakFile}" AND NOT _IU_OPTIONAL))
+      if(_shouldFail OR (NOT EXISTS "${_bakFile}" AND NOT _IU_OPTIONAL))
         # Remove backup file if exists
         file(REMOVE "${_bakFile}")
         message(FATAL_ERROR ${_error_message})
@@ -352,7 +366,8 @@ macro(INCLUDE_URL _remoteFile)
   endif()
 
   if(NOT EXISTS "${_localFile}" AND NOT _IU_OPTIONAL)
-    message(FATAL_ERROR "Downloaded file does not exist. Please report this as a bug")
+    message(
+      FATAL_ERROR "Downloaded file does not exist. Please report this as a bug")
   endif()
   include("${_localFile}" ${_includeArgs})
 

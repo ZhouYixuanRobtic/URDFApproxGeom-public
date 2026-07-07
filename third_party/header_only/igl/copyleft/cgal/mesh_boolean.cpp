@@ -1,10 +1,10 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
 //                    Qingnan Zhou <qnzhou@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
 #include "mesh_boolean.h"
@@ -96,7 +96,7 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
     const std::function<int(const int, const int)> & keep,
     Eigen::PlainObjectBase<DerivedVC > & VC,
     Eigen::PlainObjectBase<DerivedFC > & FC,
-    Eigen::PlainObjectBase<DerivedJ > & J) 
+    Eigen::PlainObjectBase<DerivedJ > & J)
 {
   // Generate combined mesh (VA,FA,VB,FB) -> (V,F)
   Eigen::Matrix<size_t,2,1> sizes(FA.rows(),FB.rows());
@@ -269,12 +269,12 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   igl::cumsum(sizes,1,cumsizes);
   const size_t num_inputs = sizes.size();
   std::transform(
-    CJ.data(), 
-    CJ.data()+CJ.size(), 
+    CJ.data(),
+    CJ.data()+CJ.size(),
     labels.data(),
     // Determine which input mesh birth face i comes from
     [&num_inputs,&cumsizes](int i)->int
-    { 
+    {
       for(int k = 0;k<num_inputs;k++)
       {
         if(i<cumsizes(k)) return k;
@@ -283,17 +283,17 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
       return -1;
     });
   bool valid = true;
-  if (num_faces > 0) 
+  if (num_faces > 0)
   {
     valid = valid && propagate_winding_numbers(
       V,F,uE,uEC,uEE,num_patches,P,num_cells,per_patch_cells,labels,W);
-  } else 
+  } else
   {
     W.resize(0, 2*num_inputs);
   }
   assert((size_t)W.rows() == num_faces);
   // If W doesn't have enough columns, pad with zeros
-  if (W.cols() <= 2*num_inputs) 
+  if (W.cols() <= 2*num_inputs)
   {
     const int old_ncols = W.cols();
     W.conservativeResize(num_faces,2*num_inputs);
@@ -306,7 +306,7 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
 
   // Compute resulting winding number.
   Eigen::MatrixXi Wr(num_faces, 2);
-  for (size_t i=0; i<num_faces; i++) 
+  for (size_t i=0; i<num_faces; i++)
   {
     // Winding number vectors above and below
     Eigen::RowVectorXi w_out(1,num_inputs), w_in(1,num_inputs);
@@ -336,13 +336,13 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   //    return abs(i) - 1;
   //};
   std::vector<int> selected;
-  for(size_t i=0; i<num_faces; i++) 
+  for(size_t i=0; i<num_faces; i++)
   {
     auto should_keep = keep(Wr(i,0), Wr(i,1));
-    if (should_keep > 0) 
+    if (should_keep > 0)
     {
       selected.push_back(index_to_signed_index(i, true));
-    } else if (should_keep < 0) 
+    } else if (should_keep < 0)
     {
       selected.push_back(index_to_signed_index(i, false));
     }
@@ -351,13 +351,13 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   const size_t num_selected = selected.size();
   DerivedFC kept_faces(num_selected, 3);
   DerivedJ  kept_face_indices(num_selected, 1);
-  for (size_t i=0; i<num_selected; i++) 
+  for (size_t i=0; i<num_selected; i++)
   {
     size_t idx = abs(selected[i]) - 1;
-    if (selected[i] > 0) 
+    if (selected[i] > 0)
     {
       kept_faces.row(i) = F.row(idx);
-    } else 
+    } else
     {
       kept_faces.row(i) = F.row(idx).reverse();
     }
@@ -392,7 +392,7 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
         Eigen::VectorXi
       > checker(V, G, params,
           dummy_VV, dummy_FF, dummy_IF, dummy_J, dummy_IM);
-      if (checker.count != 0) 
+      if (checker.count != 0)
       {
         throw "Self-intersection not fully resolved.";
       }
@@ -439,7 +439,7 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   const Eigen::MatrixBase<DerivedFB > & FB,
   const MeshBooleanType & type,
   Eigen::PlainObjectBase<DerivedVC > & VC,
-  Eigen::PlainObjectBase<DerivedFC > & FC) 
+  Eigen::PlainObjectBase<DerivedFC > & FC)
 {
   Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,1> J;
   return igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,type,VC,FC,J);

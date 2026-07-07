@@ -337,24 +337,24 @@ R"(#version 150
     float shadow = 1.0;
     if(is_shadow_mapping)
     {
-      vec3 shadow_pos = (position_shadow.xyz / position_shadow.w) * 0.5 + 0.5; 
+      vec3 shadow_pos = (position_shadow.xyz / position_shadow.w) * 0.5 + 0.5;
       float currentDepth = shadow_pos.z;
       //float bias = 0.005;
       float ddd = max(dot(normalize(normal_eye), direction_to_light_eye),0);
-      float bias = max(0.02 * (1.0 - ddd), 0.005);  
+      float bias = max(0.02 * (1.0 - ddd), 0.005);
       // 5-point stencil
       if(shadow_pos.z < 1.0)
       {
         float closestDepth = texture( shadow_tex , shadow_pos.xy).r;
-        shadow = currentDepth - bias >= closestDepth ? 0.0 : 1.0;  
+        shadow = currentDepth - bias >= closestDepth ? 0.0 : 1.0;
         vec2 texelSize = 1.0 / textureSize(shadow_tex, 0);
         for(int x = -1; x <= 1; x+=2)
         {
           for(int y = -1; y <= 1; y+=2)
           {
-            float pcfDepth = texture(shadow_tex,  shadow_pos.xy + vec2(x, y) * texelSize).r; 
-            shadow += currentDepth - bias >= pcfDepth ? 0.0 : 1.0;        
-          }    
+            float pcfDepth = texture(shadow_tex,  shadow_pos.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias >= pcfDepth ? 0.0 : 1.0;
+          }
         }
         shadow /= 5.0;
       }

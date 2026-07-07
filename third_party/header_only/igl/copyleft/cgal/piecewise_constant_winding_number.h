@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_COPYLEFT_CGAL_PIECEWISE_CONSTANT_WINDING_NUMBER_H
 #define IGL_COPYLEFT_CGAL_PIECEWISE_CONSTANT_WINDING_NUMBER_H
@@ -18,7 +18,7 @@ namespace igl
     {
       /// Determine if a given mesh induces a piecewise constant winding number
       /// field: Is this mesh valid input to solid set operations.
-      /// 
+      ///
       /// @param[in] V  #V by 3 list of mesh vertex positions
       /// @param[in] F  #F by 3 list of triangle indices into V
       /// @return true if the mesh _combinatorially_ induces a piecewise
@@ -36,4 +36,3 @@ namespace igl
 #  include "piecewise_constant_winding_number.cpp"
 #endif
 #endif
-

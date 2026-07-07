@@ -23,8 +23,8 @@ namespace igl
   ///
   /// @param[out] Q  #P by dim list of points mapping along simplified curve
   template <
-    typename DerivedP, 
-    typename DerivedS, 
+    typename DerivedP,
+    typename DerivedS,
     typename DerivedJ,
     typename DerivedQ>
   IGL_INLINE void ramer_douglas_peucker(

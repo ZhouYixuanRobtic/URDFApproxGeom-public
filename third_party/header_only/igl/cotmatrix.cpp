@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cotmatrix.h"
 #include <vector>
@@ -17,8 +17,8 @@
 
 template <typename DerivedV, typename DerivedF, typename Scalar>
 IGL_INLINE void igl::cotmatrix(
-  const Eigen::MatrixBase<DerivedV> & V, 
-  const Eigen::MatrixBase<DerivedF> & F, 
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
   Eigen::SparseMatrix<Scalar>& L)
 {
   using namespace Eigen;
@@ -36,7 +36,7 @@ IGL_INLINE void igl::cotmatrix(
     // row
     L.reserve(10*V.rows());
     edges.resize(3,2);
-    edges << 
+    edges <<
       1,2,
       2,0,
       0,1;
@@ -44,7 +44,7 @@ IGL_INLINE void igl::cotmatrix(
   {
     L.reserve(17*V.rows());
     edges.resize(6,2);
-    edges << 
+    edges <<
       1,2,
       2,0,
       0,1,
@@ -58,7 +58,7 @@ IGL_INLINE void igl::cotmatrix(
   // Gather cotangents
   Matrix<Scalar,Dynamic,Dynamic> C;
   cotmatrix_entries(V,F,C);
-  
+
   vector<Triplet<Scalar> > IJV;
   IJV.reserve(F.rows()*edges.rows()*4);
   // Loop over triangles
@@ -85,14 +85,14 @@ IGL_INLINE void igl::cotmatrix(
 #include <Eigen/QR>
 
 template <
-  typename DerivedV, 
-  typename DerivedI, 
-  typename DerivedC, 
+  typename DerivedV,
+  typename DerivedI,
+  typename DerivedC,
   typename Scalar>
 IGL_INLINE void igl::cotmatrix(
-  const Eigen::MatrixBase<DerivedV> & V, 
-  const Eigen::MatrixBase<DerivedI> & I, 
-  const Eigen::MatrixBase<DerivedC> & C, 
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedI> & I,
+  const Eigen::MatrixBase<DerivedC> & C,
   Eigen::SparseMatrix<Scalar>& L,
   Eigen::SparseMatrix<Scalar>& M,
   Eigen::SparseMatrix<Scalar>& P)
@@ -127,14 +127,14 @@ IGL_INLINE void igl::cotmatrix(
       // My equation (38) would be A w = b.
       VectorXS b = decltype(b)::Zero(np+1);
       for(Index k = 0;k<np;k++)
-      { 
+      {
         const RowVector3S Xkp1mk = X.row((k+1)%np)-X.row(k);
         const RowVector3S Xkp1mkck = Xkp1mk.cross(X.row(k));
         for(Index i = 0;i<np;i++)
-        { 
+        {
           b(i) -= 2.*(X.row(i).cross(Xkp1mk)).dot(Xkp1mkck);
           for(Index j = 0;j<np;j++)
-          { 
+          {
             A(i,j) += 2.*(X.row(j).cross(Xkp1mk)).dot(X.row(i).cross(Xkp1mk));
           }
         }
@@ -151,10 +151,10 @@ IGL_INLINE void igl::cotmatrix(
     // not be the bottleneck.
     Eigen::MatrixXi F(np,3);
     for(Index i = 0;i<np;i++)
-    { 
-      F(i,0) = i; 
-      F(i,1) = (i+1)%np; 
-      F(i,2) = np; 
+    {
+      F(i,0) = i;
+      F(i,1) = (i+1)%np;
+      F(i,2) = np;
     }
     // Cotangent contributions
     MatrixXS K;

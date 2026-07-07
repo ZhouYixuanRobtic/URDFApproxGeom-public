@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_BLUE_NOISE_H
 #define IGL_BLUE_NOISE_H
@@ -23,7 +23,7 @@ namespace igl
   /// @param[in] r  Poisson disk radius (evaluated according to Euclidean distance on V)
   /// @param[out] B  #P by 3 list of barycentric coordinates, ith row are coordinates of
   ///               ith sampled point in face FI(i)
-  /// @param[out] FI  #P list of indices into F 
+  /// @param[out] FI  #P list of indices into F
   /// @param[out] P  #P by dim list of sample positions.
   /// @param[in,out] urbg An instance of UnformRandomBitGenerator (e.g.,
   ///  `std::minstd_rand(0)`)

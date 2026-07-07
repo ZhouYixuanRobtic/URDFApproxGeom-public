@@ -31,7 +31,7 @@ namespace igl
     const Eigen::DenseBase<DerivedR> &R,
     const Eigen::DenseBase<DerivedC> &C,
     Eigen::SparseMatrix<TY> &Y);
-} 
+}
 
 #ifndef IGL_STATIC_LIBRARY
 #include "slice_sorted.cpp"

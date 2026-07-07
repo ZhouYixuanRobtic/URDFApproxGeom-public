@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Stefan Brugger <stefanbrugger@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PROCRUSTES_H
 #define IGL_PROCRUSTES_H
@@ -43,10 +43,10 @@ namespace igl
   /// \endcode
   ///
   template <
-    typename DerivedX, 
-    typename DerivedY, 
-    typename Scalar, 
-    typename DerivedR, 
+    typename DerivedX,
+    typename DerivedY,
+    typename Scalar,
+    typename DerivedR,
     typename DerivedT>
   IGL_INLINE void procrustes(
     const Eigen::MatrixBase<DerivedX>& X,
@@ -59,7 +59,7 @@ namespace igl
   /// \overload
   /// \brief Same as above but returns Eigen transformation object.
   ///
-  /// @param[out] T  transformation that minimizes error    
+  /// @param[out] T  transformation that minimizes error
   ///
   /// #### Example
   /// \code{cpp}
@@ -69,10 +69,10 @@ namespace igl
   ///      MatrixXd Xprime = (X * T.linear()).rowwise() + T.translation().transpose();
   /// \endcode
   template <
-    typename DerivedX, 
-    typename DerivedY, 
-    typename Scalar, 
-    int DIM, 
+    typename DerivedX,
+    typename DerivedY,
+    typename Scalar,
+    int DIM,
     int TType>
   IGL_INLINE void procrustes(
     const Eigen::MatrixBase<DerivedX>& X,
@@ -83,9 +83,9 @@ namespace igl
   /// \overload
   /// @param[out] S  S=scale*R, instead of scale and R separately
   template <
-    typename DerivedX, 
-    typename DerivedY, 
-    typename DerivedR, 
+    typename DerivedX,
+    typename DerivedY,
+    typename DerivedR,
     typename DerivedT>
   IGL_INLINE void procrustes(
     const Eigen::MatrixBase<DerivedX>& X,
@@ -97,9 +97,9 @@ namespace igl
   /// \overload
   /// \brief Convenient wrapper for rigid case (no scaling, no reflections)
   template <
-    typename DerivedX, 
-    typename DerivedY, 
-    typename DerivedR, 
+    typename DerivedX,
+    typename DerivedY,
+    typename DerivedR,
     typename DerivedT>
   IGL_INLINE void procrustes(
     const Eigen::MatrixBase<DerivedX>& X,
@@ -109,9 +109,9 @@ namespace igl
   /// \overload
   /// \brief Convenient wrapper for 2D case.
   template <
-    typename DerivedX, 
-    typename DerivedY, 
-    typename Scalar, 
+    typename DerivedX,
+    typename DerivedY,
+    typename Scalar,
     typename DerivedT>
   IGL_INLINE void procrustes(
     const Eigen::MatrixBase<DerivedX>& X,

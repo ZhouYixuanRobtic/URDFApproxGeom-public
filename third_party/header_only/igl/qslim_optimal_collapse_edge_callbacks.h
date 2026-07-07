@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_QSLIM_OPTIMAL_COLLAPSE_EDGE_CALLBACKS_H
 #define IGL_QSLIM_OPTIMAL_COLLAPSE_EDGE_CALLBACKS_H
@@ -16,13 +16,13 @@
 #include <set>
 namespace igl
 {
-  /// @private 
+  /// @private
   ///
   /// Prepare callbacks for decimating edges using the qslim optimal placement
   /// metric.
   ///
   /// @param[in] E  #E by 2 list of working edges
-  /// @param[in] quadrics  reference to list of working per vertex quadrics 
+  /// @param[in] quadrics  reference to list of working per vertex quadrics
   /// @param[in] v1  working variable to maintain end point of collapsed edge
   /// @param[in] v2  working variable to maintain end point of collapsed edge
   /// @param[out] cost_and_placement  callback for evaluating cost of edge collapse and
@@ -35,7 +35,7 @@ namespace igl
   /// \see collapse_edge
   IGL_INLINE void qslim_optimal_collapse_edge_callbacks(
     Eigen::MatrixXi & E,
-    std::vector<std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> > & 
+    std::vector<std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> > &
       quadrics,
     int & v1,
     int & v2,

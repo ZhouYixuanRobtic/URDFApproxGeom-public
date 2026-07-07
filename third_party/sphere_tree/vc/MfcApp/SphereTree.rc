@@ -58,7 +58,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+IDR_MAINFRAME MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
@@ -79,122 +79,7 @@ BEGIN
     END
 END
 
-IDR_MODELTYPE_SUR MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
-        MENUITEM "&Close",                      ID_FILE_CLOSE
-        MENUITEM SEPARATOR
-        POPUP "&Model"
-        BEGIN
-            MENUITEM "Save As &SUR",                ID_MODEL_SAVE
-            MENUITEM "Save As &OBJ",                ID_MODEL_SAVEOBJ
-        END
-        POPUP "&Spheres"
-        BEGIN
-            MENUITEM "&Load",                       ID_SPHERES_LOAD
-            MENUITEM "&Save",                       ID_SPHERES_SAVE
-            MENUITEM SEPARATOR
-            MENUITEM "&Export to POV",              ID_SPHERES_EXPORT_POV
-            MENUITEM "Export to &VRML",             ID_SPHERES_EXPORT_VRML
-        END
-        POPUP "Image"
-        BEGIN
-            MENUITEM "&Raster",                     ID_FILE_SAVEIMAGE
-            MENUITEM "&Postscript",                 ID_FILE_SAVEIMAGEPS
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Rotate Mode",                ID_VIEW_ROTATEMODE
-        MENUITEM "&Pan Mode",                   ID_VIEW_PANMODE
-        MENUITEM "&Zoom Mode",                  ID_VIEW_ZOOMMODE
-        MENUITEM "&Lighting Angle",             ID_VIEW_LIGHTINGANGLE
-        MENUITEM "&Point Mode",                 ID_MODE_POINT
-        MENUITEM SEPARATOR
-        MENUITEM "Re&set View",                 ID_VIEW_RESETVIEW
-        MENUITEM SEPARATOR
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "Show"
-    BEGIN
-        MENUITEM "&Model",                      ID_SHOW_MODEL
-        MENUITEM "&Samples",                    ID_SHOW_SAMPLES
-        MENUITEM "S&pheres",                    ID_SHOW_SPHERES
-        POPUP "Sphere &Tree"
-        BEGIN
-            MENUITEM "&None",                       ID_SPHERETREE_NONE
-            MENUITEM SEPARATOR
-            MENUITEM "&Top",                        ID_SPHERETREE_TOP
-            MENUITEM "&Previous",                   ID_SPHERETREE_PREV
-            MENUITEM "&Next",                       ID_SPHERETREE_NEXT
-        END
-    END
-    POPUP "Generate"
-    BEGIN
-        MENUITEM "&Samples",                    ID_GENERATE_SAMPLES
-        MENUITEM SEPARATOR
-        MENUITEM "&Validate Mesh",              ID_VALIDATE_MESH
-        MENUITEM SEPARATOR
-        POPUP "&Medial Axis"
-        BEGIN
-            MENUITEM "&Static",                     ID_GENERATE_STATIC_MA
-            MENUITEM "&Adaptive",                   ID_GENERATE_ADAPTIVE_MA
-            MENUITEM "&Improve",                    ID_GENERATE_IMPROVE_MA
-        END
-        POPUP "&Reduce"
-        BEGIN
-            MENUITEM "&Hubbard",                    ID_REDUCE_HUBBARD
-            MENUITEM "&Merge",                      ID_REDUCE_MERGE
-            MENUITEM "&Burst",                      ID_REDUCE_BURST
-            MENUITEM "&Expand",                     ID_REDUCE_EXPAND
-        END
-        POPUP "&Optimise"
-        BEGIN
-            MENUITEM "&Per Sphere",                 ID_OPTIMISE_PERSPHERE
-            MENUITEM SEPARATOR
-            MENUITEM "&Simplex",                    ID_OPTIMISE_SIMPLEX
-            MENUITEM "&Balance",                    ID_OPTIMISE_BALANCE
-        END
-        MENUITEM SEPARATOR
-        POPUP "&Tree"
-        BEGIN
-            MENUITEM "&Octree",                     ID_GENTREE_OCTREE
-            MENUITEM "&Hubbard",                    ID_GENTREE_HUBBARD
-            MENUITEM SEPARATOR
-            MENUITEM "&Merge",                      ID_GENTREE_MERGE
-            MENUITEM "&Burst",                      ID_GENTREE_BURST
-            MENUITEM "&Expand",                     ID_GENTREE_EXPAND
-            MENUITEM "&Combined",                   ID_GENTREE_COMBINED
-            MENUITEM SEPARATOR
-            MENUITEM "&Spawn",                      ID_GENTREE_SPAWN
-            MENUITEM "&Grid",                       ID_GENTREE_GRID
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "Use Convex &Tester",          ID_USE_CONVEX_TESTER
-        MENUITEM SEPARATOR
-        MENUITEM "&Evaluate spheres",           ID_EVALUATE_SPHERES
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&New Window",                 ID_WINDOW_NEW
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "&Arrange Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About SphereTree...",        ID_APP_ABOUT
-    END
-END
-
-IDR_MODELTYPE_3DM MENU PRELOAD DISCARDABLE 
+IDR_MODELTYPE_SUR MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
@@ -309,7 +194,122 @@ BEGIN
     END
 END
 
-IDR_MODELTYPE_OBJ MENU PRELOAD DISCARDABLE 
+IDR_MODELTYPE_3DM MENU PRELOAD DISCARDABLE
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "&Close",                      ID_FILE_CLOSE
+        MENUITEM SEPARATOR
+        POPUP "&Model"
+        BEGIN
+            MENUITEM "Save As &SUR",                ID_MODEL_SAVE
+            MENUITEM "Save As &OBJ",                ID_MODEL_SAVEOBJ
+        END
+        POPUP "&Spheres"
+        BEGIN
+            MENUITEM "&Load",                       ID_SPHERES_LOAD
+            MENUITEM "&Save",                       ID_SPHERES_SAVE
+            MENUITEM SEPARATOR
+            MENUITEM "&Export to POV",              ID_SPHERES_EXPORT_POV
+            MENUITEM "Export to &VRML",             ID_SPHERES_EXPORT_VRML
+        END
+        POPUP "Image"
+        BEGIN
+            MENUITEM "&Raster",                     ID_FILE_SAVEIMAGE
+            MENUITEM "&Postscript",                 ID_FILE_SAVEIMAGEPS
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Rotate Mode",                ID_VIEW_ROTATEMODE
+        MENUITEM "&Pan Mode",                   ID_VIEW_PANMODE
+        MENUITEM "&Zoom Mode",                  ID_VIEW_ZOOMMODE
+        MENUITEM "&Lighting Angle",             ID_VIEW_LIGHTINGANGLE
+        MENUITEM "&Point Mode",                 ID_MODE_POINT
+        MENUITEM SEPARATOR
+        MENUITEM "Re&set View",                 ID_VIEW_RESETVIEW
+        MENUITEM SEPARATOR
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "Show"
+    BEGIN
+        MENUITEM "&Model",                      ID_SHOW_MODEL
+        MENUITEM "&Samples",                    ID_SHOW_SAMPLES
+        MENUITEM "S&pheres",                    ID_SHOW_SPHERES
+        POPUP "Sphere &Tree"
+        BEGIN
+            MENUITEM "&None",                       ID_SPHERETREE_NONE
+            MENUITEM SEPARATOR
+            MENUITEM "&Top",                        ID_SPHERETREE_TOP
+            MENUITEM "&Previous",                   ID_SPHERETREE_PREV
+            MENUITEM "&Next",                       ID_SPHERETREE_NEXT
+        END
+    END
+    POPUP "Generate"
+    BEGIN
+        MENUITEM "&Samples",                    ID_GENERATE_SAMPLES
+        MENUITEM SEPARATOR
+        MENUITEM "&Validate Mesh",              ID_VALIDATE_MESH
+        MENUITEM SEPARATOR
+        POPUP "&Medial Axis"
+        BEGIN
+            MENUITEM "&Static",                     ID_GENERATE_STATIC_MA
+            MENUITEM "&Adaptive",                   ID_GENERATE_ADAPTIVE_MA
+            MENUITEM "&Improve",                    ID_GENERATE_IMPROVE_MA
+        END
+        POPUP "&Reduce"
+        BEGIN
+            MENUITEM "&Hubbard",                    ID_REDUCE_HUBBARD
+            MENUITEM "&Merge",                      ID_REDUCE_MERGE
+            MENUITEM "&Burst",                      ID_REDUCE_BURST
+            MENUITEM "&Expand",                     ID_REDUCE_EXPAND
+        END
+        POPUP "&Optimise"
+        BEGIN
+            MENUITEM "&Per Sphere",                 ID_OPTIMISE_PERSPHERE
+            MENUITEM SEPARATOR
+            MENUITEM "&Simplex",                    ID_OPTIMISE_SIMPLEX
+            MENUITEM "&Balance",                    ID_OPTIMISE_BALANCE
+        END
+        MENUITEM SEPARATOR
+        POPUP "&Tree"
+        BEGIN
+            MENUITEM "&Octree",                     ID_GENTREE_OCTREE
+            MENUITEM "&Hubbard",                    ID_GENTREE_HUBBARD
+            MENUITEM SEPARATOR
+            MENUITEM "&Merge",                      ID_GENTREE_MERGE
+            MENUITEM "&Burst",                      ID_GENTREE_BURST
+            MENUITEM "&Expand",                     ID_GENTREE_EXPAND
+            MENUITEM "&Combined",                   ID_GENTREE_COMBINED
+            MENUITEM SEPARATOR
+            MENUITEM "&Spawn",                      ID_GENTREE_SPAWN
+            MENUITEM "&Grid",                       ID_GENTREE_GRID
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Use Convex &Tester",          ID_USE_CONVEX_TESTER
+        MENUITEM SEPARATOR
+        MENUITEM "&Evaluate spheres",           ID_EVALUATE_SPHERES
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&New Window",                 ID_WINDOW_NEW
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+        MENUITEM "&Arrange Icons",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About SphereTree...",        ID_APP_ABOUT
+    END
+END
+
+IDR_MODELTYPE_OBJ MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
@@ -430,7 +430,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE
 BEGIN
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
@@ -507,7 +507,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO DISCARDABLE
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -525,7 +525,7 @@ END
 // String Table
 //
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
     IDR_MAINFRAME           "SphereTree"
     IDR_MODELTYPE_SUR       "\n\n\nModel (*.sur)\n.sur\n\n"
@@ -533,13 +533,13 @@ BEGIN
     IDR_MODELTYPE_OBJ       "\n\n\nWavefront Model (*.obj)\n.obj\n\n"
 END
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
     AFX_IDS_APP_TITLE       "SphereTree"
     AFX_IDS_IDLEMESSAGE     "Ready"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     ID_INDICATOR_EXT        "EXT"
     ID_INDICATOR_CAPS       "CAP"
@@ -549,7 +549,7 @@ BEGIN
     ID_INDICATOR_REC        "REC"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
@@ -558,13 +558,13 @@ BEGIN
     ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     ID_FILE_MRU_FILE1       "Open this document"
     ID_FILE_MRU_FILE2       "Open this document"
@@ -584,13 +584,13 @@ BEGIN
     ID_FILE_MRU_FILE16      "Open this document"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     ID_WINDOW_NEW           "Open another window for the active document\nNew Window"
     ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window\nArrange Icons"
@@ -600,13 +600,13 @@ BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
     ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     AFX_IDS_SCSIZE          "Change the window size"
     AFX_IDS_SCMOVE          "Change the window position"
@@ -617,14 +617,14 @@ BEGIN
     AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
     AFX_IDS_MDICHILD        "Activate this window"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     ID_FILE_SAVEIMAGE       "Save the current view to an image\nSave Image"
     ID_VIEW_ROTATEMODE      "Rotate the View\nRotate View"
@@ -654,18 +654,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE DISCARDABLE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE DISCARDABLE
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE DISCARDABLE
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -731,7 +731,7 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Output"
 FONT 8, "MS Sans Serif"
 BEGIN
-    EDITTEXT        IDC_OUTPUTBOX,7,4,376,65,ES_MULTILINE | ES_WANTRETURN | 
+    EDITTEXT        IDC_OUTPUTBOX,7,4,376,65,ES_MULTILINE | ES_WANTRETURN |
                     WS_VSCROLL
     PUSHBUTTON      "Cancel",IDC_CANCEL,166,72,27,14
     PUSHBUTTON      "Hide",IDC_HIDE,196,72,27,14
@@ -744,7 +744,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO DISCARDABLE
 BEGIN
     IDD_PROGRESS_METER, DIALOG
     BEGIN
@@ -808,4 +808,3 @@ LANGUAGE 9, 1
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

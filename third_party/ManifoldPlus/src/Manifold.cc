@@ -275,7 +275,7 @@ bool Manifold::SplitGrid(
 				else
 					v_faces.push_back(v_faces[ind[3]]);
 			} else
-			ind3 = it->second;			
+			ind3 = it->second;
 		}
 		if (!flag1 && !flag2 && !flag3)
 		{
@@ -287,41 +287,41 @@ bool Manifold::SplitGrid(
 		{
 			triangles.push_back(Vector3i(ind1,ind2,ind3));
 			triangles.push_back(Vector3i(ind1,ind3,ind[2]));
-			triangles.push_back(Vector3i(ind1,ind[2],ind[1]));			
+			triangles.push_back(Vector3i(ind1,ind[2],ind[1]));
 		} else
 		if (!flag1 && flag2 && !flag3)
-		{			
+		{
 			triangles.push_back(Vector3i(ind1,ind4,ind[1]));
 			triangles.push_back(Vector3i(ind1,ind2,ind4));
-			triangles.push_back(Vector3i(ind2,ind[3],ind3));			
-			triangles.push_back(Vector3i(ind2,ind3,ind4));			
+			triangles.push_back(Vector3i(ind2,ind[3],ind3));
+			triangles.push_back(Vector3i(ind2,ind3,ind4));
 		} else
 		if (!flag1 && flag2 && flag3)
-		{			
+		{
 			triangles.push_back(Vector3i(ind1,ind4,ind[1]));
 			triangles.push_back(Vector3i(ind1,ind2,ind4));
-			triangles.push_back(Vector3i(ind2,ind3,ind4));			
+			triangles.push_back(Vector3i(ind2,ind3,ind4));
 		} else
 		if (flag1 && !flag2 && !flag3)
-		{			
+		{
 			triangles.push_back(Vector3i(ind1,ind2,ind4));
 			triangles.push_back(Vector3i(ind4,ind2,ind[3]));
 			triangles.push_back(Vector3i(ind4,ind[3],ind[2]));
 		} else
 		if (flag1 && !flag2 && flag3)
-		{			
+		{
 			triangles.push_back(Vector3i(ind1,ind2,ind4));
 			triangles.push_back(Vector3i(ind4,ind2,ind3));
 			triangles.push_back(Vector3i(ind4,ind3,ind[2]));
 		} else
 		if (flag1 && flag2 && !flag3)
-		{			
+		{
 			triangles.push_back(Vector3i(ind1,ind2,ind4));
 			triangles.push_back(Vector3i(ind2,ind3,ind4));
-			triangles.push_back(Vector3i(ind2,ind[3],ind3));			
+			triangles.push_back(Vector3i(ind2,ind[3],ind3));
 		} else
 		if (flag1 && flag2 && flag3)
-		{			
+		{
 			triangles.push_back(Vector3i(ind1,ind2,ind3));
 			triangles.push_back(Vector3i(ind1,ind3,ind4));
 		}

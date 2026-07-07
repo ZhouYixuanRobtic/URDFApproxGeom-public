@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PARTITION_H
 #define IGL_PARTITION_H
@@ -17,7 +17,7 @@ namespace igl
   ///
   /// @param[in] W  #W by dim coordinate matrix
   /// @param[in] k  desired number of groups default is dim
-  /// @param[out] G  #W list of group indices (1 to k) for each vertex, such that vertex i 
+  /// @param[out] G  #W list of group indices (1 to k) for each vertex, such that vertex i
   ///     is assigned to group G(i)
   /// @param[out] S  k  list of seed vertices
   /// @param[out] D  #W list of squared distances for each vertex to it's corresponding

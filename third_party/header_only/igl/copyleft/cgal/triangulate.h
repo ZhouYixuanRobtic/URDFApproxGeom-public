@@ -18,7 +18,7 @@ namespace igl
   {
     namespace cgal
     {
-      /// Triangulate the interior of a polygon using CGAL 
+      /// Triangulate the interior of a polygon using CGAL
       ///
       /// @param[in] V #V by 2 list of 2D vertex positions
       /// @param[in] E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon

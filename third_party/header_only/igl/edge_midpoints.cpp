@@ -25,9 +25,9 @@ igl::edge_midpoints(
 
   using ScalarE = typename DerivedE::Scalar;
   using ScalarF = typename DerivedF::Scalar;
-	
+
   const ScalarE m = E.maxCoeff()+1;
-	
+
   mps.resize(m, V.cols());
   for(Eigen::Index i=0; i<F.rows(); ++i) {
     for(int j=0; j<3; ++j) {

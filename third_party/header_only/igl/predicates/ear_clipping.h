@@ -22,7 +22,7 @@ namespace igl
     /// will be clipped and the result mesh is (P,eF) Otherwise, the function
     /// will try to clip as many ears as possible.
     ///
-    /// @param[in] P : n*2, size n 2D polygon 
+    /// @param[in] P : n*2, size n 2D polygon
     /// @param[in] RT: n*1, preserved vertices (do not clip) marked as 1, otherwise 0
     /// @param[out] eF: clipped ears, in original index of P
     /// @param[out] I : size #nP vector, maps index from nP to P, e.g. nP's ith vertex is origianlly I(i) in P
@@ -34,14 +34,14 @@ namespace igl
     ///
     /// \bug https://github.com/libigl/libigl/issues/1563
     template <
-      typename DerivedP, 
+      typename DerivedP,
       typename DerivedRT,
-      typename DerivedF, 
+      typename DerivedF,
       typename DerivedI>
     IGL_INLINE void ear_clipping(
       const Eigen::MatrixBase<DerivedP>& P,
       const Eigen::MatrixBase<DerivedRT>& RT,
-      Eigen::PlainObjectBase<DerivedF>& eF, 
+      Eigen::PlainObjectBase<DerivedF>& eF,
       Eigen::PlainObjectBase<DerivedI>& I);
     /// \overload
     /// \brief Reverses P if necessary. Orientation of output will match input

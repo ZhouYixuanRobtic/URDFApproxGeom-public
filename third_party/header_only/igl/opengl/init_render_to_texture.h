@@ -44,12 +44,12 @@ namespace igl
     ///     }
     ///     // draw textures
     /// \endcode
-    ///      
-    ///     
+    ///
+    ///
     /// @param[in] width  image width
     /// @param[in] height  image height
     /// @param[in] depth_texture  whether to create a texture for depth or to create a
-    ///     render buffer for depth 
+    ///     render buffer for depth
     /// @param[out] tex_id  id of the texture
     /// @param[out] fbo_id  id of the frame buffer object
     /// @param[out] d_id  id of the depth texture or frame buffer object

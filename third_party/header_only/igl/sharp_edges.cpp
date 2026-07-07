@@ -60,7 +60,7 @@ IGL_INLINE void igl::sharp_edges(
       // Edge vector
       // normalization might not be necessary
       const RowVector3S ev = (V.row(E(ei,1)) - V.row(E(ei,0))).normalized();
-      const Scalar dij = 
+      const Scalar dij =
         igl::PI - atan2((ni.cross(nj)).dot(ev),ni.dot(nj));
       //DIJV.emplace_back(fi,fj,dij);
       if(std::abs(dij-igl::PI) > angle)

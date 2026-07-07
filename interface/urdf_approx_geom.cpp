@@ -27,7 +27,7 @@ namespace py = pybind11;
 using replace_pairs_t = std::vector<std::pair<std::string, std::string>>;
 
 // "visual" (default) -> true; "collision" -> false.
-static inline bool parse_use_visual(const std::string &mesh_source) {
+static inline bool parse_use_visual(const std::string& mesh_source) {
     return mesh_source != "collision";
 }
 
@@ -41,9 +41,9 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
         "capsuleized",
         [](const std::string& input, const std::string& output, const std::string& config,
            replace_pairs_t replace_pairs, const std::string& mesh_source) {
-            std::string cfg = config.empty()
-                                  ? std::string(URDFApproxGeom_CONFIG_PATH) + "/capsule/capsuleConfig.yml"
-                                  : config;
+            std::string cfg = config.empty() ? std::string(URDFApproxGeom_CONFIG_PATH) +
+                                                   "/capsule/capsuleConfig.yml"
+                                             : config;
             CapsuleURDFGenerator g(cfg, parse_use_visual(mesh_source));
             return g.run(input, output, replace_pairs).message();
         },
@@ -65,9 +65,9 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
         "spherized",
         [](const std::string& input, const std::string& output, const std::string& config,
            replace_pairs_t replace_pairs, bool simplify, const std::string& mesh_source) {
-            std::string cfg = config.empty()
-                                  ? std::string(URDFApproxGeom_CONFIG_PATH) + "/sphereTree/sphereTreeConfig.yml"
-                                  : config;
+            std::string cfg = config.empty() ? std::string(URDFApproxGeom_CONFIG_PATH) +
+                                                   "/sphereTree/sphereTreeConfig.yml"
+                                             : config;
             SphereTreeURDFGenerator g(cfg, simplify, parse_use_visual(mesh_source));
             return g.run(input, output, replace_pairs).message();
         },
@@ -80,12 +80,12 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
     // `single_output`. Saves compare-all from running the generator twice.
     m.def(
         "spherized_pair",
-        [](const std::string& input, const std::string& default_output, const std::string& single_output,
-           const std::string& config, replace_pairs_t replace_pairs, bool simplify,
-           const std::string& mesh_source) {
-            std::string cfg = config.empty()
-                                  ? std::string(URDFApproxGeom_CONFIG_PATH) + "/sphereTree/sphereTreeConfig.yml"
-                                  : config;
+        [](const std::string& input, const std::string& default_output,
+           const std::string& single_output, const std::string& config,
+           replace_pairs_t replace_pairs, bool simplify, const std::string& mesh_source) {
+            std::string cfg = config.empty() ? std::string(URDFApproxGeom_CONFIG_PATH) +
+                                                   "/sphereTree/sphereTreeConfig.yml"
+                                             : config;
             SphereTreeURDFGenerator g(cfg, simplify, parse_use_visual(mesh_source));
             return g.runPair(input, default_output, single_output, replace_pairs).message();
         },
@@ -98,9 +98,11 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
     // a list of (output_path, config_path) tuples.
     m.def(
         "capsuleized_multi",
-        [](const std::string& input, const std::vector<std::pair<std::string, std::string>>& presets,
+        [](const std::string& input,
+           const std::vector<std::pair<std::string, std::string>>& presets,
            replace_pairs_t replace_pairs, const std::string& mesh_source) {
-            std::string default_cfg = std::string(URDFApproxGeom_CONFIG_PATH) + "/capsule/capsuleConfig.yml";
+            std::string default_cfg =
+                std::string(URDFApproxGeom_CONFIG_PATH) + "/capsule/capsuleConfig.yml";
             CapsuleURDFGenerator g(default_cfg, parse_use_visual(mesh_source));
             return g.runMulti(input, presets, replace_pairs).message();
         },

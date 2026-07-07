@@ -72,7 +72,7 @@ int call_qhull (void) {
     ismalloc= False; 		/* True if qhull should 'free(points)' at end*/
     dim= 3;         		/* dimension of points */
     numpoints= 100; 		/* number of points */;
-    /* For Delaunay triangulation ('d' or 'v'), set "qh PROJECTdelaunay= True" 
+    /* For Delaunay triangulation ('d' or 'v'), set "qh PROJECTdelaunay= True"
        to project points to a paraboloid.  You may project the points yourself.
 
        For halfspace intersection ('H'), compute the dual point array

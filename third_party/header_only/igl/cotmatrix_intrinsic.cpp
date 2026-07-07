@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2018 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cotmatrix_intrinsic.h"
 #include "cotmatrix_entries.h"
@@ -11,8 +11,8 @@
 
 template <typename Derivedl, typename DerivedF, typename Scalar>
 IGL_INLINE void igl::cotmatrix_intrinsic(
-  const Eigen::MatrixBase<Derivedl> & l, 
-  const Eigen::MatrixBase<DerivedF> & F, 
+  const Eigen::MatrixBase<Derivedl> & l,
+  const Eigen::MatrixBase<DerivedF> & F,
   Eigen::SparseMatrix<Scalar>& L)
 {
   using namespace Eigen;
@@ -30,14 +30,14 @@ IGL_INLINE void igl::cotmatrix_intrinsic(
   // row
   L.reserve(10*nverts);
   edges.resize(3,2);
-  edges << 
+  edges <<
     1,2,
     2,0,
     0,1;
   // Gather cotangents
   Matrix<Scalar,Dynamic,Dynamic> C;
   cotmatrix_entries(l,C);
-  
+
   vector<Triplet<Scalar> > IJV;
   IJV.reserve(F.rows()*edges.rows()*4);
   // Loop over triangles

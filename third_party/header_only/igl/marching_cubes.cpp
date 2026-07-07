@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2021 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "marching_cubes.h"
 #include "march_cube.h"
@@ -42,7 +42,7 @@ IGL_INLINE void igl::marching_cubes(
   {
     return x+nx*(y+ny*(z));
   };
-  const auto cube = 
+  const auto cube =
     [
       &GV,&S,&V,&n,&F,&m,&isovalue,
       &E2V,&xyz2i,&ioffset
@@ -87,10 +87,10 @@ IGL_INLINE void igl::marching_cubes(
 }
 
 template <
-  typename DerivedS, 
-  typename DerivedGV, 
-  typename DerivedGI, 
-  typename DerivedV, 
+  typename DerivedS,
+  typename DerivedGV,
+  typename DerivedGI,
+  typename DerivedV,
   typename DerivedF>
 IGL_INLINE void igl::marching_cubes(
   const Eigen::MatrixBase<DerivedS> & S,

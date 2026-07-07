@@ -7,7 +7,7 @@ namespace igl
 {
   /// Compute the surface of the swept volume of a solid object with surface
   /// (V,F) mesh under going rigid motion.
-  /// 
+  ///
   /// @param[in] V  #V by 3 list of mesh positions in reference pose
   /// @param[in] F  #F by 3 list of mesh indices into V
   /// @param[in] transform  function handle so that transform(t) returns the rigid
@@ -27,7 +27,7 @@ namespace igl
     const size_t isolevel,
     Eigen::MatrixXd & SV,
     Eigen::MatrixXi & SF);
-  
+
 }
 
 #ifndef IGL_STATIC_LIBRARY

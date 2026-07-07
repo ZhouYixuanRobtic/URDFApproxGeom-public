@@ -20,7 +20,7 @@
 #include <iostream>
 
 template <
-  typename DerivedT, 
+  typename DerivedT,
   typename DerivedF,
   typename DerivedJ,
   typename DerivedK>

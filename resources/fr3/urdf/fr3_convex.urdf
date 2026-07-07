@@ -35,7 +35,7 @@
         <inertial>
             <origin xyz="4.128e-07 -0.0181251 -0.0386036" rpy="0 -0 0"/>
             <mass value="2.927465"/>
-            <inertia ixx="5.158582e-05" ixy="1.020019e-09" ixz="3.245950e-09" iyy="4.467940e-05" iyz="1.006856e-05" izz="2.084410e-05"/>
+            <inertia ixx="2.650037e-05" ixy="-1.706135e-07" ixz="-4.034375e-06" iyy="3.422790e-05" iyz="-3.666555e-09" izz="3.534050e-05"/>
         </inertial>
     </link>
     <joint name="fr3_joint1" type="revolute">
@@ -62,7 +62,7 @@
         <inertial>
             <origin xyz="0.00318289 -0.0743222 0.00881461" rpy="0 -0 0"/>
             <mass value="2.935537"/>
-            <inertia ixx="5.288355e-05" ixy="-6.014104e-09" ixz="-2.030815e-09" iyy="2.112092e-05" iyz="-1.026267e-05" izz="4.589057e-05"/>
+            <inertia ixx="2.657344e-05" ixy="-1.710839e-07" ixz="-4.045499e-06" iyy="3.432228e-05" iyz="-3.676664e-09" izz="3.543794e-05"/>
         </inertial>
     </link>
     <joint name="fr3_joint2" type="revolute">

@@ -27,7 +27,7 @@ namespace igl
         /// Abstract class for imgui "widgets". A widget is something that uses
         /// imgui, but doesn't own the entire imgui IO stack: the single
         /// ImGuiPlugin owns that and widgets are registered with it.
-        class ImGuiWidget 
+        class ImGuiWidget
         {
           public:
             IGL_INLINE ImGuiWidget(){ name = "dummy"; }
@@ -62,4 +62,3 @@ namespace igl
 }
 
 #endif
-

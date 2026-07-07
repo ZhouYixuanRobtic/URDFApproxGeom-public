@@ -21,7 +21,7 @@ IGL_INLINE bool igl::predicates::point_inside_convex_polygon(
     Eigen::Matrix<Scalar,1,2> a = P.row(i);
     Eigen::Matrix<Scalar,1,2> b = P.row(i_1);
     auto r = igl::predicates::orient2d(a,b,q);
-    if(r == igl::predicates::Orientation::COLLINEAR || 
+    if(r == igl::predicates::Orientation::COLLINEAR ||
        r == igl::predicates::Orientation::NEGATIVE)
       return false;
   }

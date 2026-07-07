@@ -21,9 +21,7 @@ import subprocess
 import urllib.request
 import xml.etree.ElementTree as ET
 
-DEFAULT_ROOT_CANDIDATES = (
-    "/home/admin1/ref/robot_viewer",
-)
+DEFAULT_ROOT_CANDIDATES = ("/home/admin1/ref/robot_viewer",)
 
 
 def find_robot_viewer_root() -> pathlib.Path | None:
@@ -44,7 +42,9 @@ def find_robot_viewer_root() -> pathlib.Path | None:
     return None
 
 
-def _collect_mesh_paths(urdf_path: pathlib.Path) -> tuple[list[tuple[ET.Element, pathlib.Path]], ET.ElementTree]:
+def _collect_mesh_paths(
+    urdf_path: pathlib.Path,
+) -> tuple[list[tuple[ET.Element, pathlib.Path]], ET.ElementTree]:
     """Return (element, resolved_source) pairs for every resolvable mesh ref, plus the parsed tree."""
     tree = ET.parse(urdf_path)
     pairs: list[tuple[ET.Element, pathlib.Path]] = []
@@ -70,7 +70,9 @@ def bundle(urdf_path: str | pathlib.Path, out_dir: str | pathlib.Path) -> pathli
     return bundle_many([urdf_path], out_dir)[0]
 
 
-def bundle_many(urdf_paths: list[str | pathlib.Path], out_dir: str | pathlib.Path) -> list[pathlib.Path]:
+def bundle_many(
+    urdf_paths: list[str | pathlib.Path], out_dir: str | pathlib.Path
+) -> list[pathlib.Path]:
     """Bundle multiple URDFs into one shared *out_dir* with a single deduped ``meshes/`` tree.
 
     Mesh files referenced by more than one URDF (e.g. the shared ``.dae`` visual

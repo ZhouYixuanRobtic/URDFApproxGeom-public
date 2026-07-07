@@ -1,0 +1,44 @@
+# Development docker-compose configuration.
+# Start:  docker compose -f docker/docker-compose.yml up -d
+# Shell:  docker exec -it spherized-dev bash
+# Stop:   docker compose -f docker/docker-compose.yml down
+#
+# Uncomment the sections you need.
+
+services:
+  spherized-dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: spherized-dev
+    image: urdfapprox-dev:latest
+    volumes:
+      - ..:/workspace:cached
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    network_mode: host
+
+    # ---- GPU (NVIDIA) ----
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+    # ---- Display (GUI apps, X11 forwarding) ----
+    # environment:
+    #   - DISPLAY=${DISPLAY}
+    #   - QT_X11_NO_MITSHM=1
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix:ro
+
+    # ---- Debugging (gdb server, valgrind) ----
+    # ports:
+    #   - "7777:7777"   # gdbserver
+    # cap_add:
+    #   - SYS_PTRACE
+    # security_opt:
+    #   - seccomp:unconfined

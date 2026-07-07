@@ -19,8 +19,8 @@
 #include "CapsuleURDFGenerator.h"
 #include "CapsuleCrossSection.h"
 
-#include <urdf_model/model.h>
 #include <ManifoldPlus/Manifold.h>
+#include <urdf_model/model.h>
 #include <yaml-cpp/yaml.h>
 #include "irmv/third_party/json.hpp"
 
@@ -33,7 +33,8 @@
 
 #include "irmv/bot_common/log/singleton_logger.h"
 
-CapsuleURDFGenerator::CapsuleURDFGenerator(const std::string& capsule_config_path, bool use_visual) : URDFGenerator() {
+CapsuleURDFGenerator::CapsuleURDFGenerator(const std::string& capsule_config_path, bool use_visual)
+    : URDFGenerator() {
     m_model = std::make_shared<urdf::ModelInterface>();
     config_path_ = capsule_config_path;
     use_visual_ = use_visual;
@@ -52,7 +53,8 @@ void CapsuleURDFGenerator::loadConfigFrom(const std::string& path) {
         max_capsules_ = doc["MaxCapsulesPerLink"].as<int>(max_capsules_);
         max_radius_bin_ratio_ = doc["MaxRadiusBinRatio"].as<double>(max_radius_bin_ratio_);
         max_capv_aabb_ratio_ = doc["MaxCapVAabbRatio"].as<double>(max_capv_aabb_ratio_);
-        min_split_volume_improvement_ = doc["MinSplitVolumeImprovement"].as<double>(min_split_volume_improvement_);
+        min_split_volume_improvement_ =
+            doc["MinSplitVolumeImprovement"].as<double>(min_split_volume_improvement_);
         adaptive_circle_count_ = doc["AdaptiveCircleCount"].as<bool>(adaptive_circle_count_);
         union_volume_samples_per_axis_ =
             doc["UnionVolumeSamplesPerAxis"].as<int>(union_volume_samples_per_axis_);
@@ -119,9 +121,9 @@ void emitCapsuleInto(const urdf::LinkSharedPtr& link, const urdf_approx_geom::Ca
 }
 }  // namespace
 
-void CapsuleURDFGenerator::fitAndEmit(const urdf::LinkSharedPtr& link,
-                                      const Eigen::MatrixXd& Vlf, const Eigen::MatrixXi& F,
-                                      const Eigen::MatrixXd& Vorig_lf, nlohmann::json& link_json) {
+void CapsuleURDFGenerator::fitAndEmit(const urdf::LinkSharedPtr& link, const Eigen::MatrixXd& Vlf,
+                                      const Eigen::MatrixXi& F, const Eigen::MatrixXd& Vorig_lf,
+                                      nlohmann::json& link_json) {
     urdf_approx_geom::CapsuleFitOptions fit_options;
     fit_options.n_sections = n_sections_;
     fit_options.coa_threshold = coa_threshold_;
@@ -141,14 +143,16 @@ void CapsuleURDFGenerator::fitAndEmit(const urdf::LinkSharedPtr& link,
 
     link->collision_array.clear();
     nlohmann::json cap_arr = nlohmann::json::array();
-    for (const auto& cap : caps) emitCapsuleInto(link, cap, cap_arr);
-    if (!link->collision_array.empty()) link->collision = link->collision_array[0];
+    for (const auto& cap : caps)
+        emitCapsuleInto(link, cap, cap_arr);
+    if (!link->collision_array.empty())
+        link->collision = link->collision_array[0];
     link_json["capsules"] = cap_arr;
 }
 
-irmv_core::bot_common::ErrorInfo
-CapsuleURDFGenerator::run(const std::string& urdf_path, const std::string& output_path,
-                          const std::vector<std::pair<std::string, std::string>>& replace_pairs) {
+irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::run(
+    const std::string& urdf_path, const std::string& output_path,
+    const std::vector<std::pair<std::string, std::string>>& replace_pairs) {
     auto ret = loadURDF(urdf_path, m_model);
     if (!ret.isOk()) {
         IRMV_ERROR("{}", ret.message());
@@ -165,7 +169,8 @@ CapsuleURDFGenerator::run(const std::string& urdf_path, const std::string& outpu
                     std::string("only one collision mesh per link accepted (") + link_name + ")"};
         }
         MeshSource src;
-        if (!resolveMeshSource(link, use_visual_, replace_pairs, src)) continue;
+        if (!resolveMeshSource(link, use_visual_, replace_pairs, src))
+            continue;
 
         Eigen::MatrixXd V;
         MatrixD OUT_V;
@@ -181,11 +186,12 @@ CapsuleURDFGenerator::run(const std::string& urdf_path, const std::string& outpu
         // Watertight manifold (cross-section slicing needs a closed surface).
         auto m_manifold = std::make_unique<Manifold>();
         m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
-        if (OUT_V.rows() < 4 || OUT_F.rows() == 0) continue;
+        if (OUT_V.rows() < 4 || OUT_F.rows() == 0)
+            continue;
 
         // Mesh-local -> link frame via the chosen source element's origin.
         Eigen::Matrix3d R = src.rotation.toRotationMatrix();
-        const Eigen::Vector3d &T = src.translation;
+        const Eigen::Vector3d& T = src.translation;
         Eigen::MatrixXd Vlf(OUT_V.rows(), 3);
         for (int i = 0; i < OUT_V.rows(); ++i)
             Vlf.row(i) = (T + R * OUT_V.row(i).transpose()).transpose();
@@ -205,10 +211,9 @@ CapsuleURDFGenerator::run(const std::string& urdf_path, const std::string& outpu
     return writeURDF(output_path, m_model);
 }
 
-irmv_core::bot_common::ErrorInfo
-CapsuleURDFGenerator::runMulti(const std::string& urdf_path,
-                               const std::vector<std::pair<std::string, std::string>>& presets,
-                               const std::vector<std::pair<std::string, std::string>>& replace_pairs) {
+irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::runMulti(
+    const std::string& urdf_path, const std::vector<std::pair<std::string, std::string>>& presets,
+    const std::vector<std::pair<std::string, std::string>>& replace_pairs) {
     if (presets.empty()) {
         return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "runMulti: no presets requested"};
     }
@@ -239,13 +244,15 @@ CapsuleURDFGenerator::runMulti(const std::string& urdf_path,
     std::vector<std::future<void>> futures;
     for (size_t idx = 0; idx < links.size(); ++idx) {
         futures.emplace_back(std::async(std::launch::async, [&, idx]() {
-            auto &lp = links[idx];
-            auto &out = meshes[idx];
+            auto& lp = links[idx];
+            auto& out = meshes[idx];
             out.name = lp.first;
-            const auto &link = lp.second;
-            if (link->collision_array.size() > 1) return;  // validated later per-preset
+            const auto& link = lp.second;
+            if (link->collision_array.size() > 1)
+                return;  // validated later per-preset
             MeshSource src;
-            if (!resolveMeshSource(link, use_visual_, replace_pairs, src)) return;
+            if (!resolveMeshSource(link, use_visual_, replace_pairs, src))
+                return;
 
             Eigen::MatrixXd V;
             MatrixD OUT_V;
@@ -259,10 +266,11 @@ CapsuleURDFGenerator::runMulti(const std::string& urdf_path,
             }
             auto m_manifold = std::make_unique<Manifold>();
             m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
-            if (OUT_V.rows() < 4 || OUT_F.rows() == 0) return;
+            if (OUT_V.rows() < 4 || OUT_F.rows() == 0)
+                return;
 
             Eigen::Matrix3d R = src.rotation.toRotationMatrix();
-            const Eigen::Vector3d &T = src.translation;
+            const Eigen::Vector3d& T = src.translation;
             Eigen::MatrixXd Vlf(OUT_V.rows(), 3);
             for (int i = 0; i < OUT_V.rows(); ++i)
                 Vlf.row(i) = (T + R * OUT_V.row(i).transpose()).transpose();
@@ -276,30 +284,36 @@ CapsuleURDFGenerator::runMulti(const std::string& urdf_path,
             out.valid = true;
         }));
     }
-    for (auto &f : futures) f.get();
+    for (auto& f : futures)
+        f.get();
 
     // Phase 2 -- per preset: fresh URDF parse, fit each link on its cached mesh.
-    for (const auto &preset : presets) {
-        const std::string &output_path = preset.first;
-        const std::string &config_path = preset.second;
+    for (const auto& preset : presets) {
+        const std::string& output_path = preset.first;
+        const std::string& config_path = preset.second;
         loadConfigFrom(config_path);
 
         urdf::ModelInterfaceSharedPtr model;
         loadURDF(urdf_path, model);
         nlohmann::json json;
-        for (auto &link_pair : model->links_) {
-            const auto &link_name = link_pair.first;
-            auto &link = link_pair.second;
+        for (auto& link_pair : model->links_) {
+            const auto& link_name = link_pair.first;
+            auto& link = link_pair.second;
             if (link->collision_array.size() > 1) {
-                return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
-                        std::string("only one collision mesh per link accepted (") + link_name + ")"};
+                return {
+                    irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                    std::string("only one collision mesh per link accepted (") + link_name + ")"};
             }
             // find cached mesh for this link
-            const LinkMesh *lm = nullptr;
-            for (const auto &m : meshes) {
-                if (m.valid && m.name == link_name) { lm = &m; break; }
+            const LinkMesh* lm = nullptr;
+            for (const auto& m : meshes) {
+                if (m.valid && m.name == link_name) {
+                    lm = &m;
+                    break;
+                }
             }
-            if (!lm) continue;
+            if (!lm)
+                continue;
             fitAndEmit(link, lm->Vlf, lm->F, lm->Vorig_lf, json[link_name]);
         }
 

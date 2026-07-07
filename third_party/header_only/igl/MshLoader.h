@@ -1,11 +1,11 @@
-// based on MSH reader from PyMesh 
+// based on MSH reader from PyMesh
 
-// Copyright (c) 2015 Qingnan Zhou <qzhou@adobe.com>           
-// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com> 
+// Copyright (c) 2015 Qingnan Zhou <qzhou@adobe.com>
+// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com>
 //
-// This Source Code Form is subject to the terms of the Mozilla 
-// Public License v. 2.0. If a copy of the MPL was not distributed 
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_MSH_LOADER_H
 #define IGL_MSH_LOADER_H
 #include "igl_inline.h"
@@ -28,18 +28,18 @@ class MshLoader {
             msh_struct(int _tag=0,int _type=0):
                 tag(_tag),el_type(_type){}
             bool operator== (const msh_struct& a) const {
-                return this->tag==a.tag && 
+                return this->tag==a.tag &&
                        this->el_type==a.el_type;
             }
 
             bool operator< (const msh_struct& a) const {
-                return (this->tag*100+this->el_type) < 
+                return (this->tag*100+this->el_type) <
                        (a.tag*100+a.el_type);
             }
         };
 
         typedef double Float;
-        
+
         typedef std::vector<int>      IndexVector;
         typedef std::vector<int>      IntVector;
         typedef std::vector<Float>    FloatVector;
@@ -49,13 +49,13 @@ class MshLoader {
         typedef std::multimap<msh_struct,int> StructIndex;
         typedef std::vector<msh_struct> StructVector;
 
-        enum {ELEMENT_LINE=1, ELEMENT_TRI=2, ELEMENT_QUAD=3, 
+        enum {ELEMENT_LINE=1, ELEMENT_TRI=2, ELEMENT_QUAD=3,
               ELEMENT_TET=4,  ELEMENT_HEX=5, ELEMENT_PRISM=6,
               ELEMENT_PYRAMID=7,
               // 2nd order elements
-              ELEMENT_LINE_2ND_ORDER=8, ELEMENT_TRI_2ND_ORDER=9, 
-              ELEMENT_QUAD_2ND_ORDER=10,ELEMENT_TET_2ND_ORDER=11, 
-              ELEMENT_HEX_2ND_ORDER=12, ELEMENT_PRISM_2ND_ORDER=13, 
+              ELEMENT_LINE_2ND_ORDER=8, ELEMENT_TRI_2ND_ORDER=9,
+              ELEMENT_QUAD_2ND_ORDER=10,ELEMENT_TET_2ND_ORDER=11,
+              ELEMENT_HEX_2ND_ORDER=12, ELEMENT_PRISM_2ND_ORDER=13,
               ELEMENT_PYRAMID_2ND_ORDER=14,
               // other elements
               ELEMENT_POINT=15 };
@@ -67,12 +67,12 @@ class MshLoader {
     public:
 
         // get nodes , x,y,z sequentially
-        const FloatVector& get_nodes()    const { return m_nodes; } 
+        const FloatVector& get_nodes()    const { return m_nodes; }
         // get elements , identifying nodes that create an element
         // variable length per element
         const IndexVector& get_elements() const { return m_elements; }
 
-        // get element types 
+        // get element types
         const IntVector& get_elements_types() const { return m_elements_types; }
         // get element lengths
         const IntVector& get_elements_lengths() const { return m_elements_lengths; }
@@ -86,12 +86,12 @@ class MshLoader {
 
         // get fields assigned per node, all fields and components sequentially
         const FloatField& get_node_fields() const { return m_node_fields;}
-        // get node field names, 
+        // get node field names,
         const FieldNames& get_node_fields_names() const { return m_node_fields_names;}
         // get number of node field components
         const IntVector&  get_node_fields_components() const {return m_node_fields_components;}
 
-        int get_node_field_components(size_t c)  const 
+        int get_node_field_components(size_t c)  const
         {
             return m_node_fields_components[c];
         }
@@ -124,26 +124,26 @@ class MshLoader {
 
         // create tag index
         // tag_column: ( physical (0) or elementary (1) ) specifying which tag to use
-        void index_structures(int tag_column); 
+        void index_structures(int tag_column);
 
         // get tag index, call index_structure_tags first
-        const StructIndex& get_structure_index() const 
+        const StructIndex& get_structure_index() const
         {
             return m_structure_index;
         }
 
         // get size of a structure identified by tag and element type
-        const StructIndex& get_structure_length() const 
+        const StructIndex& get_structure_length() const
         {
             return m_structure_length;
         }
 
         //! get list of structures
-        const StructVector& get_structures() const 
+        const StructVector& get_structures() const
         {
             return m_structures;
         }
-        
+
     public:
         // helper function, calculate number of nodes associated with an element
         static int num_nodes_per_elem_type(int elem_type);
@@ -159,26 +159,26 @@ class MshLoader {
     private:
         bool   m_binary;
         size_t m_data_size;
-        
-        FloatVector m_nodes;    // len x 3 vector 
 
-        IndexVector m_elements; // linear array for nodes corresponding to each element 
-        IndexVector m_elements_nodes_idx; // element indexes  
+        FloatVector m_nodes;    // len x 3 vector
 
-        IntVector   m_elements_ids;     // element id's 
-        IntVector   m_elements_types;   // Element types 
-        IntVector   m_elements_lengths; // Element lengths 
-        IntField    m_elements_tags;    // Element tags, currently 2xtags per element 
+        IndexVector m_elements; // linear array for nodes corresponding to each element
+        IndexVector m_elements_nodes_idx; // element indexes
 
-        FloatField  m_node_fields;      // Float field defined at each node 
-        IntVector   m_node_fields_components; // Number of components for node field 
-        FieldNames  m_node_fields_names; // Node field name 
+        IntVector   m_elements_ids;     // element id's
+        IntVector   m_elements_types;   // Element types
+        IntVector   m_elements_lengths; // Element lengths
+        IntField    m_elements_tags;    // Element tags, currently 2xtags per element
 
-        FloatField  m_element_fields;    // Float field defined at each element 
-        IntVector   m_element_fields_components; // Number of components for element field 
-        FieldNames  m_element_fields_names; // Element field name 
+        FloatField  m_node_fields;      // Float field defined at each node
+        IntVector   m_node_fields_components; // Number of components for node field
+        FieldNames  m_node_fields_names; // Node field name
 
-        StructIndex  m_structure_index; // index tag ids  
+        FloatField  m_element_fields;    // Float field defined at each element
+        IntVector   m_element_fields_components; // Number of components for element field
+        FieldNames  m_element_fields_names; // Element field name
+
+        StructIndex  m_structure_index; // index tag ids
         StructVector m_structures;  // unique structures
         StructIndex  m_structure_length; // length of structures with consistent element type
 };

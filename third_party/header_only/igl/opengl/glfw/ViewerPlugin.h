@@ -49,7 +49,7 @@ namespace igl
           /// This function is called before a mesh is saved
           IGL_INLINE virtual bool save(std::string filename) { return false; }
           /// This function is called when the scene is serialized
-          IGL_INLINE virtual bool serialize(std::vector<char>& buffer) const 
+          IGL_INLINE virtual bool serialize(std::vector<char>& buffer) const
             { return false; }
           /// This function is called when the scene is deserialized
           IGL_INLINE virtual bool deserialize(const std::vector<char>& buffer)

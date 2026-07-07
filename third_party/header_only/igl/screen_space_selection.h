@@ -95,5 +95,5 @@ namespace igl
 #ifndef IGL_STATIC_LIBRARY
 #include "screen_space_selection.cpp"
 #endif
-  
+
 #endif

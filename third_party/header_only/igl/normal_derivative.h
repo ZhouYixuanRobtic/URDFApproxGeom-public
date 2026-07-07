@@ -38,4 +38,3 @@ namespace igl
 #endif
 
 #endif
-

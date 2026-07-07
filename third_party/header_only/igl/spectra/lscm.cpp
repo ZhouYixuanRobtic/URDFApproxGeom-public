@@ -4,8 +4,8 @@
 #include "../repdiag.h"
 #include "eigs.h"
 template <
-  typename DerivedV, 
-  typename DerivedF, 
+  typename DerivedV,
+  typename DerivedF,
   typename DerivedV_uv>
 IGL_INLINE bool igl::spectra::lscm(
   const Eigen::MatrixBase<DerivedV> & V,

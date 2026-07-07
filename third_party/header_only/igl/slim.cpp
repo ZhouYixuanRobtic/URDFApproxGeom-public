@@ -100,7 +100,7 @@ namespace igl
       compute_jacobians(s, uv);
       slim_update_weights_and_closest_rotations_with_jacobians(s.Ji, s.slim_energy, s.exp_factor, s.W, s.Ri);
     }
-    
+
 
 
 
@@ -117,7 +117,7 @@ namespace igl
       build_linear_system(s,L);
 
       igl::Timer t;
-      
+
       //t.start();
       // solve
       Eigen::VectorXd Uc;
@@ -177,7 +177,7 @@ namespace igl
             P.setFromTriplets(IJV.begin(), IJV.end());
             return P;
           };
-          
+
           s.Dx = face_proj(F1) * G;
           s.Dy = face_proj(F2) * G;
         }
@@ -215,7 +215,7 @@ namespace igl
     {
       // formula (35) in paper
       std::vector<Eigen::Triplet<double> > IJV;
-      
+
       #ifdef SLIM_CACHED
       slim_buildA(s.Dx, s.Dy, s.Dz, s.W, IJV);
       if (s.A.rows() == 0)
@@ -254,7 +254,7 @@ namespace igl
       else
         igl::AtA_cached(s.A,s.AtA_data,s.AtA);
 
-      L = s.AtA + s.proximal_p * id_m; //add also a proximal 
+      L = s.AtA + s.proximal_p * id_m; //add also a proximal
       L.makeCompressed();
 
       #else
@@ -489,8 +489,8 @@ IGL_INLINE void igl::slim_update_weights_and_closest_rotations_with_jacobians(co
     const double sqrt_2 = sqrt(2);
     for (int i = 0; i < Ji.rows(); ++i)
     {
-      ji << Ji(i,0), Ji(i,1), Ji(i,2), 
-      Ji(i,3), Ji(i,4), Ji(i,5), 
+      ji << Ji(i,0), Ji(i,1), Ji(i,2),
+      Ji(i,3), Ji(i,4), Ji(i,5),
       Ji(i,6), Ji(i,7), Ji(i,8);
 
       Mat3 ri, ti, ui, vi;
@@ -746,11 +746,11 @@ std::vector<Eigen::Triplet<double> > & IJV)
 /// Slim Implementation
 
 IGL_INLINE void igl::slim_precompute(
-  const Eigen::MatrixXd &V, 
-  const Eigen::MatrixXi &F, 
-  const Eigen::MatrixXd &V_init, 
+  const Eigen::MatrixXd &V,
+  const Eigen::MatrixXi &F,
+  const Eigen::MatrixXd &V_init,
   igl::SLIMData &data,
-  igl::MappingEnergyType slim_energy, 
+  igl::MappingEnergyType slim_energy,
   const Eigen::VectorXi &b,
   const Eigen::MatrixXd &bc,
   double soft_p)
