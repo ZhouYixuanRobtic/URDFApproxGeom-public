@@ -50,7 +50,7 @@ namespace igl {
     /// @param[in] pa  2D point on plane
     /// @param[in] pb  2D point on plane
     /// @param[in] pc  2D point on plane
-    /// @param[in] pd  2D query point 
+    /// @param[in] pd  2D query point
     ///  @return POSITIVE if pd is "below" the oriented plane formed by pa, pb and pc.
     ///          NEGATIVE if pd is "above" the plane.
     ///          COPLANAR if pd is on the plane.

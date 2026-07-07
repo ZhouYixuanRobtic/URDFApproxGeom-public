@@ -35,7 +35,7 @@ void igl::isolines(
   iV.resize(iB.rows(),V.cols());
   for(int i = 0;i<iB.rows();i++)
   {
-    iV.row(i) = 
+    iV.row(i) =
       iB(i,0)*V.row(F(iFI(i),0))+
       iB(i,1)*V.row(F(iFI(i),1))+
       iB(i,2)*V.row(F(iFI(i),2));

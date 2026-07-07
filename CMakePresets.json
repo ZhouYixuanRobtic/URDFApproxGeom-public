@@ -1,0 +1,106 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "dev",
+      "displayName": "Development (Debug + Tests)",
+      "description": "Debug build with tests, pybind11, and compile_commands.json for IDE support",
+      "binaryDir": "build/dev",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_TEST": "ON",
+        "COMPILE_URDFApproxGeom_PYBINDING": "ON",
+        "ENABLE_WARNINGS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "description": "Optimized Release build with LTO",
+      "binaryDir": "build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_TEST": "OFF",
+        "COMPILE_URDFApproxGeom_PYBINDING": "OFF",
+        "ENABLE_WARNINGS": "ON"
+      }
+    },
+    {
+      "name": "asan",
+      "displayName": "Sanitizers (ASan + UBSan)",
+      "description": "Debug build with AddressSanitizer and UndefinedBehaviorSanitizer",
+      "binaryDir": "build/asan",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_TEST": "ON",
+        "COMPILE_URDFApproxGeom_PYBINDING": "OFF",
+        "ENABLE_SANITIZER": "ON"
+      }
+    },
+    {
+      "name": "coverage",
+      "displayName": "Code Coverage",
+      "description": "Debug build with gcov instrumentation for lcov/gcovr coverage reports",
+      "binaryDir": "build/coverage",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_TEST": "ON",
+        "ENABLE_COVERAGE": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "jobs": 0
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "jobs": 0
+    },
+    {
+      "name": "asan",
+      "configurePreset": "asan",
+      "jobs": 0
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage",
+      "jobs": 0
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "asan",
+      "configurePreset": "asan",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

@@ -7,7 +7,7 @@
 /// it is a "drop-in" workaround for documented bug in Eigen:
 /// http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1383
 ///
-/// Replace: 
+/// Replace:
 ///
 ///     Eigen::VectorXi::LinSpaced(size,low,high);
 ///
@@ -38,7 +38,7 @@ namespace igl
   ///
   /// \fileinfo
   template <typename Derived>
-  //inline typename Eigen::DenseBase< Derived >::RandomAccessLinSpacedReturnType 
+  //inline typename Eigen::DenseBase< Derived >::RandomAccessLinSpacedReturnType
   inline Derived LinSpaced(
     typename Derived::Index size,
     const typename Derived::Scalar & low,
@@ -48,7 +48,7 @@ namespace igl
 // Implementation
 
 template <typename Derived>
-//inline typename Eigen::DenseBase< Derived >::RandomAccessLinSpacedReturnType 
+//inline typename Eigen::DenseBase< Derived >::RandomAccessLinSpacedReturnType
 inline Derived
 igl::LinSpaced(
   typename Derived::Index size,

@@ -23,7 +23,7 @@ namespace igl
   /// @param[in] F  #F by 3 list of mesh triangle indices into some V
   /// @param[in] S  #S by 1 list of per-vertex scalar values
   /// @param[in] vals  #vals by 1 list of values to compute isolines for
-  /// @param[out] iB  #iB by 3 list of barycentric coordinates so that 
+  /// @param[out] iB  #iB by 3 list of barycentric coordinates so that
   ///   iV.row(i) = iB(i,0)*V.row(F(iFI(i,0)) +
   ///               iB(i,1)*V.row(F(iFI(i,1)) +
   ///               iB(i,2)*V.row(F(iFI(i,2))
@@ -94,4 +94,3 @@ namespace igl
 #endif
 
 #endif
-

@@ -39,7 +39,7 @@ namespace igl
       using Matrix3S = Eigen::Matrix<Scalar,3,3>;
       using Vector3S = Eigen::Matrix<Scalar,3,1>;
       using KeyTriplet = std::tuple<int,int,int>;
-    public: 
+    public:
     // Working variables
     // see dual_contouring.h
       // f(x) returns >0 outside, <0 inside, and =0 on the surface
@@ -72,7 +72,7 @@ namespace igl
       Eigen::Matrix<Eigen::Index,Eigen::Dynamic,Eigen::Dynamic> Q;
       // running number of real quads in Q (used for dynamic array allocation)
       typename decltype(Q)::Index m;
-      // mutexes used to insert into Q and (vV,vI,vH,vcount) 
+      // mutexes used to insert into Q and (vV,vI,vH,vcount)
       std::mutex Qmut;
       std::mutex Vmut;
     public:
@@ -137,7 +137,7 @@ namespace igl
         // x-min_corner = (ic.cast<Scalar>().array() * step.array())
         // (x-min_corner).array() / step.array()  = ic.cast<Scalar>().array()
         // ((x-min_corner).array() / step.array()).round()  = ic
-        return 
+        return
           ((x-min_corner).array()/step.array()).round().template cast<int>();
       }
       // Inputs:
@@ -154,9 +154,9 @@ namespace igl
         return single_edge(x,y,z,o,e0,f0);
       }
       bool single_edge(
-        const int & x, 
-        const int & y, 
-        const int & z, 
+        const int & x,
+        const int & y,
+        const int & z,
         const int & o,
         const RowVector3S & e0,
         const Scalar & f0)
@@ -172,9 +172,9 @@ namespace igl
         return single_edge(x,y,z,o,e0,f0,e1,f1);
       }
       bool single_edge(
-        const int & x, 
-        const int & y, 
-        const int & z, 
+        const int & x,
+        const int & y,
+        const int & z,
         const int & o,
         const RowVector3S & e0,
         const Scalar & f0,
@@ -304,14 +304,14 @@ namespace igl
           //RowVector3S p = b * A.inverse();
           //
           // min_p  ½ pᵀ A p - pᵀb
-          //  
+          //
           // let p = p₀ + x
           //
           //     min    ½ (p₀ + x )ᵀ A (p₀ + x ) - (p₀ + x )ᵀb
           // step≥x≥0
-          const RowVector3S p0 = 
+          const RowVector3S p0 =
             min_corner + ((vI[v].template cast<Scalar>().array()) * step.array()).matrix();
-          const RowVector3S x = 
+          const RowVector3S x =
             constrained ?
             igl::quadprog<Scalar,3>(A,(p0*A-b).transpose(),Vector3S(0,0,0),step.transpose()) :
             Eigen::LLT<Matrix3S>(A).solve(-(p0*A-b).transpose());
@@ -442,28 +442,28 @@ namespace igl
           {
             if(ic0(j) == ic1(j)){ continue;}
             if(ic0(j) - ic1(j) == 1)
-            { 
-              assert(o == -1 && "Edges should differ in just one coordinate"); 
-              o = j; 
+            {
+              assert(o == -1 && "Edges should differ in just one coordinate");
+              o = j;
               continue; // rather than break so assertions fire
             }
             if(ic1(j) - ic0(j) == 1)
-            { 
-              assert(o == -1 && "Edges should differ in just one coordinate"); 
+            {
+              assert(o == -1 && "Edges should differ in just one coordinate");
               std::swap(e0,e1);
               std::swap(f0,f1);
               std::swap(ic0,ic1);
-              o = j; 
+              o = j;
               continue; // rather than break so assertions fire
             } else
             {
-              assert(false && "Edges should differ in just one coordinate"); 
+              assert(false && "Edges should differ in just one coordinate");
             }
           }
           assert(o>=0 && "Edges should differ in just one coordinate");
           // i0 is the larger subscript location and ic1 is backward in the o
           // direction.
-          for(int j = 0;j<3;j++){ assert(ic0(j) == ic1(j)+(o==j)); } 
+          for(int j = 0;j<3;j++){ assert(ic0(j) == ic1(j)+(o==j)); }
           const int x = ic0(0);
           const int y = ic0(1);
           const int z = ic0(2);

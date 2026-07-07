@@ -3,7 +3,7 @@
     <!-- property -->
         <xacro:property name="pi" value="3.14159265358979323846" />
         <xacro:property name="deg" value = "${pi/180}"/>
-        
+
         <xacro:property name="prefix" value="/home/admin1/projects/CFDF/resources/fr3" />
         <xacro:property name="path" value="/home/admin1/projects/CFDF/resources/fr3" />
         <!-- include files -->

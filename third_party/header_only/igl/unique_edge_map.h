@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_UNIQUE_EDGE_MAP_H
 #define IGL_UNIQUE_EDGE_MAP_H
@@ -68,11 +68,11 @@ namespace igl
   ///   for(int i = 0;i<uE2E[u].size();i++)
   ///   {
   ///     // eth directed-edge is ith edge equivalent to uth undirected edge
-  ///     e = uE2E[u][i]; 
+  ///     e = uE2E[u][i];
   ///   }
   /// }
   /// \endcode
-  /// 
+  ///
   /// \code{cpp}
   /// // Using uEC,uEE
   /// for(int u = 0;u<uE.size();u++)

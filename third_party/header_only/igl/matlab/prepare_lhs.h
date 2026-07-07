@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_MATLAB_PREPARE_LHS_H
 #define IGL_MATLAB_PREPARE_LHS_H
@@ -17,7 +17,7 @@ namespace igl
   {
     /// Writes out a matrix as a double
     ///
-    /// @param[in] V  M by N matrix 
+    /// @param[in] V  M by N matrix
     /// @param[out] plhs  points to lhs argument
     template <typename DerivedV>
     IGL_INLINE void prepare_lhs_double(
@@ -36,7 +36,7 @@ namespace igl
       mxArray *plhs[]);
     /// Writes out a matrix and adds 1
     ///
-    /// @param[in] V  M by N matrix 
+    /// @param[in] V  M by N matrix
     /// @param[out] plhs  points to lhs argument
     template <typename DerivedV>
     IGL_INLINE void prepare_lhs_index(
@@ -55,4 +55,3 @@ namespace igl
 #  include "prepare_lhs.cpp"
 #endif
 #endif
-

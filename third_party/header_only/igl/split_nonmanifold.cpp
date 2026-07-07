@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2022 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "split_nonmanifold.h"
 #include "ismember_rows.h"
@@ -73,15 +73,15 @@ IGL_INLINE void igl::split_nonmanifold(
   igl::slice(E,JI,1,EJI);
   Eigen::MatrixXi EJI_flip = EJI.rowwise().reverse();
   // Build adjacency matrix
-  std::vector<Eigen::Triplet<bool> > Aijv; 
+  std::vector<Eigen::Triplet<bool> > Aijv;
   Aijv.reserve(EI.size());
   for(int i = 0;i<EI.rows();i++)
   {
     for(int j = 0;j<2;j++)
     {
-      Aijv.emplace_back( 
-        EI(i,j), 
-        EJI_flip(i,j), 
+      Aijv.emplace_back(
+        EI(i,j),
+        EJI_flip(i,j),
         true);
     }
   }
@@ -108,7 +108,7 @@ IGL_INLINE void igl::split_nonmanifold(
       SF(i,j) = K(SF(i,j));
     }
   }
-  
+
   // Initial mapping
   Eigen::VectorXi SVI0(m*3);
   {

@@ -53,22 +53,22 @@ IGL_INLINE bool igl::stb::write_image(
   if(e == "png")
   {
     return stbi_write_png(image_file.c_str(), width, height, comp, rgba_data, stride_in_bytes)!=0;
-  } else if( e == "tga") 
+  } else if( e == "tga")
   {
     return stbi_write_tga(image_file.c_str(), width, height, comp, rgba_data)!=0;
-  } else if( e == "bmp") 
+  } else if( e == "bmp")
   {
     return stbi_write_bmp(image_file.c_str(), width, height, comp, rgba_data)!=0;
-  } else if( e == "jpg") 
+  } else if( e == "jpg")
   {
     return stbi_write_jpg(image_file.c_str(), width, height, comp, rgba_data,quality)!=0;
-  } else 
+  } else
   {
     // unsupported file format
-    return false;  
+    return false;
   }
   // not yet.
-  //} else if( e == "hdr") 
+  //} else if( e == "hdr")
   // {
   //  return stbi_write_hdr(image_file.c_str(), width, height, comp, rgba_data.rgba_data())!=0;
   // }

@@ -91,7 +91,7 @@ namespace igl {
         int unmarked = 0;
         while (mark(unmarked))
           unmarked++;
-        
+
         d.push_back(unmarked);
         mark(unmarked) = true;
 

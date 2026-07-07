@@ -24,7 +24,7 @@ namespace igl
   /// @param[out] K  list of indices revealing across from which vertex is this facet
   ///
   template <
-    typename DerivedT, 
+    typename DerivedT,
     typename DerivedF,
     typename DerivedJ,
     typename DerivedK>

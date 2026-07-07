@@ -23,4 +23,3 @@ namespace igl
 #  include "find_zero.cpp"
 #endif
 #endif
-

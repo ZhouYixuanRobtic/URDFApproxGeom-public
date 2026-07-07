@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2018 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_INTRINSIC_DELAUNAY_TRIANGULATION_H
 #define IGL_INTRINSIC_DELAUNAY_TRIANGULATION_H
@@ -41,7 +41,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedF_in> & F_in,
     Eigen::PlainObjectBase<Derivedl> & l,
     Eigen::PlainObjectBase<DerivedF> & F);
-  /// \overload 
+  /// \overload
   /// @param[out] E  #F*3 by 2 list of all directed edges, such that E.row(f+#F*c) is the
   /// @param[out]   edge opposite F(f,c)
   /// @param[out] uE  #uE by 2 list of unique undirected edges

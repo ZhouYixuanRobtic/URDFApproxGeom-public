@@ -42,27 +42,25 @@
 
  */
 
+#include <gtest/gtest.h>
 #include <cstdio>
 #include <ctime>  // clock_t, clock, CLOCKS_PER_SEC
-#include <gtest/gtest.h>
 #include <filesystem>
 #include "irmv/bot_common/log/singleton_logger.h"
 #include "sphereTreeWrapper/sphereTreeBase.h"
-#include "sphereTreeWrapper/sphereTreeSpawn.h"
-#include "sphereTreeWrapper/sphereTreeOctree.h"
+#include "sphereTreeWrapper/sphereTreeGrid.h"
 #include "sphereTreeWrapper/sphereTreeHubbard.h"
 #include "sphereTreeWrapper/sphereTreeMedial.h"
-#include "sphereTreeWrapper/sphereTreeGrid.h"
+#include "sphereTreeWrapper/sphereTreeOctree.h"
+#include "sphereTreeWrapper/sphereTreeSpawn.h"
 
 class SphereTreeTest : public testing::Test {
-protected:
-    void SetUp() override {
-    }
+  protected:
+    void SetUp() override {}
 
-    void TearDown() override {
-    }
+    void TearDown() override {}
 
-public:
+  public:
     // ponytail: returns the first existing public FR3 OBJ; empty string if none found.
     std::string publicFr3Obj(const std::string& name = "finger.obj") const {
         namespace fs = std::filesystem;
@@ -79,8 +77,8 @@ public:
         return "";
     }
 
-protected:
-    std::string resourcePath =  URDFApproxGeom_RESOURCE_PATH;
+  protected:
+    std::string resourcePath = URDFApproxGeom_RESOURCE_PATH;
     std::string configPath = URDFApproxGeom_CONFIG_PATH;
     SphereTreeMethod::SphereTreeUniquePtr m_method;
 };
@@ -88,7 +86,8 @@ protected:
 TEST_F(SphereTreeTest, MedialTest) {
     const std::string test_obj = publicFr3Obj();
     ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
-    m_method = SphereTreeMethod::SphereTreeMethodMedial::create(configPath + "/sphereTree/sphereTreeConfig.yml");
+    m_method = SphereTreeMethod::SphereTreeMethodMedial::create(configPath +
+                                                                "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
@@ -98,7 +97,8 @@ TEST_F(SphereTreeTest, MedialTest) {
 TEST_F(SphereTreeTest, GridTest) {
     const std::string test_obj = publicFr3Obj();
     ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
-    m_method = SphereTreeMethod::SphereTreeMethodGrid::create(configPath + "/sphereTree/sphereTreeConfig.yml");
+    m_method = SphereTreeMethod::SphereTreeMethodGrid::create(configPath +
+                                                              "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
@@ -108,18 +108,19 @@ TEST_F(SphereTreeTest, GridTest) {
 TEST_F(SphereTreeTest, SpawnTest) {
     const std::string test_obj = publicFr3Obj();
     ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
-    m_method = SphereTreeMethod::SphereTreeMethodSpawn::create(configPath + "/sphereTree/sphereTreeConfig.yml");
+    m_method = SphereTreeMethod::SphereTreeMethodSpawn::create(configPath +
+                                                               "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
     ASSERT_TRUE(ret.isOk());
 }
 
-
 TEST_F(SphereTreeTest, HubbardTest) {
     const std::string test_obj = publicFr3Obj();
     ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
-    m_method = SphereTreeMethod::SphereTreeMethodHubbard::create(configPath + "/sphereTree/sphereTreeConfig.yml");
+    m_method = SphereTreeMethod::SphereTreeMethodHubbard::create(
+        configPath + "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
@@ -129,7 +130,8 @@ TEST_F(SphereTreeTest, HubbardTest) {
 TEST_F(SphereTreeTest, OctreeTest) {
     const std::string test_obj = publicFr3Obj();
     ASSERT_FALSE(test_obj.empty()) << "FR3 public OBJ test asset is missing";
-    m_method = SphereTreeMethod::SphereTreeMethodOctree::create(configPath + "/sphereTree/sphereTreeConfig.yml");
+    m_method = SphereTreeMethod::SphereTreeMethodOctree::create(configPath +
+                                                                "/sphereTree/sphereTreeConfig.yml");
     SphereTreeMethod::MySphereTree tree;
     auto ret = m_method->constructTree(test_obj, tree);
     IRMV_INFO("{}", ret.message());
@@ -144,7 +146,7 @@ TEST(SphereTreeConfig, SingleSpherePresetHasExplicitFlag) {
     EXPECT_TRUE(config["SingleSphere"].as<bool>());
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

@@ -164,9 +164,9 @@ IGL_INLINE void igl::per_corner_normals(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedI, 
-  typename DerivedC, 
+  typename DerivedV,
+  typename DerivedI,
+  typename DerivedC,
   typename DerivedN,
   typename DerivedVV,
   typename DerivedFF,
@@ -228,7 +228,7 @@ IGL_INLINE void igl::per_corner_normals(
     }
   }
 
-  // Relies on order of FF 
+  // Relies on order of FF
   NN.resize(FF.rows()*3,3);
   {
     Eigen::Index k = 0;

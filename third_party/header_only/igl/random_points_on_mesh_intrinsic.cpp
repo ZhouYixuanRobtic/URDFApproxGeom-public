@@ -6,7 +6,7 @@
 
 template <
   typename DeriveddblA,
-  typename DerivedB, 
+  typename DerivedB,
   typename DerivedFI,
   typename URBG>
 IGL_INLINE void igl::random_points_on_mesh_intrinsic(
@@ -36,7 +36,7 @@ IGL_INLINE void igl::random_points_on_mesh_intrinsic(
   assert(R.maxCoeff() <= 1);
   histc(R,C,FI);
   // fix the bin when R(i) == 1 exactly
-  // Gross cast to deal with Windows 
+  // Gross cast to deal with Windows
   FI = FI.array().min(static_cast<typename DerivedFI::Scalar>(dblA.rows() - 1));
   const VectorXs S = (VectorXs::NullaryExpr(n,1,[&](){return dis(urbg);}).array() + 1.)/2.;
   const VectorXs T = (VectorXs::NullaryExpr(n,1,[&](){return dis(urbg);}).array() + 1.)/2.;
@@ -49,7 +49,7 @@ IGL_INLINE void igl::random_points_on_mesh_intrinsic(
 template <
   typename DeriveddblA,
   typename DerivedF,
-  typename ScalarB, 
+  typename ScalarB,
   typename DerivedFI,
   typename URBG>
 IGL_INLINE void igl::random_points_on_mesh_intrinsic(

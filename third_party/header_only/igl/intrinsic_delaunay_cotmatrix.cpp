@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2018 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "intrinsic_delaunay_cotmatrix.h"
 #include "edge_lengths.h"
@@ -13,8 +13,8 @@
 
 template <typename DerivedV, typename DerivedF, typename Scalar>
 IGL_INLINE void igl::intrinsic_delaunay_cotmatrix(
-  const Eigen::MatrixBase<DerivedV> & V, 
-  const Eigen::MatrixBase<DerivedF> & F, 
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
   Eigen::SparseMatrix<Scalar>& L)
 {
   Eigen::Matrix<Scalar, Eigen::Dynamic, 3> l_intrinsic;
@@ -23,14 +23,14 @@ IGL_INLINE void igl::intrinsic_delaunay_cotmatrix(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
+  typename DerivedV,
+  typename DerivedF,
   typename Scalar,
   typename Derivedl_intrinsic,
   typename DerivedF_intrinsic>
 IGL_INLINE void igl::intrinsic_delaunay_cotmatrix(
-  const Eigen::MatrixBase<DerivedV> & V, 
-  const Eigen::MatrixBase<DerivedF> & F, 
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
   Eigen::SparseMatrix<Scalar>& L,
   Eigen::PlainObjectBase<Derivedl_intrinsic> & l_intrinsic,
   Eigen::PlainObjectBase<DerivedF_intrinsic> & F_intrinsic)

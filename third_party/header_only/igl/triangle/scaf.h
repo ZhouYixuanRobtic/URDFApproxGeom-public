@@ -17,7 +17,7 @@ namespace igl
   namespace triangle
   {
     /// Use a similar interface to igl::slim
-    /// Implement ready-to-use 2D version of the algorithm described in 
+    /// Implement ready-to-use 2D version of the algorithm described in
     /// SCAF: Simplicial Complex Augmentation Framework for Bijective Maps
     /// Zhongshi Jiang, Scott Schaefer, Daniele Panozzo, ACM Trancaction on Graphics (Proc. SIGGRAPH Asia 2017)
     /// For a complete implementation and customized UI, please refer to https://github.com/jiangzhongshi/scaffold-map
@@ -29,7 +29,7 @@ namespace igl
 
       // Output
       int dim = 2;
-      /// scaffold + isometric 
+      /// scaffold + isometric
       double total_energy;
       /// objective value
       double energy;
@@ -69,7 +69,7 @@ namespace igl
       // multi-chart support
       std::vector<int> component_sizes;
       std::vector<int> bnd_sizes;
-    
+
       // reweightedARAP interior variables.
       bool has_pre_calc = false;
       Eigen::SparseMatrix<double> Dx_s, Dy_s, Dz_s;

@@ -42,7 +42,7 @@ def test_prepare_visual_meshes_noop_when_already_obj(tmp_path):
         '<robot name="r">'
         '<link name="l"><visual><geometry><mesh filename="m.obj"/></geometry></visual>'
         '<collision><geometry><mesh filename="m.stl"/></geometry></collision></link>'
-        '</robot>'
+        "</robot>"
     )
     pairs, tmp = _prepare_visual_meshes(urdf, None)
     assert pairs == [] and tmp is None
@@ -56,10 +56,22 @@ def test_generate_rejects_invalid_mesh_source(tmp_path):
 def test_mesh_source_visual_diverges_from_collision(tmp_path):
     """Fitting the visual .dae must produce a different result from the
     collision .stl -- proves the source flag actually routes the fit."""
-    vis = generate("sphere", FR3_URDF, tmp_path / "vis.urdf",
-                   preset="single", simplify=True, mesh_source="visual")
-    col = generate("sphere", FR3_URDF, tmp_path / "col.urdf",
-                   preset="single", simplify=True, mesh_source="collision")
+    vis = generate(
+        "sphere",
+        FR3_URDF,
+        tmp_path / "vis.urdf",
+        preset="single",
+        simplify=True,
+        mesh_source="visual",
+    )
+    col = generate(
+        "sphere",
+        FR3_URDF,
+        tmp_path / "col.urdf",
+        preset="single",
+        simplify=True,
+        mesh_source="collision",
+    )
     vj = json.loads(vis.json_path.read_text())
     cj = json.loads(col.json_path.read_text())
     # single-sphere preset emits one sphere per link under "spheres"
@@ -72,8 +84,12 @@ def test_spherized_pair_single_matches_default_biggest(tmp_path):
     default_out = tmp_path / "default.urdf"
     single_out = tmp_path / "single.urdf"
     default_res, single_res = generate_sphere_pair(
-        FR3_URDF, default_out, single_out,
-        preset="default", simplify=True, mesh_source="visual",
+        FR3_URDF,
+        default_out,
+        single_out,
+        preset="default",
+        simplify=True,
+        mesh_source="visual",
     )
     assert default_res.output_urdf.is_file() and single_res.output_urdf.is_file()
     assert default_res.json_path.is_file() and single_res.json_path.is_file()
@@ -99,13 +115,16 @@ def test_capsule_multi_matches_separate_runs(tmp_path):
     preset through generate() separately (one mesh load vs many)."""
     presets = ["single", "default"]
     multi = generate_capsule_multi(
-        FR3_URDF, [(tmp_path / f"multi_{p}.urdf", p) for p in presets],
+        FR3_URDF,
+        [(tmp_path / f"multi_{p}.urdf", p) for p in presets],
         mesh_source="visual",
     )
     by_preset = {p: r.primitive_count for r, p in zip(multi, presets)}
     # compare against separate runs
     for p in presets:
-        sep = generate("capsule", FR3_URDF, tmp_path / f"sep_{p}.urdf",
-                       preset=p, mesh_source="visual")
-        assert by_preset[p] == sep.primitive_count, (
-            f"preset {p}: multi={by_preset[p]} separate={sep.primitive_count}")
+        sep = generate(
+            "capsule", FR3_URDF, tmp_path / f"sep_{p}.urdf", preset=p, mesh_source="visual"
+        )
+        assert (
+            by_preset[p] == sep.primitive_count
+        ), f"preset {p}: multi={by_preset[p]} separate={sep.primitive_count}"

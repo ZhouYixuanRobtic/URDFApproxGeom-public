@@ -31,20 +31,38 @@ def main():
     parser.add_argument("--max-capv-aabb", type=float, default=2.50)
     parser.add_argument("--max-r-binmed", type=float, default=1.45)
     parser.add_argument("--max-capsules", type=int, default=24)
-    parser.add_argument("--link-max-capv-aabb", action="append", default=[],
-                        help="per-link capV/aabb ceiling as LINK=VALUE")
-    parser.add_argument("--link-max-r-binmed", action="append", default=[],
-                        help="per-link r/binMed ceiling as LINK=VALUE")
-    parser.add_argument("--link-min-capsules", action="append", default=[],
-                        help="per-link minimum capsule count as LINK=VALUE")
-    parser.add_argument("--link-max-axis-overhang-r", action="append", default=[],
-                        help="per-link max assigned axial overhang divided by radius as LINK=VALUE")
+    parser.add_argument(
+        "--link-max-capv-aabb",
+        action="append",
+        default=[],
+        help="per-link capV/aabb ceiling as LINK=VALUE",
+    )
+    parser.add_argument(
+        "--link-max-r-binmed",
+        action="append",
+        default=[],
+        help="per-link r/binMed ceiling as LINK=VALUE",
+    )
+    parser.add_argument(
+        "--link-min-capsules",
+        action="append",
+        default=[],
+        help="per-link minimum capsule count as LINK=VALUE",
+    )
+    parser.add_argument(
+        "--link-max-axis-overhang-r",
+        action="append",
+        default=[],
+        help="per-link max assigned axial overhang divided by radius as LINK=VALUE",
+    )
     args = parser.parse_args()
 
     link_max_capv = parse_link_limits(args.link_max_capv_aabb, float, "--link-max-capv-aabb")
     link_max_ratio = parse_link_limits(args.link_max_r_binmed, float, "--link-max-r-binmed")
     link_min_capsules = parse_link_limits(args.link_min_capsules, int, "--link-min-capsules")
-    link_max_overhang = parse_link_limits(args.link_max_axis_overhang_r, float, "--link-max-axis-overhang-r")
+    link_max_overhang = parse_link_limits(
+        args.link_max_axis_overhang_r, float, "--link-max-axis-overhang-r"
+    )
 
     if not os.path.exists(args.caps_json):
         print(f"capsule json does not exist: {args.caps_json}", file=sys.stderr)
@@ -54,10 +72,14 @@ def main():
         [
             sys.executable,
             "scripts/check_capsule_coverage.py",
-            "--caps-json", args.caps_json,
-            "--urdf", args.urdf,
-            "--mesh-source", args.mesh_source,
-            "--volume-samples", str(args.volume_samples),
+            "--caps-json",
+            args.caps_json,
+            "--urdf",
+            args.urdf,
+            "--mesh-source",
+            args.mesh_source,
+            "--volume-samples",
+            str(args.volume_samples),
             "--json",
         ],
         text=True,
@@ -94,9 +116,13 @@ def main():
             failures.append(f"{link}: r/binMed {row['r_binMed']:.2f} > {max_ratio:.2f}")
         max_overhang = link_max_overhang.get(link)
         if max_overhang is not None and row.get("axis_overhang_r", 0.0) > max_overhang:
-            failures.append(f"{link}: axis_overhang/r {row['axis_overhang_r']:.2f} > {max_overhang:.2f}")
+            failures.append(
+                f"{link}: axis_overhang/r {row['axis_overhang_r']:.2f} > {max_overhang:.2f}"
+            )
 
-    requested_links = set(link_max_capv) | set(link_max_ratio) | set(link_min_capsules) | set(link_max_overhang)
+    requested_links = (
+        set(link_max_capv) | set(link_max_ratio) | set(link_min_capsules) | set(link_max_overhang)
+    )
     for missing in sorted(requested_links - seen_links):
         failures.append(f"{missing}: link not present in capsule metrics")
 

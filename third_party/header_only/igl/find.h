@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_FIND_H
 #define IGL_FIND_H
@@ -17,14 +17,14 @@ namespace igl
   /// Like matlab's [I,J,V] = find(X)
   ///
   /// @tparam T  should be a eigen sparse matrix primitive type like int or double
-  /// @param[in] X  m by n matrix whose entries are to be found 
+  /// @param[in] X  m by n matrix whose entries are to be found
   /// @param[out] I  nnz vector of row indices of non zeros entries in X
   /// @param[out] J  nnz vector of column indices of non zeros entries in X
   /// @param[out] V  nnz vector of type T non-zeros entries in X
   ///
   template <
-    typename T, 
-    typename DerivedI, 
+    typename T,
+    typename DerivedI,
     typename DerivedJ,
     typename DerivedV>
   IGL_INLINE void find(
@@ -35,7 +35,7 @@ namespace igl
   /// \overload
   template <
     typename DerivedX,
-    typename DerivedI, 
+    typename DerivedI,
     typename DerivedJ,
     typename DerivedV>
   IGL_INLINE void find(

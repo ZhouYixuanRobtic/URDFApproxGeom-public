@@ -74,5 +74,4 @@ namespace igl
 #  include "ImGuiPlugin.cpp"
 #endif
 
-#endif 
-
+#endif

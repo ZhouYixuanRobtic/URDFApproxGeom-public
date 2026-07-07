@@ -60,7 +60,7 @@ IGL_INLINE void igl::ismember_rows(
   sortrows(uA,true,sA,sIA);
   sortrows(uB,true,sB,sIB);
 
-  Eigen::Matrix<bool,Eigen::Dynamic,1> uF = 
+  Eigen::Matrix<bool,Eigen::Dynamic,1> uF =
     Eigen::Matrix<bool,Eigen::Dynamic,1>::Zero(sA.size(),1);
   Eigen::Matrix<typename DerivedLOCB::Scalar, Eigen::Dynamic,1> uLOCB =
     Eigen::Matrix<typename DerivedLOCB::Scalar,Eigen::Dynamic,1>::

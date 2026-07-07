@@ -44,8 +44,7 @@ Capsule fitCapsuleCoveringDisks(const std::vector<Eigen::Vector3d>& centers,
                                 const std::vector<double>& radii);
 
 /// Point-to-segment distance, exposed for coverage assertions.
-double pointToSegmentDistance(const Eigen::Vector3d& p,
-                              const Eigen::Vector3d& a,
+double pointToSegmentDistance(const Eigen::Vector3d& p, const Eigen::Vector3d& a,
                               const Eigen::Vector3d& b);
 
 /// Remove capsules fully nested inside another (redundant). Coverage-safe: a
@@ -66,10 +65,8 @@ std::vector<Capsule> dedupeNestedCapsules(const std::vector<Capsule>& caps);
 std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
                                          const std::vector<Eigen::Vector3d>& centers,
                                          const std::vector<double>& radii,
-                                         double cluster_gap = 0.02,
-                                         int min_cluster_size = 8,
-                                         double fat_split_ratio = 0.4,
-                                         int max_capsules = 3);
+                                         double cluster_gap = 0.02, int min_cluster_size = 8,
+                                         double fat_split_ratio = 0.4, int max_capsules = 3);
 
 }  // namespace urdf_approx_geom
 

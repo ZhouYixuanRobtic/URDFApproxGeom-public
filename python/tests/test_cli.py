@@ -21,7 +21,9 @@ def run_cli(*args):
 
 def test_generate_capsule_cli(tmp_path):
     out = tmp_path / "fr3_capsule.urdf"
-    proc = run_cli("generate", "--mode", "capsule", "-i", FR3_URDF, "-o", str(out), "--preset", "default")
+    proc = run_cli(
+        "generate", "--mode", "capsule", "-i", FR3_URDF, "-o", str(out), "--preset", "default"
+    )
     assert proc.returncode == 0, proc.stdout
     assert out.exists()
     assert out.with_suffix(".json").exists()
@@ -29,7 +31,17 @@ def test_generate_capsule_cli(tmp_path):
 
 
 def test_generate_all_cli(tmp_path):
-    proc = run_cli("generate", "--mode", "all", "-i", FR3_URDF, "--output-dir", str(tmp_path), "--preset", "default")
+    proc = run_cli(
+        "generate",
+        "--mode",
+        "all",
+        "-i",
+        FR3_URDF,
+        "--output-dir",
+        str(tmp_path),
+        "--preset",
+        "default",
+    )
     assert proc.returncode == 0, proc.stdout
     assert (tmp_path / "fr3_convex.urdf").exists()
     assert (tmp_path / "fr3_spherized.urdf").exists()

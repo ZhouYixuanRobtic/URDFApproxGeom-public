@@ -30,34 +30,36 @@
 /// sidecar of capsule params. Cylinder+sphere is the URDF-native form of a
 /// capsule (loadable in ROS / pybullet / MuJoCo).
 class CapsuleURDFGenerator : public URDFGenerator {
-public:
+  public:
     /// @param use_visual  fit the visual mesh (true) or collision mesh (false).
     explicit CapsuleURDFGenerator(const std::string& capsule_config_path, bool use_visual = true);
 
     ~CapsuleURDFGenerator() override;
 
-    irmv_core::bot_common::ErrorInfo run(const std::string& urdf_path, const std::string& output_path,
-                                         const std::vector<std::pair<std::string, std::string>>& replace_pairs) override;
+    irmv_core::bot_common::ErrorInfo run(
+        const std::string& urdf_path, const std::string& output_path,
+        const std::vector<std::pair<std::string, std::string>>& replace_pairs) override;
 
     /// One URDF load + one mesh load + one Manifold watertight pass per link,
     /// then fits every preset on the cached link meshes and writes one
     /// (URDF, JSON) pair per preset. @p presets is (output_path, config_path).
     /// Parallelizes the per-link mesh load across links (std::async, like the
     /// sphere generator).
-    irmv_core::bot_common::ErrorInfo runMulti(const std::string& urdf_path,
-                                              const std::vector<std::pair<std::string, std::string>>& presets,
-                                              const std::vector<std::pair<std::string, std::string>>& replace_pairs);
+    irmv_core::bot_common::ErrorInfo runMulti(
+        const std::string& urdf_path,
+        const std::vector<std::pair<std::string, std::string>>& presets,
+        const std::vector<std::pair<std::string, std::string>>& replace_pairs);
 
-private:
+  private:
     void loadConfigFrom(const std::string& path);
 
     /// Build fit options from current members, fit capsules on the link-frame
     /// watertight mesh (Vlf, F), grow to cover the original link-frame mesh
     /// (Vorig_lf), and emit URDF collision primitives + JSON entries into @p
     /// link_json. Shared by run() and runMulti() so preset fits stay identical.
-    void fitAndEmit(const urdf::LinkSharedPtr& link,
-                    const Eigen::MatrixXd& Vlf, const Eigen::MatrixXi& F,
-                    const Eigen::MatrixXd& Vorig_lf, nlohmann::json& link_json);
+    void fitAndEmit(const urdf::LinkSharedPtr& link, const Eigen::MatrixXd& Vlf,
+                    const Eigen::MatrixXi& F, const Eigen::MatrixXd& Vorig_lf,
+                    nlohmann::json& link_json);
 
     std::string config_path_;
     bool use_visual_ = true;

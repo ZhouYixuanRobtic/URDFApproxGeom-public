@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef FIT_CUBIC_BEZIER_H
 #define FIT_CUBIC_BEZIER_H
@@ -27,7 +27,7 @@ namespace igl
     std::vector<Eigen::MatrixXd> & cubics);
   /// Recursive helper function for fit_cubic_bezier
   ///
-  /// \fileinfo 
+  /// \fileinfo
   ///
   /// @param[in] first  index of first point in d of substring
   /// @param[in] last  index of last point in d of substring
@@ -44,7 +44,7 @@ namespace igl
     const Eigen::RowVectorXd & tHat1,
     const Eigen::RowVectorXd & tHat2,
     const double error,
-    const bool force_split, 
+    const bool force_split,
     std::vector<Eigen::MatrixXd> & cubics);
 }
 
@@ -52,4 +52,4 @@ namespace igl
 #include "fit_cubic_bezier.cpp"
 #endif
 
-#endif 
+#endif

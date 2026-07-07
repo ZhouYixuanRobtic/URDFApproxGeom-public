@@ -66,8 +66,7 @@ std::vector<Circle2D> fitCirclesLloyd(const Contour2D& contour, double coa_thres
 /// Fit a fixed number of covering circles to all contours in one section plane.
 /// k==1 is the MEC fallback. k>1 uses deterministic k-means seeds followed by
 /// MEC refits per cluster so every sampled contour point remains covered.
-std::vector<Circle2D> fitFixedCountCirclesForPlane(const std::vector<Contour2D>& contours,
-                                                   int k);
+std::vector<Circle2D> fitFixedCountCirclesForPlane(const std::vector<Contour2D>& contours, int k);
 
 struct CapsuleFitOptions {
     int n_sections = 10;
@@ -103,15 +102,13 @@ CapsuleTightnessMetrics evaluateCapsuleTightness(const Eigen::MatrixXd& V,
                                                  const std::vector<Capsule>& caps,
                                                  int union_volume_samples_per_axis = 32);
 
-double estimateCapsuleUnionVolume(const std::vector<Capsule>& caps,
-                                  int samples_per_axis = 32);
+double estimateCapsuleUnionVolume(const std::vector<Capsule>& caps, int samples_per_axis = 32);
 
 double assignedPlaneCircleScore(const std::vector<Contour2D>& contours,
                                 const std::vector<Circle2D>& circles);
 
 std::vector<Circle2D> fitAdaptiveCirclesForPlane(const std::vector<Contour2D>& contours,
-                                                 double coa_threshold,
-                                                 int max_circles);
+                                                 double coa_threshold, int max_circles);
 
 /// Wu2018 sphere+capsule fit (§III-C..E): slice `V,F` along its PCA axis,
 /// fit circles per section, link adjacent-section circles into capsules, drop

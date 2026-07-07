@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_RANDOM_POINTS_ON_MESH_H
 #define IGL_RANDOM_POINTS_ON_MESH_H
@@ -24,13 +24,13 @@ namespace igl
   ///     ith sampled point in face FI(i)
   /// @param[in] urbg An instance of UnformRandomBitGenerator (e.g.,
   ///  `std::minstd_rand(0)`)
-  /// @param[out] FI  n list of indices into F 
+  /// @param[out] FI  n list of indices into F
   /// @param[in,out] urbg An instance of UnformRandomBitGenerator.
   /// @param[out] X  n by dim list of sample positions.
   template <
-    typename DerivedV, 
-    typename DerivedF, 
-    typename DerivedB, 
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedB,
     typename DerivedFI,
     typename DerivedX,
     typename URBG = DEFAULT_URBG>

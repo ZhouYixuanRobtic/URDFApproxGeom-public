@@ -22,7 +22,7 @@ igl::tet_tet_adjacency(
                        Eigen::PlainObjectBase<DerivedTTi>& TTi)
 {
   assert(T.cols()==4 && "Tets have four vertices.");
-  
+
   //Preprocess
   using Array = std::array<typename DerivedT::Scalar, 5>;
   std::vector<Array> TTT(4*T.rows());
@@ -34,13 +34,13 @@ igl::tet_tet_adjacency(
     for(int i=0; i<4; ++i)
       std::sort(TTT[4*t+i].begin(), TTT[4*t+i].begin()+3);
   };
-  
+
   //for(int t=0; t<T.rows(); ++t)
   //    loop_f(t);
   igl::parallel_for(T.rows(), loop_f);
-  
+
   std::sort(TTT.begin(),TTT.end());
-  
+
   //Compute TT and TTi
   TT.setConstant(T.rows(), T.cols(), -1);
   TTi.setConstant(T.rows(), T.cols(), -1);
@@ -70,4 +70,3 @@ igl::tet_tet_adjacency(
 #ifdef IGL_STATIC_LIBRARY
 template void igl::tet_tet_adjacency<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
-

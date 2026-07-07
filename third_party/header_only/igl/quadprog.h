@@ -82,6 +82,6 @@ namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "quadprog.cpp"
-#endif 
+#endif
 
-#endif 
+#endif

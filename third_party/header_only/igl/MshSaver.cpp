@@ -1,11 +1,11 @@
-// based on MSH writer from PyMesh 
+// based on MSH writer from PyMesh
 
-// Copyright (c) 2015 Qingnan Zhou <qzhou@adobe.com>           
-// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com> 
+// Copyright (c) 2015 Qingnan Zhou <qzhou@adobe.com>
+// Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com>
 //
-// This Source Code Form is subject to the terms of the Mozilla 
-// Public License v. 2.0. If a copy of the MPL was not distributed 
-// with this file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "MshSaver.h"
 
@@ -34,8 +34,8 @@ IGL_INLINE igl::MshSaver::~MshSaver() {
 }
 
 IGL_INLINE void igl::MshSaver::save_mesh(
-    const FloatVector& nodes, 
-    const IndexVector& elements, 
+    const FloatVector& nodes,
+    const IndexVector& elements,
     const IntVector& element_lengths,
     const IntVector& element_types,
     const IntVector& element_tags
@@ -88,10 +88,10 @@ IGL_INLINE void igl::MshSaver::save_nodes(const FloatVector& nodes) {
     fout.flush();
 }
 
-IGL_INLINE void igl::MshSaver::save_elements(const IndexVector& elements, 
+IGL_INLINE void igl::MshSaver::save_elements(const IndexVector& elements,
             const IntVector& element_lengths,
             const IntVector& element_types,
-            const IntVector& element_tags) 
+            const IntVector& element_tags)
     {
 
     m_num_elements = element_tags.size();
@@ -110,7 +110,7 @@ IGL_INLINE void igl::MshSaver::save_elements(const IndexVector& elements,
         if (!m_binary) {
             size_t el_ptr=0;
             for (size_t i=0;i<m_num_elements;++i) {
-                
+
                 int elem_num = (int) i + 1;
                 ///VectorI elem = elements.segment(i, nodes_per_element) + VectorI::Ones(nodes_per_element);
                 // hardcoded: duplicate tags (I don't know why)
@@ -127,18 +127,18 @@ IGL_INLINE void igl::MshSaver::save_elements(const IndexVector& elements,
 
                 // write elements in consistent chunks
                 // TODO: refactor this code to be able to specify different elements
-                // more effeciently 
+                // more effeciently
 
                 int elem_type=-1;
                 int elem_len=-1;
                 size_t j=i;
                 for(;j<m_num_elements;++j)
                 {
-                    if( elem_type==-1 ) 
+                    if( elem_type==-1 )
                     {
                         elem_type=element_types[j];
                         elem_len=element_lengths[j];
-                    } else if( elem_type!=element_types[j] || 
+                    } else if( elem_type!=element_types[j] ||
                                elem_len!=element_lengths[j]) {
                         break; // found the edge of the segment
                     }
@@ -311,7 +311,7 @@ IGL_INLINE void igl::MshSaver::save_elem_tensor_field(const std::string& fieldna
     fout << m_num_elements << std::endl; // number of elements
 
     const Float zero = 0.0;
-    
+
     if (m_binary) {
         for (size_t i=0; i<m_num_elements; i++) {
             int elem_idx = i+1;

@@ -55,7 +55,7 @@ IGL_INLINE void igl::copyleft::cgal::triangulate(
     cdt.insert(p);
     points.emplace_back(p);
   }
-  // Insert all edges 
+  // Insert all edges
   for(Eigen::Index e = 0;e<E.rows();e++)
   {
     cdt.insert_constraint(points[E(e,0)],points[E(e,1)]);

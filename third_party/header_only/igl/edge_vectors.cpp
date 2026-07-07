@@ -45,15 +45,15 @@ igl::edge_vectors(
 {
   using Scalar = typename DerivedvecParallel::Scalar;
   using MatX = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
-  
+
   assert(E.rows()==F.rows() && "E does not match dimensions of F.");
   assert(oE.rows()==F.rows() && "oE does not match dimensions of F.");
   assert(E.cols()==3 && F.cols()==3 && oE.cols()==3 &&
          "This method is for triangle meshes.");
   assert(F.maxCoeff()<V.rows() && "V does not seem to belong to F.");
-  
+
   const typename DerivedE::Scalar m = E.maxCoeff()+1;
-  
+
   //Compute edge-based normal
   MatX N, edgeN(m, 3);
   edgeN.setZero();
@@ -64,7 +64,7 @@ igl::edge_vectors(
     }
   }
   edgeN.rowwise().normalize();
-  
+
   //Compute edge vectors
   vecParallel.resize(m, 3);
   if(computePerpendicular) { //This should ideally be an if constexpr

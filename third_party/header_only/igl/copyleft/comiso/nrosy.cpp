@@ -529,17 +529,17 @@ void igl::copyleft::comiso::NRosyField::computek()
 
       ref0.normalize();
       ref1.normalize();
-      
+
       double ktemp = - std::atan2(ref1(1), ref1(0)) + std::atan2(ref0(1), ref0(0));
-      
-      // make sure kappa is in corret range 
+
+      // make sure kappa is in corret range
       auto pos_fmod = [](double x, double y){
         return (0 == y) ? x : x - y * floor(x/y);
       };
       ktemp = pos_fmod(ktemp, 2*igl::PI);
-      if (ktemp > igl::PI) 
+      if (ktemp > igl::PI)
         ktemp -= 2*igl::PI;
-      
+
       // just to be sure, rotate ref0 using angle ktemp...
       Eigen::MatrixXd R2(2,2);
       R2 << std::cos(-ktemp), -std::sin(-ktemp), std::sin(-ktemp), std::cos(-ktemp);

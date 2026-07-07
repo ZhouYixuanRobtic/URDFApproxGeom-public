@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mosek_quadprog.h"
 #include "mosek_guarded.h"
@@ -206,14 +206,14 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   // Set up task parameters
   for(
     std::map<MSKiparame,int>::iterator pit = mosek_data.intparam.begin();
-    pit != mosek_data.intparam.end(); 
+    pit != mosek_data.intparam.end();
     pit++)
   {
     mosek_guarded(MSK_putintparam(task,pit->first,pit->second));
   }
   for(
     std::map<MSKdparame,double>::iterator pit = mosek_data.douparam.begin();
-    pit != mosek_data.douparam.end(); 
+    pit != mosek_data.douparam.end();
     pit++)
   {
     mosek_guarded(MSK_putdouparam(task,pit->first,pit->second));
@@ -239,7 +239,7 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   bool success = false;
   switch(solsta)
   {
-    case MSK_SOL_STA_OPTIMAL:   
+    case MSK_SOL_STA_OPTIMAL:
 #if MSK_VERSION_MAJOR <= 8
     case MSK_SOL_STA_NEAR_OPTIMAL:
 #endif
@@ -255,7 +255,7 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
     case MSK_SOL_STA_PRIM_INFEAS_CER:
 #if MSK_VERSION_MAJOR <= 8
     case MSK_SOL_STA_NEAR_DUAL_INFEAS_CER:
-    case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:  
+    case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:
 #endif
       //printf("Primal or dual infeasibility certificate found.\n");
       break;

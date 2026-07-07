@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2022 Vladimir S. FONOV <vladimir.fonov@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/
 #include "fast_find_intersections.h"
 #include "AABB.h"
@@ -64,10 +64,10 @@ IGL_INLINE void igl::fast_find_intersections(
 
       for(int j=0;j<3;++j)
         tri_box.extend( V2.row( F2(i,j) ).transpose() );
-      
+
       // find leaf nodes containing intersecting tri_box
       // need to specify exact type instead of auto to allow recursion
-      std::function<void(const AABBTree &,int)> check_intersect = 
+      std::function<void(const AABBTree &,int)> check_intersect =
         [&](const AABBTree &t,int d) -> void
       {
         if(t.m_primitive != -1) //check for the actual intersection //t.is_leaf()
@@ -91,8 +91,8 @@ IGL_INLINE void igl::fast_find_intersections(
             }
           }
         } else {
-          if(t.m_box.intersects( tri_box )) 
-          { // need to check all branches 
+          if(t.m_box.intersects( tri_box ))
+          { // need to check all branches
             check_intersect(*t.m_left, d+1);
             check_intersect(*t.m_right,d+1);
           }

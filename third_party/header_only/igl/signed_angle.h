@@ -5,9 +5,9 @@
 namespace igl
 {
   /// Compute the signed angle subtended by the oriented 3d triangle (A,B,C) at some point P
-  /// 
-  /// @param[in] A  2D position of corner 
-  /// @param[in] B  2D position of corner 
+  ///
+  /// @param[in] A  2D position of corner
+  /// @param[in] B  2D position of corner
   /// @param[in] P  2D position of query point
   /// @return signed angle
   template <
@@ -23,4 +23,3 @@ namespace igl
 #  include "signed_angle.cpp"
 #endif
 #endif
-

@@ -21,7 +21,7 @@ namespace igl
 {
   /// Read mesh from an ascii file with automatic detection of file format
   /// among: mesh, msh obj, off, ply, stl, wrl.
-  /// 
+  ///
   /// @tparam Scalar  type for positions and vectors (will be read as double and
   ///   cast to Scalar)
   /// @tparam Index  type for indices (will be read as int and cast to Index)

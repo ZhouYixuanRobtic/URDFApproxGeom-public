@@ -33,7 +33,7 @@ namespace igl
   ///          of the ith octree cell
   /// @param[out] I  #P by k list of k-nearest-neighbor indices into P
   template <
-    typename DerivedP, 
+    typename DerivedP,
     typename IndexType,
     typename DerivedCH,
     typename DerivedCN,
@@ -49,10 +49,10 @@ namespace igl
     Eigen::PlainObjectBase<DerivedI> & I);
   /// \overload
   /// \brief only neighbors found in V
-  /// @param[in] V  #V by 3 list of point locations for which may be neighbors 
+  /// @param[in] V  #V by 3 list of point locations for which may be neighbors
   /// @param[out] I  #P by k list of k-nearest-neighbor indices into V
   template <
-    typename DerivedP, 
+    typename DerivedP,
     typename DerivedV,
     typename IndexType,
     typename DerivedCH,
@@ -73,4 +73,3 @@ namespace igl
 #  include "knn.cpp"
 #endif
 #endif
-

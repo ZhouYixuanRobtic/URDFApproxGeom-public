@@ -56,7 +56,7 @@ namespace igl
         Eigen::PlainObjectBase<DerivedFC > & FC,
         Eigen::PlainObjectBase<DerivedJ > & J);
       /// \overload
-      /// @param[in] P  plane 
+      /// @param[in] P  plane
       template <
         typename DerivedV,
         typename DerivedF,

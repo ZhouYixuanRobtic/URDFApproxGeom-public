@@ -13,14 +13,14 @@
 #include "../turning_number.h"
 
 template <
-  typename DerivedP, 
+  typename DerivedP,
   typename DerivedRT,
-  typename DerivedF, 
+  typename DerivedF,
   typename DerivedI>
 IGL_INLINE void igl::predicates::ear_clipping(
   const Eigen::MatrixBase<DerivedP>& P,
   const Eigen::MatrixBase<DerivedRT>& RT,
-  Eigen::PlainObjectBase<DerivedF>& eF, 
+  Eigen::PlainObjectBase<DerivedF>& eF,
   Eigen::PlainObjectBase<DerivedI>& I)
 {
   typedef typename DerivedF::Scalar Index;
@@ -28,7 +28,7 @@ IGL_INLINE void igl::predicates::ear_clipping(
   static_assert(std::is_same<typename DerivedI::Scalar,
                              typename DerivedF::Scalar>::value,
                 "index type should be consistent");
-  
+
   // check whether vertex i is an ear
   auto is_ear = [](
     const Eigen::MatrixBase<DerivedP>& P,
@@ -37,7 +37,7 @@ IGL_INLINE void igl::predicates::ear_clipping(
     const Eigen::Matrix<Index,Eigen::Dynamic,1>& R,
     const Index i
   ){
-    
+
     // check if any edge in the leftover polygon intersects triangle (a,b,i)
 
     Index a = L(i), b = R(i);
@@ -61,7 +61,7 @@ IGL_INLINE void igl::predicates::ear_clipping(
         r2 != igl::predicates::Orientation::POSITIVE) {
       return false;
     }
-    
+
     // iterate through all edges do not have common endpoints with a, b
     k = l;
     l = R(k);
@@ -111,11 +111,11 @@ IGL_INLINE void igl::predicates::ear_clipping(
 
   // clip ears until none left
   while(ears.maxCoeff()==1){
-    
+
     // find the first ear
     Index e = 0;
     while(e < ears.rows() && ears(e) != 1) e++;
-    
+
     // find valid neighbors
     Index a = L(e), b = R(e);
     if(a == b) break;
@@ -141,7 +141,7 @@ IGL_INLINE void igl::predicates::ear_clipping(
       X(b) = 1;
     }
   }
-  
+
   // collect remaining vertices if theres any
   for(int i = 0;i < X.rows(); i++)
   {
@@ -173,7 +173,7 @@ IGL_INLINE bool igl::predicates::ear_clipping(
     eF = eF.rowwise().reverse();
     return ret;
   }
-  const Eigen::Matrix<typename DerivedP::Scalar, Eigen::Dynamic, 1> RT = 
+  const Eigen::Matrix<typename DerivedP::Scalar, Eigen::Dynamic, 1> RT =
     Eigen::Matrix<typename DerivedP::Scalar, Eigen::Dynamic, 1>::Zero(P.rows());
   Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> I;
   igl::predicates::ear_clipping(P, RT, eF, I);

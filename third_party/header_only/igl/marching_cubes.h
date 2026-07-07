@@ -26,9 +26,9 @@ namespace igl
   /// @param[out] F  #F by 3 list of mesh triangle indices into rows of V
   ///
   template <
-    typename DerivedS, 
-    typename DerivedGV, 
-    typename DerivedV, 
+    typename DerivedS,
+    typename DerivedGV,
+    typename DerivedV,
     typename DerivedF>
   IGL_INLINE void marching_cubes(
     const Eigen::MatrixBase<DerivedS> & S,
@@ -47,10 +47,10 @@ namespace igl
   /// @param[in] GV  #S by 3 list of referenced grid vertex positions
   /// @param[in] GI  #GI by 8 list of grid corner indices into rows of GV
   template <
-    typename DerivedS, 
-    typename DerivedGV, 
-    typename DerivedGI, 
-    typename DerivedV, 
+    typename DerivedS,
+    typename DerivedGV,
+    typename DerivedGI,
+    typename DerivedV,
     typename DerivedF>
   IGL_INLINE void marching_cubes(
     const Eigen::MatrixBase<DerivedS> & S,

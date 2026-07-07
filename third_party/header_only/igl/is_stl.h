@@ -6,8 +6,8 @@ namespace igl
 {
   /// Given a file pointer, determine if it contains an .stl file and then
   /// rewind it.
-  /// 
-  /// @param[in] stl_file  pointer to file 
+  ///
+  /// @param[in] stl_file  pointer to file
   /// @param[in] is_ascii  flag whether stl is ascii
   /// @return whether stl_file is an .stl file
   IGL_INLINE bool is_stl(FILE * stl_file, bool & is_ascii);

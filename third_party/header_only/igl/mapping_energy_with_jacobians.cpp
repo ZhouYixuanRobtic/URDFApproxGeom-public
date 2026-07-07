@@ -1,18 +1,18 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2018 Zhongshi Jiang <jiangzs@nyu.edu>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "mapping_energy_with_jacobians.h"
 #include "polar_svd.h"
 
 IGL_INLINE double igl::mapping_energy_with_jacobians(
-  const Eigen::MatrixXd &Ji, 
-  const Eigen::VectorXd &areas, 
-  igl::MappingEnergyType slim_energy, 
+  const Eigen::MatrixXd &Ji,
+  const Eigen::VectorXd &areas,
+  igl::MappingEnergyType slim_energy,
   double exp_factor){
 
   double energy = 0;

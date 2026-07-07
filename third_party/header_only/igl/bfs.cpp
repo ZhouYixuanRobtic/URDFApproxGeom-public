@@ -90,4 +90,3 @@ IGL_INLINE void igl::bfs(
   }
 
 }
-

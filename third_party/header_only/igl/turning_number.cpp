@@ -8,7 +8,7 @@ IGL_INLINE typename DerivedV::Scalar igl::turning_number(
 {
   typedef typename DerivedV::Scalar Scalar;
   constexpr Scalar TWO_PI = 2.0 * igl::PI;
-    
+
   const int n = V.rows();
   Scalar total_angle = 0.0;
 
@@ -16,12 +16,12 @@ IGL_INLINE typename DerivedV::Scalar igl::turning_number(
   {
     Eigen::Matrix<Scalar, 1, 2> current = V.row(i).head(2);
     Eigen::Matrix<Scalar, 1, 2> next = V.row((i + 1) % n).head(2);
-    
+
     Eigen::Matrix<Scalar, 1, 2> d1 = next - current;
     Eigen::Matrix<Scalar, 1, 2> d2 = V.row((i + 2) % n).head(2) - next;
 
     const Scalar angle = atan2(
-      d1(0)*d2(1) - d1(1)*d2(0), 
+      d1(0)*d2(1) - d1(1)*d2(0),
       d1(0)*d2(0) + d1(1)*d2(1));
     total_angle += angle;
   }

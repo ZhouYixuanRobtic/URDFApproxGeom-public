@@ -15,11 +15,11 @@
 #include <cassert>
 
 template <
-  typename DerivedV, 
+  typename DerivedV,
   typename DerivedF,
-  typename DerivedCN, 
+  typename DerivedCN,
   typename DerivedFN,
-  typename DerivedTC, 
+  typename DerivedTC,
   typename DerivedFTC>
 IGL_INLINE bool igl::writeOBJ(
   const std::string str,
@@ -134,7 +134,7 @@ IGL_INLINE bool igl::writeOBJ(
     return false;
   }
   s<<V.format(IOFormat(FullPrecision,DontAlignCols," ","\n","v ","","","\n"));
-  
+
   for(const auto& face : F)
   {
     int face_size = face.size();
@@ -144,7 +144,7 @@ IGL_INLINE bool igl::writeOBJ(
 
     for(const auto& vi : face)
     {
-      s<<" "<<(vi+1); 
+      s<<" "<<(vi+1);
     }
     s<<"\n";
   }

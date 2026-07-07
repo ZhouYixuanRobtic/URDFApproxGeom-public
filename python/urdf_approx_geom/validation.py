@@ -10,8 +10,12 @@ import sys
 from ._paths import require_source_root
 
 
-def _capsule_metrics(caps_json: str, urdf: str = "resources/fr3/urdf/fr3.urdf",
-                     mesh_source: str = "visual", volume_samples: int = 64) -> dict:
+def _capsule_metrics(
+    caps_json: str,
+    urdf: str = "resources/fr3/urdf/fr3.urdf",
+    mesh_source: str = "visual",
+    volume_samples: int = 64,
+) -> dict:
     root = require_source_root()
     script = root / "scripts" / "check_capsule_coverage.py"
     urdf_path = pathlib.Path(urdf)
@@ -57,15 +61,25 @@ def validate_capsule_metrics(metrics: dict, max_capv_aabb: float, max_r_binmed: 
         failures.append("not all links are covered")
     for row in metrics.get("links", []):
         if float(row["capV_aabb"]) > max_capv_aabb:
-            failures.append(f"{row['link']}: capV/aabb {row['capV_aabb']:.2f} > {max_capv_aabb:.2f}")
+            failures.append(
+                f"{row['link']}: capV/aabb {row['capV_aabb']:.2f} > {max_capv_aabb:.2f}"
+            )
         if float(row["r_binMed"]) > max_r_binmed:
             failures.append(f"{row['link']}: r/binMed {row['r_binMed']:.2f} > {max_r_binmed:.2f}")
     return failures
 
 
-def validate_capsule_file(caps_json: str, urdf: str, max_capv_aabb: float, max_r_binmed: float,
-                          mesh_source: str = "visual", volume_samples: int = 64) -> int:
-    metrics = _capsule_metrics(caps_json, urdf, mesh_source=mesh_source, volume_samples=volume_samples)
+def validate_capsule_file(
+    caps_json: str,
+    urdf: str,
+    max_capv_aabb: float,
+    max_r_binmed: float,
+    mesh_source: str = "visual",
+    volume_samples: int = 64,
+) -> int:
+    metrics = _capsule_metrics(
+        caps_json, urdf, mesh_source=mesh_source, volume_samples=volume_samples
+    )
     print(json.dumps(metrics, indent=2, sort_keys=True))
     failures = validate_capsule_metrics(metrics, max_capv_aabb, max_r_binmed)
     if failures:
@@ -87,8 +101,12 @@ def compare_capsule_files(
     mesh_source: str = "visual",
     volume_samples: int = 64,
 ) -> int:
-    baseline = _capsule_metrics(baseline_json, urdf, mesh_source=mesh_source, volume_samples=volume_samples)
-    candidate = _capsule_metrics(candidate_json, urdf, mesh_source=mesh_source, volume_samples=volume_samples)
+    baseline = _capsule_metrics(
+        baseline_json, urdf, mesh_source=mesh_source, volume_samples=volume_samples
+    )
+    candidate = _capsule_metrics(
+        candidate_json, urdf, mesh_source=mesh_source, volume_samples=volume_samples
+    )
     baseline_capv = _worst(baseline, "capV_aabb")
     candidate_capv = _worst(candidate, "capV_aabb")
     baseline_r = _worst(baseline, "r_binMed")
@@ -109,9 +127,7 @@ def compare_capsule_files(
                 f"candidate capV/aabb worsened: {candidate_capv:.2f} > {baseline_capv:.2f}"
             )
         if candidate_r > baseline_r:
-            failures.append(
-                f"candidate r/binMed worsened: {candidate_r:.2f} > {baseline_r:.2f}"
-            )
+            failures.append(f"candidate r/binMed worsened: {candidate_r:.2f} > {baseline_r:.2f}")
     if failures:
         print("candidate validation failed:", file=sys.stderr)
         for failure in failures:

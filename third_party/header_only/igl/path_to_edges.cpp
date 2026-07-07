@@ -39,4 +39,3 @@ IGL_INLINE void igl::path_to_edges(
 template void igl::path_to_edges<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, bool);
 template void igl::path_to_edges<int, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::vector<int, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, bool);
 #endif
-  

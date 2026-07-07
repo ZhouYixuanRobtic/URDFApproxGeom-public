@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_BARYCENTRIC_INTERPOLATION_H
 #define IGL_BARYCENTRIC_INTERPOLATION_H
@@ -11,7 +11,7 @@
 #include <Eigen/Core>
 namespace igl
 {
-  /// Interpolate data on a triangle mesh using barycentric coordinates 
+  /// Interpolate data on a triangle mesh using barycentric coordinates
   ///
   /// @param[in] D  #D by dim list of per-vertex data
   /// @param[in] F  #F by 3 list of triangle indices
@@ -37,4 +37,3 @@ namespace igl
 #endif
 
 #endif
-

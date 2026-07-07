@@ -50,7 +50,7 @@ namespace igl
   /// \overload
   /// Compute a harmonic map using a given Laplacian and mass matrix
   ///
-  /// @param[in] L  #V by #V discrete (integrated) Laplacian  
+  /// @param[in] L  #V by #V discrete (integrated) Laplacian
   ///  @param[in] M  #V by #V mass matrix
   template <
     typename DerivedL,
@@ -68,10 +68,10 @@ namespace igl
   /// Build the discrete k-harmonic operator (computing integrated quantities).
   /// That is, if the k-harmonic PDE is Q x = 0, then this minimizes x' Q x
   ///
-  /// @param[in] L  #V by #V discrete (integrated) Laplacian  
+  /// @param[in] L  #V by #V discrete (integrated) Laplacian
   /// @param[in] M  #V by #V mass matrix
   /// @param[in] k  power of harmonic operation (1: harmonic, 2: biharmonic, etc)
-  /// @param[out] Q  #V by #V discrete (integrated) k-Laplacian  
+  /// @param[out] Q  #V by #V discrete (integrated) k-Laplacian
   template <
     typename DerivedL,
     typename DerivedM,

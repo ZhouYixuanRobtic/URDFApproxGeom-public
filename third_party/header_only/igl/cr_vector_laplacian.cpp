@@ -99,16 +99,16 @@ igl::cr_vector_laplacian_intrinsic(
       eki=l_sq(f,(e+2)%3); //These are squared quantities.
       const ScalarL lens = sqrt(eij*eki);
       const ScalarL o = oE(f,e)*oE(f,(e+2)%3);
-      
+
       tripletList.emplace_back(E(f,e), E(f,e), 2./dA(f) * eij);
       tripletList.emplace_back(E(f,e)+nE, E(f,e)+nE, 2./dA(f) * eij);
-      
+
       const ScalarL Dijki = o * pow(eij-ejk+eki,2)/(2.*lens*dA(f));
       tripletList.emplace_back(E(f,e), E(f,(e+2)%3), Dijki);
       tripletList.emplace_back(E(f,(e+2)%3), E(f,e), Dijki);
       tripletList.emplace_back(E(f,e)+nE, E(f,(e+2)%3)+nE, Dijki);
       tripletList.emplace_back(E(f,(e+2)%3)+nE, E(f,e)+nE, Dijki);
-      
+
       const ScalarL Dijkiperp = -o * (eij-ejk+eki)/lens;
       tripletList.emplace_back(E(f,e), E(f,(e+2)%3)+nE, Dijkiperp);
       tripletList.emplace_back(E(f,(e+2)%3)+nE, E(f,e), Dijkiperp);
