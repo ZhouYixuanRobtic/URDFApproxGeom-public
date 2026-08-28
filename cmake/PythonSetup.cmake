@@ -133,7 +133,7 @@ setup(
     install_requires=['pybind11-stubgen>=0.12.0', 'wheel>=0.36.0'],
     classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: Creative Commons Attribution-NonCommercial 4.0 International License',
+        'License :: Other/Proprietary License',
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.8',

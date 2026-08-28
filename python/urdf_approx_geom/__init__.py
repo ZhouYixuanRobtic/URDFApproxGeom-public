@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Public Python API for URDF approximate collision geometry generation."""
 
 from __future__ import annotations
@@ -22,6 +25,7 @@ def _extension_function(name: str):
 
 capsuleized = _extension_function("capsuleized")
 convex = _extension_function("convex")
+single_spherized = _extension_function("single_spherized")
 spherized = _extension_function("spherized")
 
 __all__ = [
@@ -32,5 +36,6 @@ __all__ = [
     "generate_all",
     "generate_capsule_multi",
     "generate_sphere_pair",
+    "single_spherized",
     "spherized",
 ]

@@ -1,25 +1,12 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #include "CapsuleURDFGenerator.h"
 #include "CapsuleCrossSection.h"
 
-#include <ManifoldPlus/Manifold.h>
 #include <urdf_model/model.h>
 #include <yaml-cpp/yaml.h>
 #include "irmv/third_party/json.hpp"
@@ -136,9 +123,9 @@ void CapsuleURDFGenerator::fitAndEmit(const urdf::LinkSharedPtr& link, const Eig
     fit_options.union_volume_samples_per_axis = union_volume_samples_per_axis_;
 
     auto caps = urdf_approx_geom::fitCapsulesByCrossSection(Vlf, F, fit_options);
-    // The fit ran on the watertight (Manifold) mesh, which may differ from
-    // the original; grow again against the ORIGINAL mesh vertices so the
-    // real collision surface is fully covered.
+    // The fit ran on the validated mesh, which may differ from the original;
+    // grow again against the ORIGINAL mesh vertices so the real collision
+    // surface is fully covered.
     urdf_approx_geom::growCapsulesToCover(caps, Vorig_lf);
 
     link->collision_array.clear();
@@ -173,9 +160,9 @@ irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::run(
             continue;
 
         Eigen::MatrixXd V;
-        MatrixD OUT_V;
+        Eigen::MatrixXd OUT_V;
         Eigen::MatrixXi F, N;
-        MatrixI OUT_F;
+        Eigen::MatrixXi OUT_F;
         bool alreadyOBJ = false;
         auto lret = loadedIntoIGL(src.filename, V, F, N, alreadyOBJ);
         if (!lret.isOk()) {
@@ -183,9 +170,13 @@ irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::run(
             return lret;
         }
 
-        // Watertight manifold (cross-section slicing needs a closed surface).
-        auto m_manifold = std::make_unique<Manifold>();
-        m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
+        // Cross-section slicing needs a closed, consistently oriented surface.
+        auto vret = validateMeshForMode(V, F, MeshMode::Capsule, OUT_V, OUT_F, link_name,
+                                        src.filename.string());
+        if (!vret.isOk()) {
+            IRMV_ERROR("{}", vret.message());
+            return vret;
+        }
         if (OUT_V.rows() < 4 || OUT_F.rows() == 0)
             continue;
 
@@ -218,9 +209,9 @@ irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::runMulti(
         return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, "runMulti: no presets requested"};
     }
 
-    // Phase 1 -- load the URDF once, resolve + load + Manifold each link's mesh
-    // once (parallel across links). The expensive part (mesh IO + watertight
-    // pass) happens exactly once per link regardless of how many presets run.
+    // Phase 1 -- load the URDF once, resolve + load + validate each link's mesh
+    // once (parallel across links). The expensive part (mesh IO + validation)
+    // happens exactly once per link regardless of how many presets run.
     urdf::ModelInterfaceSharedPtr base_model;
     auto ret = loadURDF(urdf_path, base_model);
     if (!ret.isOk()) {
@@ -241,51 +232,62 @@ irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::runMulti(
                                                                    base_model->links_.end());
     std::vector<LinkMesh> meshes(links.size());
 
-    std::vector<std::future<void>> futures;
+    std::vector<std::future<irmv_core::bot_common::ErrorInfo>> futures;
     for (size_t idx = 0; idx < links.size(); ++idx) {
-        futures.emplace_back(std::async(std::launch::async, [&, idx]() {
-            auto& lp = links[idx];
-            auto& out = meshes[idx];
-            out.name = lp.first;
-            const auto& link = lp.second;
-            if (link->collision_array.size() > 1)
-                return;  // validated later per-preset
-            MeshSource src;
-            if (!resolveMeshSource(link, use_visual_, replace_pairs, src))
-                return;
+        futures.emplace_back(std::async(
+            std::launch::async,
+            [&, idx]() -> irmv_core::bot_common::ErrorInfo {
+                auto& lp = links[idx];
+                auto& out = meshes[idx];
+                out.name = lp.first;
+                const auto& link = lp.second;
+                if (link->collision_array.size() > 1)
+                    return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                            "only one collision mesh per link accepted"};
+                MeshSource src;
+                if (!resolveMeshSource(link, use_visual_, replace_pairs, src))
+                    return {irmv_core::bot_common::ErrorCode::OK, ""};
 
-            Eigen::MatrixXd V;
-            MatrixD OUT_V;
-            Eigen::MatrixXi F, N;
-            MatrixI OUT_F;
-            bool alreadyOBJ = false;
-            auto lret = loadedIntoIGL(src.filename, V, F, N, alreadyOBJ);
-            if (!lret.isOk()) {
-                IRMV_ERROR("link '{}': {}", link->name, lret.message());
-                return;
-            }
-            auto m_manifold = std::make_unique<Manifold>();
-            m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
-            if (OUT_V.rows() < 4 || OUT_F.rows() == 0)
-                return;
+                Eigen::MatrixXd V;
+                Eigen::MatrixXd OUT_V;
+                Eigen::MatrixXi F, N;
+                Eigen::MatrixXi OUT_F;
+                bool alreadyOBJ = false;
+                auto lret = loadedIntoIGL(src.filename, V, F, N, alreadyOBJ);
+                if (!lret.isOk()) {
+                    IRMV_ERROR("link '{}': {}", link->name, lret.message());
+                    return lret;
+                }
+                auto vret = validateMeshForMode(V, F, MeshMode::Capsule, OUT_V, OUT_F,
+                                                link->name, src.filename.string());
+                if (!vret.isOk()) {
+                    IRMV_ERROR("link '{}': {}", link->name, vret.message());
+                    return vret;
+                }
+                if (OUT_V.rows() < 4 || OUT_F.rows() == 0)
+                    return {irmv_core::bot_common::ErrorCode::OK, ""};
 
-            Eigen::Matrix3d R = src.rotation.toRotationMatrix();
-            const Eigen::Vector3d& T = src.translation;
-            Eigen::MatrixXd Vlf(OUT_V.rows(), 3);
-            for (int i = 0; i < OUT_V.rows(); ++i)
-                Vlf.row(i) = (T + R * OUT_V.row(i).transpose()).transpose();
-            Eigen::MatrixXd Vorig_lf(V.rows(), 3);
-            for (int i = 0; i < V.rows(); ++i)
-                Vorig_lf.row(i) = (T + R * V.row(i).transpose()).transpose();
+                Eigen::Matrix3d R = src.rotation.toRotationMatrix();
+                const Eigen::Vector3d& T = src.translation;
+                Eigen::MatrixXd Vlf(OUT_V.rows(), 3);
+                for (int i = 0; i < OUT_V.rows(); ++i)
+                    Vlf.row(i) = (T + R * OUT_V.row(i).transpose()).transpose();
+                Eigen::MatrixXd Vorig_lf(V.rows(), 3);
+                for (int i = 0; i < V.rows(); ++i)
+                    Vorig_lf.row(i) = (T + R * V.row(i).transpose()).transpose();
 
-            out.Vlf = std::move(Vlf);
-            out.Vorig_lf = std::move(Vorig_lf);
-            out.F = OUT_F;
-            out.valid = true;
-        }));
+                out.Vlf = std::move(Vlf);
+                out.Vorig_lf = std::move(Vorig_lf);
+                out.F = OUT_F;
+                out.valid = true;
+                return {irmv_core::bot_common::ErrorCode::OK, ""};
+            }));
     }
-    for (auto& f : futures)
-        f.get();
+    for (auto& f : futures) {
+        auto fut_ret = f.get();
+        if (!fut_ret.isOk())
+            return fut_ret;
+    }
 
     // Phase 2 -- per preset: fresh URDF parse, fit each link on its cached mesh.
     for (const auto& preset : presets) {

@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Command line interface for URDF approximate collision geometry."""
 
 from __future__ import annotations
@@ -26,7 +29,7 @@ def _run_compare(args) -> int:
 
     Reuses intermediates: the sphere single+default pair is one generator run
     (the single sphere is the default run's biggest_sphere), and every capsule
-    preset shares one mesh load + one Manifold pass per link."""
+    preset shares one mesh load + one validation pass per link."""
     import shutil
     import tempfile
 

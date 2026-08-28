@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Smoke test for the urdf_approx_geom pybind11 extension (capsule path)."""
 
 import json

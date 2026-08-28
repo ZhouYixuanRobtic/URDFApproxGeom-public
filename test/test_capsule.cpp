@@ -1,24 +1,14 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #include <gtest/gtest.h>
 #include <cmath>
+#include <filesystem>
 #include <fstream>
+#include <string>
 #include "CapsuleCrossSection.h"
 #include "CapsuleFitter.h"
 #include "CapsuleURDFGenerator.h"
@@ -36,6 +26,27 @@ static Eigen::MatrixXd ring(double r, double x0, int n) {
         V(i, 2) = r * std::sin(a);
     }
     return V;
+}
+
+// The checked-in FR3 URDF uses absolute /workspace/... mesh paths. In a source
+// checkout outside the container, rewrite those to the configured resource root
+// so end-to-end generator tests are runnable on any machine.
+static std::string portableFr3Urdf() {
+    namespace fs = std::filesystem;
+    const std::string resource_root = URDFApproxGeom_RESOURCE_PATH;
+    const std::string src = resource_root + "/fr3/urdf/fr3.urdf";
+    std::ifstream in(src);
+    std::string text((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    const std::string old_prefix = "/workspace/resources";
+    size_t pos = 0;
+    while ((pos = text.find(old_prefix, pos)) != std::string::npos) {
+        text.replace(pos, old_prefix.size(), resource_root);
+        pos += resource_root.size();
+    }
+    fs::path out = fs::temp_directory_path() / "fr3_portable_capsule_test.urdf";
+    std::ofstream f(out);
+    f << text;
+    return out.string();
 }
 
 // A capped cylinder (two end rings) must yield radius == r and a segment
@@ -677,7 +688,7 @@ TEST(CapsuleRun, EmitsNativeCylinderSphere) {
     const std::string out_urdf = "/tmp/fr3_sparse_capsule_emit_test.urdf";
     CapsuleURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) + "/capsule/capsuleConfig.yml",
                            /*use_visual=*/false);
-    auto ret = g.run("/workspace/resources/fr3/urdf/fr3.urdf", out_urdf, {});
+    auto ret = g.run(portableFr3Urdf(), out_urdf, {});
     ASSERT_TRUE(ret.isOk()) << ret.message();
 
     // JSON sidecar: capsules carry p0, p1, radius > 0.
@@ -712,7 +723,7 @@ TEST(CapsuleRun, TightPresetAddsBaseLinkDetail) {
     CapsuleURDFGenerator g(std::string(URDFApproxGeom_CONFIG_PATH) +
                            "/capsule/capsuleConfig_tight.yml",
                            /*use_visual=*/false);
-    auto ret = g.run("/workspace/resources/fr3/urdf/fr3.urdf", out_urdf, {});
+    auto ret = g.run(portableFr3Urdf(), out_urdf, {});
     ASSERT_TRUE(ret.isOk()) << ret.message();
 
     std::ifstream f("/tmp/fr3_tight_link0_detail_test.json");

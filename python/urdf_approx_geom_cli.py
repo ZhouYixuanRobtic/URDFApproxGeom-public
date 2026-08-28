@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Backward-compatible module wrapper.
 
 New code should import from ``urdf_approx_geom`` or run

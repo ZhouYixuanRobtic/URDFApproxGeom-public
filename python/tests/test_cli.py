@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Tests for the unified CLI with subcommands."""
 
 from __future__ import annotations

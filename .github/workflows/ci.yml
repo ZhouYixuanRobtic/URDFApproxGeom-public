@@ -79,6 +79,7 @@ jobs:
             set -e
             cmake -B build -DCMAKE_BUILD_TYPE=Release -DCOMPILE_URDFApproxGeom_PYBINDING=ON
             cmake --build build -j$(nproc)
+            python3 scripts/prepare_test_assets.py
             ./build/test/test_capsule --gtest_color=no
             ./build/test/test_spheretree --gtest_color=no
             PYTHONPATH=/workspace/python:/workspace/build/python python3 -m pytest python/tests -q
@@ -115,3 +116,116 @@ jobs:
         run: |
           echo "Skipping full Docker build because private registry credentials are not available."
           echo "The source-hygiene job still runs on every pull request."
+
+  edition-build:
+    needs: check-secrets
+    if: ${{ needs.check-secrets.outputs.has_registry == 'true' }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [research, commercial]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Log in to Docker registry
+        uses: docker/login-action@v3
+        with:
+          registry: irmv-docker-hub-registry.cn-shanghai.cr.aliyuncs.com
+          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          if [ "${{ matrix.edition }}" = "research" ]; then
+            ENABLE=ON
+          else
+            ENABLE=OFF
+          fi
+          docker build --build-arg ENABLE_SPHERE_TREE=$ENABLE \
+            -t urdfapprox-${{ matrix.edition }} -f docker/Dockerfile .
+
+      - name: Configure and build
+        run: |
+          if [ "${{ matrix.edition }}" = "research" ]; then
+            ENABLE=ON
+          else
+            ENABLE=OFF
+          fi
+          docker run --rm -v $PWD:/workspace urdfapprox-${{ matrix.edition }} bash -lc "
+            set -e
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+              -DCOMPILE_URDFApproxGeom_PYBINDING=ON \
+              -DURDFApproxGeom_ENABLE_SPHERE_TREE=\$ENABLE
+            cmake --build build -j\$(nproc)
+          "
+
+      - name: Commercial binary scan
+        if: matrix.edition == 'commercial'
+        run: |
+          docker run --rm -v $PWD:/workspace urdfapprox-commercial bash -lc '
+            set -e
+            if find /usr/local -iname "*ManifoldPlus*" -o -iname "*sphere_tree*" -o -iname "*gdiam*" | grep .; then
+              echo "Forbidden commercial artifacts found"
+              exit 1
+            fi
+            if ldconfig -p | grep -E "libCGAL|libgmp|libManifoldPlus" ; then
+              echo "Forbidden commercial libraries found"
+              exit 1
+            fi
+            echo "Commercial binary scan passed"
+          '
+
+  sbom:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Generate SBOMs
+        run: |
+          python3 scripts/generate_sbom.py research build/sbom-research.cyclonedx.json
+          python3 scripts/generate_sbom.py commercial build/sbom-commercial.cyclonedx.json
+
+      - name: Upload SBOMs
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: |
+            build/sbom-research.cyclonedx.json
+            build/sbom-commercial.cyclonedx.json
+
+  license-scan:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Run local commercial source scanner
+        run: python3 scripts/check_commercial_source.py
+
+      - name: Scan for forbidden build-time dependencies in commercial paths
+        run: |
+          set -e
+          if grep -R -n -E \
+              "add_subdirectory\(third_party/ManifoldPlus\)|#include <ManifoldPlus/|#include <igl/copyleft/|libcgal-dev|libgmp-dev" \
+              --include='CMakeLists.txt' --include='*.cmake' --include='Dockerfile' \
+              --include='*.cpp' --include='*.h' --include='*.hpp' .; then
+            echo "Forbidden commercial dependency reference found"
+            exit 1
+          fi
+          if grep -R -n -E \
+              "#include [<\"]ManifoldPlus|ManifoldPlus/|add_subdirectory\(third_party/ManifoldPlus\)|target_link_libraries\([^)]*ManifoldPlus|libcgal-dev|libgmp-dev|igl/copyleft" \
+              CMakeLists.txt app bot_utils interface python src include test docker; then
+            echo "Forbidden commercial source reference found"
+            exit 1
+          fi
+          echo "License scan passed"

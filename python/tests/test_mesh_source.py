@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Tests for visual-mesh fit source, spherized_pair, capsuleized_multi, and the
 preset path regression."""
 

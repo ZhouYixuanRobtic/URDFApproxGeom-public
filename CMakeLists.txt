@@ -30,6 +30,11 @@ option(ENABLE_DOXYGEN "Enable doxygen" OFF)
 option(ENABLE_STATIC "Build with static library" OFF)
 option(COMPILE_${PROJECT_NAME}_PYBINDING "Compile pybind " OFF)
 option(ENABLE_COVERAGE "Enable code coverage instrumentation (gcov/lcov)" OFF)
+option(URDFApproxGeom_ENABLE_SPHERE_TREE "Enable sphere_tree backend (research only)" ON)
+set(URDFApproxGeom_EDITION "research" CACHE STRING "Build edition: research or commercial")
+if(URDFApproxGeom_EDITION STREQUAL "commercial" AND URDFApproxGeom_ENABLE_SPHERE_TREE)
+  message(FATAL_ERROR "Commercial edition must be configured with -DURDFApproxGeom_ENABLE_SPHERE_TREE=OFF")
+endif()
 
 # Set up modules path and include necessary scripts from cmake_template
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -83,9 +88,11 @@ add_definitions(
   -D${PROJECT_NAME}_CONFIG_PATH="${URDFApproxGeom_CONFIG_PATH}")
 
 # include area (should be installed into the system)
-set(THIS_PACKAGE_INCLUDE_DIRS
-    include third_party/header_only third_party/ManifoldPlus/include
-    third_party/sphere_tree/src bot_utils/sphereTreeWrapper/include)
+set(THIS_PACKAGE_INCLUDE_DIRS include third_party/header_only third_party/quickhull)
+if(URDFApproxGeom_ENABLE_SPHERE_TREE)
+  list(APPEND THIS_PACKAGE_INCLUDE_DIRS third_party/sphere_tree/src
+       bot_utils/sphereTreeWrapper/include)
+endif()
 
 # special handle to pass include directories to parent scope
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
@@ -112,27 +119,34 @@ include_directories(
   ${irmv_core_INCLUDE_DIRS}
   /usr/include/irmv/third_party/)
 
-add_subdirectory(third_party/ManifoldPlus)
-add_subdirectory(third_party/sphere_tree)
-add_subdirectory(bot_utils)
+if(URDFApproxGeom_ENABLE_SPHERE_TREE)
+  add_subdirectory(third_party/sphere_tree)
+  add_subdirectory(bot_utils)
+endif()
 
 # project library area
-set(THIS_PACKAGE_TARGETS ${LIBS_TO_LINK_OUT} ManifoldPlus sphereTreeWrapper)
-add_library(
-  ${PROJECT_NAME}
-  ${COMPILE_TYPE}
-  src/SphereTreeURDFGenerator.cpp
-  src/ConvexHullCollisionURDFGenerator.cpp
-  src/CapsuleFitter.cpp
-  src/CapsuleCrossSection.cpp
-  src/CapsuleURDFGenerator.cpp
-  src/URDFGenerator.cpp)
+set(THIS_PACKAGE_TARGETS)
+if(URDFApproxGeom_ENABLE_SPHERE_TREE)
+  set(THIS_PACKAGE_TARGETS ${LIBS_TO_LINK_OUT} sphereTreeWrapper)
+endif()
+set(URDFAPPROXGEOM_SOURCES
+    src/ConvexHullBackend.cpp
+    src/ConvexHullCollisionURDFGenerator.cpp
+    src/CapsuleFitter.cpp
+    src/CapsuleCrossSection.cpp
+    src/CapsuleURDFGenerator.cpp
+    src/SingleSphereURDFGenerator.cpp
+    src/URDFGenerator.cpp)
+if(URDFApproxGeom_ENABLE_SPHERE_TREE)
+  list(APPEND URDFAPPROXGEOM_SOURCES src/SphereTreeURDFGenerator.cpp)
+endif()
+add_library(${PROJECT_NAME} ${COMPILE_TYPE} ${URDFAPPROXGEOM_SOURCES})
 # link irmv package and/or other packages
 target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC ${THIS_PACKAGE_TARGETS}
          ${irmv_core_LIBRARIES}
-         gmp
+         yaml-cpp
          tinyxml2
          urdfdom_model
          urdfdom_world
@@ -168,6 +182,10 @@ endif()
 
 # package area
 include(PackageProject)
+set(URDFAPPROXGEOM_APPS convex capsuleized)
+if(URDFApproxGeom_ENABLE_SPHERE_TREE)
+  list(APPEND URDFAPPROXGEOM_APPS spherized)
+endif()
 myproject_package_project(
   NAME
   ${PROJECT_NAME}
@@ -176,9 +194,7 @@ myproject_package_project(
   TARGETS
   ${THIS_PACKAGE_TARGETS}
   ${PROJECT_NAME}
-  convex
-  spherized
-  capsuleized
+  ${URDFAPPROXGEOM_APPS}
   PUBLIC_INCLUDES
   ${THIS_PACKAGE_INCLUDE_DIRS}
   PUBLIC_DEPENDENCIES
@@ -192,15 +208,34 @@ myproject_package_project(
 include(GNUInstallDirs)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/config/
         DESTINATION share/URDFApproxGeom/config)
+install(FILES THIRD_PARTY_NOTICES.md NOTICE
+        DESTINATION share/doc/${PROJECT_NAME})
+if(URDFApproxGeom_ENABLE_SPHERE_TREE)
+  install(FILES LICENSE
+          DESTINATION share/doc/${PROJECT_NAME}
+          RENAME LICENSE)
+else()
+  install(FILES LICENSE.commercial
+          DESTINATION share/doc/${PROJECT_NAME}
+          RENAME LICENSE)
+endif()
+install(DIRECTORY LICENSES/
+        DESTINATION share/doc/${PROJECT_NAME}/LICENSES)
+install(FILES resources/README.md resources/fr3/NOTICE resources/robots/panda/NOTICE
+        DESTINATION share/doc/${PROJECT_NAME}/resources)
+
+if(URDFApproxGeom_ENABLE_SPHERE_TREE)
+  set(CPACK_PACKAGE_NAME "urdfapprox-research")
+else()
+  set(CPACK_PACKAGE_NAME "urdfapprox-commercial")
+endif()
+set(CPACK_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}")
 
 set(CPACK_PACKAGE_FILE_NAME
-    "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
+    "${CPACK_PACKAGE_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
 )
 
 set(CPACK_GENERATOR "DEB")
-
-set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
-set(CPACK_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}")
 set(CPACK_PACKAGE_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${AUTHOR}) # given your own name
 

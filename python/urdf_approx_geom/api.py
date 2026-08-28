@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Structured Python API over the C++ URDF approximation generators."""
 
 from __future__ import annotations
@@ -63,43 +66,9 @@ def _prepare_visual_meshes(
     C++ loader (OBJ/STL only) can fit the true visual geometry. Returns merged
     replace_pairs plus the temp dir holding the converted .obj (caller keeps it
     alive for the C++ run). No-op when every visual mesh is already OBJ/STL."""
-    import tempfile
-    import xml.etree.ElementTree as ET
+    from .mesh_prep import prepare_visual_meshes
 
-    pairs = [(str(a), str(b)) for a, b in (replace_pairs or [])]
-    try:
-        tree = ET.parse(str(input_urdf))
-    except Exception:
-        return pairs, None
-
-    unique: list[str] = []
-    seen: set[str] = set()
-    for vis in tree.iter("visual"):
-        mesh = vis.find(".//mesh")
-        if mesh is None:
-            continue
-        fn = mesh.get("filename", "")
-        if not fn or pathlib.Path(fn).suffix.lower() in {".obj", ".stl"}:
-            continue
-        if fn in seen:
-            continue
-        seen.add(fn)
-        unique.append(fn)
-    if not unique:
-        return pairs, None
-
-    import trimesh  # lazy: only required when .dae (or similar) visuals exist
-
-    _repo_root = pathlib.Path(__file__).resolve().parents[2]
-    tmp = pathlib.Path(tempfile.mkdtemp(prefix="urdf_approx_visual_"))
-    for fn in unique:
-        local_fn = (
-            str(_repo_root / fn.removeprefix("/workspace/")) if fn.startswith("/workspace/") else fn
-        )
-        mesh = trimesh.load(local_fn, force="mesh")
-        out = tmp / (pathlib.Path(fn).stem + ".obj")
-        mesh.export(out)
-        pairs.append((fn, str(out)))
+    pairs, tmp, _warnings = prepare_visual_meshes(input_urdf, replace_pairs)
     return pairs, tmp
 
 
@@ -138,6 +107,17 @@ def generate(
     output_path = pathlib.Path(output_urdf)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pairs = [(str(a), str(b)) for a, b in (replace_pairs or [])]
+
+    sphere_ext = None
+    if normal == "sphere":
+        sphere_ext = _extension()
+        if not hasattr(sphere_ext, "spherized") and not (
+            preset == "single" and hasattr(sphere_ext, "single_spherized")
+        ):
+            raise RuntimeError(
+                "sphere-tree backend is only available in the research edition; use sphere/single"
+            )
+
     config_path = pathlib.Path(config) if config else resolve_preset(normal, preset)
 
     if mesh_source not in {"visual", "collision"}:
@@ -152,9 +132,20 @@ def generate(
         json_path = _sidecar_json(output_path)
         primitive_count = _count_json_primitives(json_path, "capsules")
     elif normal == "sphere":
-        message = _extension().spherized(
-            str(input_path), str(output_path), str(config_path), pairs, bool(simplify), mesh_source
-        )
+        ext = sphere_ext if sphere_ext is not None else _extension()
+        if hasattr(ext, "spherized"):
+            message = ext.spherized(
+                str(input_path), str(output_path), str(config_path), pairs, bool(simplify),
+                mesh_source
+            )
+        elif preset == "single" and hasattr(ext, "single_spherized"):
+            message = ext.single_spherized(
+                str(input_path), str(output_path), pairs, bool(simplify), mesh_source
+            )
+        else:
+            raise RuntimeError(
+                "sphere-tree backend is only available in the research edition; use sphere/single"
+            )
         json_path = _sidecar_json(output_path)
         primitive_count = _count_json_primitives(json_path, "spheres")
     else:
@@ -194,6 +185,10 @@ def generate_sphere_pair(
     for p in (default_path, single_path):
         p.parent.mkdir(parents=True, exist_ok=True)
     pairs = [(str(a), str(b)) for a, b in (replace_pairs or [])]
+    if not hasattr(_extension(), "spherized_pair"):
+        raise RuntimeError(
+            "sphere-tree backend is only available in the research edition; use sphere/single"
+        )
     if mesh_source == "visual":
         pairs, _ = _prepare_visual_meshes(input_path, pairs)
     config_path = pathlib.Path(config) if config else resolve_preset("sphere", preset)
@@ -237,7 +232,7 @@ def generate_capsule_multi(
     replace_pairs: Iterable[tuple[str, str]] | None = None,
     mesh_source: str = "visual",
 ) -> list[GenerateResult]:
-    """Fit multiple capsule presets on one mesh load + one Manifold pass per
+    """Fit multiple capsule presets on one mesh load + one validation pass per
     link. `outputs` is an iterable of (output_urdf, preset_name) pairs."""
     input_path = pathlib.Path(input_urdf)
     pairs = [(str(a), str(b)) for a, b in (replace_pairs or [])]
