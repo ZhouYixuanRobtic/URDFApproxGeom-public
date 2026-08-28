@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Diagnostic: does each stored capsule actually cover its mesh, and is the
 PCA axis sensible? Reads fr3.urdf (collision origins + mesh files) +
 fr3_capsuleized.json, reverses the collision origin to test coverage in the

@@ -1,27 +1,18 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 #include "CapsuleURDFGenerator.h"
 #include "ConvexHullCollisionURDFGenerator.h"
+#include "SingleSphereURDFGenerator.h"
+#ifdef URDFAPPROXGEOM_ENABLE_SPHERE_TREE
 #include "SphereTreeURDFGenerator.h"
+#endif
 
 namespace py = pybind11;
 using replace_pairs_t = std::vector<std::pair<std::string, std::string>>;
@@ -60,6 +51,18 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
         },
         py::arg("input"), py::arg("output"), py::arg("replace_pairs") = replace_pairs_t{});
 
+    // Single-sphere baseline, available in both editions.
+    m.def(
+        "single_spherized",
+        [](const std::string& input, const std::string& output, replace_pairs_t replace_pairs,
+           bool simplify, const std::string& mesh_source) {
+            SingleSphereURDFGenerator g(simplify, parse_use_visual(mesh_source));
+            return g.run(input, output, replace_pairs).message();
+        },
+        py::arg("input"), py::arg("output"), py::arg("replace_pairs") = replace_pairs_t{},
+        py::arg("simplify") = true, py::arg("mesh_source") = std::string("visual"));
+
+#ifdef URDFAPPROXGEOM_ENABLE_SPHERE_TREE
     // Sphere tree -> spherized collision URDF + JSON sidecar.
     m.def(
         "spherized",
@@ -92,8 +95,8 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
         py::arg("input"), py::arg("default_output"), py::arg("single_output"),
         py::arg("config") = std::string(""), py::arg("replace_pairs") = replace_pairs_t{},
         py::arg("simplify") = true, py::arg("mesh_source") = std::string("visual"));
-
-    // Capsule, multi-preset: one mesh load + one Manifold pass per link, then
+#endif
+    // Capsule, multi-preset: one mesh load + one validation pass per link, then
     // every (output, config) preset is fit on the cached link meshes. presets is
     // a list of (output_path, config_path) tuples.
     m.def(

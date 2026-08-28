@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Research/commercial edition CMake switch `URDFApproxGeom_ENABLE_SPHERE_TREE`
+- `research` and `commercial` CMake presets
+- Self-contained QuickHull replacement (`third_party/quickhull/quickhull.hpp`) replacing CGAL
+- `SingleSphereURDFGenerator` for edition-independent `sphere/single`
+- Mesh validation helper `URDFGenerator::validateMeshForMode`
+- `test/test_mesh_validation.cpp`
+- Python `mesh_prep.py` for trimesh-based DAE repair/conversion
+- `THIRD_PARTY_NOTICES.md`, `NOTICE`, `LICENSES/`, root `LICENSE` dual-edition notice, and `LICENSE.commercial` for the commercial edition
+- SBOM generator script `scripts/generate_sbom.py`
+- Edition wheel packaging helper `scripts/build_wheel.sh`
+- Local commercial source scanner `scripts/check_commercial_source.py`
+- Test asset preparation script `scripts/prepare_test_assets.py`
+- Aliyun Codeup CI now builds research/commercial matrix
+- Resource model notices under `resources/fr3` and `resources/robots/panda`
+- Removed incorrect Trinity College Dublin disclaimers from C++ headers and root LICENSE
+
+### Changed
+- Removed ManifoldPlus from C++ sources, CMake, tests, and vendored tree
+- Removed CGAL/GMP from CMake and Docker
+- Linked `yaml-cpp` directly from the core library (fixes commercial link)
+- Trimmed libigl `copyleft/` tree
+- Python package version synced to 2.0.1 and declares `numpy`/`trimesh`
+- Dockerfile uses `ARG ENABLE_SPHERE_TREE` for edition-specific images
+- CI now builds both editions and runs a commercial license/binary scan
+
 ## [2.0.1] - 2026-07-07
 
 ### Added

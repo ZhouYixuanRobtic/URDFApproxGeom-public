@@ -47,6 +47,7 @@ stages:
     strategy:
       matrix:
         BUILD_TYPE: [Debug, Release]
+        EDITION: [research, commercial]
     jobs:
       build:
         runs-on: linux
@@ -69,13 +70,23 @@ stages:
 
           - name: cmake configure
             run: |
+              if [ "$EDITION" = "research" ]; then
+                ENABLE=ON
+              else
+                ENABLE=OFF
+              fi
               cmake -B build . \
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
                 -DENABLE_TEST=ON \
-                -DCOMPILE_URDFApproxGeom_PYBINDING=ON
+                -DCOMPILE_URDFApproxGeom_PYBINDING=ON \
+                -DURDFApproxGeom_EDITION=${EDITION} \
+                -DURDFApproxGeom_ENABLE_SPHERE_TREE=${ENABLE}
 
           - name: cmake build
             run: cmake --build build --parallel $(nproc)
+
+          - name: prepare test assets
+            run: python3 scripts/prepare_test_assets.py
 
           - name: ctest
             run: cd build && ctest --output-on-failure

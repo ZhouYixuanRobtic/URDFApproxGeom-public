@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Visualize covering capsules (from fr3_capsuleized.json) overlaid on the FR3 robot.
 
 Host-side inspection tool. Loads fr3.urdf in pybullet (mesh paths rewritten for

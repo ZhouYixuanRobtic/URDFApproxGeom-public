@@ -14,34 +14,36 @@
 #
 # Base (imc:base-2.3.0, Ubuntu 22.04) already provides irmv_core 1.3.0,
 # urdfdom, yaml-cpp, tinyxml2, Eigen, pybind11, and the non-root `irmv` user.
-# Only libcgal-dev + libgmp-dev are added (convex-hull path via
-# igl/copyleft/cgal). libigl / sphere_tree / ManifoldPlus are vendored under
-# third_party/ and built by the project.
+# The convex-hull path no longer needs CGAL/GMP; libigl / sphere_tree are
+# vendored under third_party/ and built by the project.
 
 ARG BASE=irmv-docker-hub-registry.cn-shanghai.cr.aliyuncs.com/manipulation/imc:base-2.3.0
+ARG ENABLE_SPHERE_TREE=ON
 
 # ──────────────────────────────── builder ────────────────────────────────
 FROM ${BASE} AS builder
 
+ARG ENABLE_SPHERE_TREE=ON
 USER root
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libcgal-dev \
-        libgmp-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /src
 COPY . .
 
 # Release build with pybind11 extension; tests/docs off. Install to /usr/local
 # so the runtime stage can copy a single tree (libs, headers, CLI binaries,
-# CMake package config).
-RUN cmake -S . -B build \
+# CMake package config). Set ENABLE_SPHERE_TREE=OFF for the commercial image.
+RUN if [ "$ENABLE_SPHERE_TREE" = "OFF" ]; then \
+      EDITION=commercial; \
+    else \
+      EDITION=research; \
+    fi \
+    && cmake -S . -B build \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
         -DCOMPILE_URDFApproxGeom_PYBINDING=ON \
         -DENABLE_TEST=OFF \
         -DENABLE_DOXYGEN=OFF \
+        -DURDFApproxGeom_EDITION=$EDITION \
+        -DURDFApproxGeom_ENABLE_SPHERE_TREE=${ENABLE_SPHERE_TREE} \
         -DURDFApproxGeom_CONFIG_PATH=/usr/local/share/URDFApproxGeom/config \
     && cmake --build build -j"$(nproc)" \
     && cmake --install build
@@ -49,13 +51,7 @@ RUN cmake -S . -B build \
 # ──────────────────────────────── runtime ────────────────────────────────
 FROM ${BASE} AS runtime
 
-# Runtime needs the cgal/gmp shared libs (same tiny apt layer as builder).
-USER root
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libcgal-dev \
-        libgmp-dev \
-    && rm -rf /var/lib/apt/lists/*
+ARG ENABLE_SPHERE_TREE=ON
 
 # Installed C++ artifacts: libURDFApproxGeom + third-party targets, headers,
 # spherized/convex/capsuleized binaries, CMake config under /usr/local/share.
@@ -70,7 +66,11 @@ COPY --from=builder /src/build/python/_urdf_approx_geom*.so /tmp/ext/
 COPY python/ /src/python/
 COPY config/ /src/python/urdf_approx_geom/config/
 
-RUN cp /tmp/ext/_urdf_approx_geom*.so /src/python/urdf_approx_geom/ \
+# The commercial image does not ship the multi-sphere default preset.
+RUN if [ "$ENABLE_SPHERE_TREE" = "OFF" ]; then \
+      rm -f /src/python/urdf_approx_geom/config/sphereTree/default.yml; \
+    fi \
+    && cp /tmp/ext/_urdf_approx_geom*.so /src/python/urdf_approx_geom/ \
     && pip3 install --no-cache-dir --retries 5 --timeout 120 --upgrade pip setuptools \
     && pip3 install --no-cache-dir --retries 5 --timeout 120 /src/python \
     && rm -rf /src /tmp/ext

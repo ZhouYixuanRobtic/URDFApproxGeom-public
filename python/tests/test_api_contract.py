@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Tests for the structured generate / generate_all API."""
 
 from __future__ import annotations

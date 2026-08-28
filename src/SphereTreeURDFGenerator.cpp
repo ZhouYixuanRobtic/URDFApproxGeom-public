@@ -1,57 +1,19 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-   You are free to use, copy, modify, and distribute this software and its
-   documentation for educational, research, and other non-commercial purposes,
-   provided that appropriate credit is given to the original author(s) and
-   copyright holder(s).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
-                              D I S C L A I M E R
-
-   IN NO EVENT SHALL TRINITY COLLEGE DUBLIN BE LIABLE TO ANY PARTY FOR
-   DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING,
-   BUT NOT LIMITED TO, LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE
-   AND ITS DOCUMENTATION, EVEN IF TRINITY COLLEGE DUBLIN HAS BEEN ADVISED OF
-   THE POSSIBILITY OF SUCH DAMAGES.
-
-   TRINITY COLLEGE DUBLIN DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED
-   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-   PURPOSE. THE SOFTWARE PROVIDED HEREIN IS ON AN "AS IS" BASIS, AND TRINITY
-   COLLEGE DUBLIN HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
-   ENHANCEMENTS, OR MODIFICATIONS.
-
-   The authors may be contacted at the following e-mail addresses:
-
-           YX.E.Z yixuanzhou@sjtu.edu.cn
-
-   Further information about the IRMV and its projects can be found at the ISG web site :
-
-          https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #include "SphereTreeURDFGenerator.h"
 #include <igl/decimate.h>
 #include <igl/volume.h>
+#include <algorithm>
 #include <urdf_model/model.h>
 #include <filesystem>
 #include <fstream>
 #include <future>
 #include <string>
 #include <vector>
-#include "ManifoldPlus/Manifold.h"
 #include "irmv/bot_common/log/singleton_logger.h"
 #include "irmv/third_party/json.hpp"
 #include "sphereTreeWrapper/sphereTreeGrid.h"
@@ -119,26 +81,26 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                 {
                     std::filesystem::path filename = src.filename;
                     Eigen::MatrixXd V;
-                    MatrixD OUT_V;
+                    Eigen::MatrixXd OUT_V;
                     Eigen::MatrixXi F, N;
-                    MatrixI OUT_F;
+                    Eigen::MatrixXi OUT_F;
                     bool alreadyOBJ = false;
                     auto ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
                     if (!ret.isOk()) {
                         IRMV_ERROR("{}", ret.message());
                         return ret;
                     }
-                    // do manifold watertight process
-                    IRMV_INFO(
-                        "-------------------Start Processing Watertight Manifold----------------");
-                    auto m_manifold = std::make_unique<Manifold>();
-                    m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
-                    IRMV_INFO("Got {} faces after watertight manifold processing", OUT_F.rows());
-                    IRMV_INFO(
-                        "-------------------End Processing Watertight Manifold----------------");
+                    // Multi-sphere mode requires a closed, consistently oriented mesh.
+                    auto vret = validateMeshForMode(V, F, MeshMode::SphereTree, OUT_V, OUT_F,
+                                                    link_pair.first, src.filename.string());
+                    if (!vret.isOk()) {
+                        IRMV_ERROR("{}", vret.message());
+                        return vret;
+                    }
+                    IRMV_INFO("Got {} faces after mesh validation", OUT_F.rows());
                     // compute volume;
                     Eigen::VectorXd vol;
-                    Eigen::MatrixXi T(F.rows(), 4);
+                    Eigen::MatrixXi T(OUT_F.rows(), 4);
                     T.leftCols(3) = OUT_F;
                     T.col(3).setZero();
                     igl::volume(OUT_V, T, vol);
@@ -165,7 +127,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                               "----------------",
                               link_count++);
                     SphereTreeMethod::SphereTreeUniquePtr m_method;
-                    switch (type_) {
+                    switch (static_cast<SphereTreeMethod::STMethodType>(type_)) {
                     case SphereTreeMethod::Grid:
                         m_method = SphereTreeMethod::SphereTreeMethodGrid::create(config_path_);
                         break;
@@ -297,9 +259,9 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSingleSphereModel
         {
             std::filesystem::path filename = src.filename;
             Eigen::MatrixXd V;
-            MatrixD OUT_V;
+            Eigen::MatrixXd OUT_V;
             Eigen::MatrixXi F, N;
-            MatrixI OUT_F;
+            Eigen::MatrixXi OUT_F;
             bool alreadyOBJ = false;
             ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
             if (!ret.isOk()) {
@@ -307,12 +269,14 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSingleSphereModel
                 return ret;
             }
 
-            // watertight manifold processing
-            IRMV_INFO("-------------------Start Processing Watertight Manifold----------------");
-            auto m_manifold = std::make_unique<Manifold>();
-            m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
-            IRMV_INFO("Got {} faces after watertight manifold processing", OUT_F.rows());
-            IRMV_INFO("-------------------End Processing Watertight Manifold----------------");
+            // Single-sphere mode only needs the vertex set; still clean the mesh
+            // so duplicate vertices and degenerate faces do not distort the bound.
+            auto vret = validateMeshForMode(V, F, MeshMode::SphereSingle, OUT_V, OUT_F,
+                                            link_pair.first, src.filename.string());
+            if (!vret.isOk()) {
+                IRMV_ERROR("{}", vret.message());
+                return vret;
+            }
 
             if (doSimplify) {
                 IRMV_INFO("-------------------Start Simplify----------------");

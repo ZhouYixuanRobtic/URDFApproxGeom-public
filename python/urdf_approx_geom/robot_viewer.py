@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """robot_viewer integration.
 
 `robot_viewer` is a web URDF/MJCF viewer (https://github.com/fan-ziqi/robot_viewer).

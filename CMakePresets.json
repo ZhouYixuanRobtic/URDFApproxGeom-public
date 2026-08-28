@@ -56,6 +56,32 @@
         "ENABLE_TEST": "ON",
         "ENABLE_COVERAGE": "ON"
       }
+    },
+    {
+      "name": "research",
+      "displayName": "Research (full sphere-tree)",
+      "description": "Research edition with sphere_tree backend enabled",
+      "binaryDir": "build/research",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_TEST": "ON",
+        "COMPILE_URDFApproxGeom_PYBINDING": "ON",
+        "URDFApproxGeom_ENABLE_SPHERE_TREE": "ON",
+        "URDFApproxGeom_EDITION": "research"
+      }
+    },
+    {
+      "name": "commercial",
+      "displayName": "Commercial (no sphere-tree)",
+      "description": "Commercial edition without sphere_tree backend",
+      "binaryDir": "build/commercial",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_TEST": "ON",
+        "COMPILE_URDFApproxGeom_PYBINDING": "ON",
+        "URDFApproxGeom_ENABLE_SPHERE_TREE": "OFF",
+        "URDFApproxGeom_EDITION": "commercial"
+      }
     }
   ],
   "buildPresets": [
@@ -78,6 +104,16 @@
       "name": "coverage",
       "configurePreset": "coverage",
       "jobs": 0
+    },
+    {
+      "name": "research",
+      "configurePreset": "research",
+      "jobs": 0
+    },
+    {
+      "name": "commercial",
+      "configurePreset": "commercial",
+      "jobs": 0
     }
   ],
   "testPresets": [
@@ -98,6 +134,20 @@
     {
       "name": "coverage",
       "configurePreset": "coverage",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "research",
+      "configurePreset": "research",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "commercial",
+      "configurePreset": "commercial",
       "output": {
         "outputOnFailure": true
       }
