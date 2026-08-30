@@ -14,13 +14,15 @@ project itself.  Run from the repository root:
 from __future__ import annotations
 
 import json
+import re
 import sys
+import uuid
 from pathlib import Path
 
 COMPONENTS = [
     ("Eigen3", "3.1", "MPL-2.0"),
     ("yaml-cpp", "0.6", "MIT"),
-    ("urdfdom", "1.0", "BSD"),
+    ("urdfdom", "1.0", "BSD-3-Clause"),
     ("tinyxml2", "8.0", "Zlib"),
     ("pybind11", "2", "BSD-3-Clause"),
     ("GoogleTest", "1", "BSD-3-Clause"),
@@ -48,16 +50,22 @@ def main(argv: list[str] | None = None) -> int:
     if edition == "commercial":
         components = [c for c in COMPONENTS if c[0] not in RESEARCH_ONLY]
 
+    # Single source of truth for the version: pyproject.toml.
+    pyproject = (Path(__file__).resolve().parents[1] / "python" / "pyproject.toml").read_text()
+    version = re.search(r'^version\s*=\s*"([^"]+)"', pyproject, re.MULTILINE).group(1)
+
     bom = {
         "bomFormat": "CycloneDX",
         "specVersion": "1.5",
-        "serialNumber": "urn:uuid:00000000-0000-0000-0000-000000000000",
+        # CycloneDX requires a unique serialNumber per BOM instance; a fixed
+        # zero UUID would make every BOM look like the same document.
+        "serialNumber": f"urn:uuid:{uuid.uuid4()}",
         "version": 1,
         "metadata": {
             "component": {
                 "type": "application",
                 "name": f"URDFApproxGeom-{edition}",
-                "version": "2.0.1",
+                "version": version,
             }
         },
         "components": [
@@ -65,7 +73,13 @@ def main(argv: list[str] | None = None) -> int:
                 "type": "library",
                 "name": name,
                 "version": version,
-                "licenses": [{"license": {"id": license_id}}],
+                # LicenseRef-* ids must be defined in the BOM; use a name
+                # instead so validators can resolve the entry.
+                "licenses": [
+                    {"license": {"name": f"{license_id} (see THIRD_PARTY_NOTICES.md)"}}
+                    if license_id.startswith("LicenseRef-")
+                    else {"license": {"id": license_id}}
+                ],
             }
             for name, version, license_id in components
         ],

@@ -16,6 +16,7 @@ Run from the repository root:
 from __future__ import annotations
 
 import pathlib
+import sys
 
 import trimesh
 
@@ -40,8 +41,11 @@ JOBS = [
 def main() -> int:
     for src, dst in JOBS:
         if not src.exists():
-            print(f"skip missing {src}")
-            continue
+            # CI runs this before test_spheretree; fail here so a partial asset
+            # checkout surfaces at the point of detection, not as a vague
+            # "test asset missing" assertion later.
+            print(f"error: missing source {src}", file=sys.stderr)
+            return 1
         dst.parent.mkdir(parents=True, exist_ok=True)
         mesh = trimesh.load(src, force="mesh")
         mesh.export(dst)
