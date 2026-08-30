@@ -10,10 +10,8 @@
 #define URDFAPPROXGEOM_QUICKHULL_HPP
 
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <map>
-#include <set>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -29,11 +27,13 @@ struct Face {
     int v[3];
 };
 
-double orientDist(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& p) {
+// Header-only helpers: must be inline or any second TU including this header
+// would produce multiple-definition linker errors.
+inline double orientDist(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& p) {
     return (b - a).cross(c - a).dot(p - a);
 }
 
-void orientFace(Face& f, const std::vector<Vec3>& P, const Vec3& inside) {
+inline void orientFace(Face& f, const std::vector<Vec3>& P, const Vec3& inside) {
     const Vec3& a = P[f.v[0]];
     const Vec3& b = P[f.v[1]];
     const Vec3& c = P[f.v[2]];
@@ -42,7 +42,7 @@ void orientFace(Face& f, const std::vector<Vec3>& P, const Vec3& inside) {
     }
 }
 
-std::pair<int, int> edgeKey(int a, int b) {
+inline std::pair<int, int> edgeKey(int a, int b) {
     if (a > b) std::swap(a, b);
     return {a, b};
 }
@@ -52,16 +52,25 @@ inline void computeConvexHull3DImpl(const Eigen::MatrixXd& V, Eigen::MatrixXd& H
     HV.resize(0, 3);
     HF.resize(0, 3);
     if (V.rows() < 4) return;
+    if (!V.allFinite()) return;
     using namespace quickhull_detail;
+
+    // Normalize coordinates to a unit-scale box centered at the origin. This
+    // keeps the absolute tolerances below scale-free for any coordinate
+    // magnitude (sub-mm parts in meters to geospatial data), and prevents the
+    // dedup quantization below from overflowing long long on large coordinates.
+    const Eigen::Vector3d lo = V.colwise().minCoeff();
+    const Eigen::Vector3d hi = V.colwise().maxCoeff();
+    const Eigen::Vector3d center = 0.5 * (lo + hi);
+    const double span = (hi - lo).maxCoeff();
+    if (span <= 0.0) return;  // degenerate: all points coincide
 
     // Deduplicate input vertices.
     std::vector<Vec3> P;
     P.reserve(V.rows());
-    double scale = 0.0;
     for (int i = 0; i < V.rows(); ++i) {
         Vec3 p = V.row(i);
-        scale = std::max(scale, p.cwiseAbs().maxCoeff());
-        P.push_back(p);
+        P.push_back((p - center) / span);
     }
     std::map<std::tuple<long long, long long, long long>, int> seen;
     std::vector<Vec3> uniqueP;
@@ -79,7 +88,10 @@ inline void computeConvexHull3DImpl(const Eigen::MatrixXd& V, Eigen::MatrixXd& H
     const int n = static_cast<int>(P.size());
     if (n < 4) return;
 
-    const double eps = 1e-10 * std::max(1.0, scale);
+    // In normalized space all coordinates are O(1): a length tolerance of 1e-10
+    // is safely below the lengths compared against it, and orientDist (a
+    // volume) is O(1) for non-degenerate tetrahedra.
+    const double eps = 1e-10;
 
     // Pick two extreme points along the largest spread axis.
     int a = 0, b = 0;
@@ -197,7 +209,7 @@ inline void computeConvexHull3DImpl(const Eigen::MatrixXd& V, Eigen::MatrixXd& H
         }
     }
     HV.resize(static_cast<int>(remap.size()), 3);
-    for (const auto& kv : remap) HV.row(kv.second) = P[kv.first];
+    for (const auto& kv : remap) HV.row(kv.second) = P[kv.first] * span + center;
 
     HF.resize(static_cast<int>(faces.size()), 3);
     for (int i = 0; i < static_cast<int>(faces.size()); ++i) {
