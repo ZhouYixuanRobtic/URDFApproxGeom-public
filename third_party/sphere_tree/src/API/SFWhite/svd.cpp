@@ -45,7 +45,7 @@ void svbksb(float **u, float w[], float **v, int m, int n, float b[],
   free_vector(tmp, 1, n);
 }
 
-void svdcmp(float **a, int m, int n, float w[], float **v) {
+int svdcmp(float **a, int m, int n, float w[], float **v) {
   int flag, i, its, j, jj, k, l, nm;
   float anorm, c, f, g, h, s, scale, x, y, z, *rv1;
 
@@ -189,8 +189,10 @@ void svdcmp(float **a, int m, int n, float w[], float **v) {
         }
         break;
       }
-      if (its == 30)
-        nrerror("no convergence in 30 svdcmp iterations");
+      if (its == 30) {
+        free_vector(rv1, 1, n);
+        return 1;  // non-convergence: caller falls back (see ball.cpp)
+      }
       x = w[l];
       nm = k - 1;
       y = w[nm];
@@ -242,4 +244,5 @@ void svdcmp(float **a, int m, int n, float w[], float **v) {
     }
   }
   free_vector(rv1, 1, n);
+  return 0;
 }
