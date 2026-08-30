@@ -86,6 +86,8 @@ TEST_F(SimplifyTest, CVHTest) {
         Eigen::MatrixXi CH_F;
 
         urdf_approx_geom::computeConvexHull3D(V, CH_V, CH_F);
+        ASSERT_GT(CH_V.rows(), 0) << "Convex hull produced no vertices for " << stlFile;
+        ASSERT_GT(CH_F.rows(), 0) << "Convex hull produced no faces for " << stlFile;
         std::string output_path = stlFile;
         replaceWith(output_path, "/visual", "/collision/simple");
         replaceWith(output_path, ".stl", ".obj");
