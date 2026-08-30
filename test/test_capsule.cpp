@@ -8,7 +8,9 @@
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <string>
+#include <unistd.h>
 #include "CapsuleCrossSection.h"
 #include "CapsuleFitter.h"
 #include "CapsuleURDFGenerator.h"
@@ -36,16 +38,31 @@ static std::string portableFr3Urdf() {
     const std::string resource_root = URDFApproxGeom_RESOURCE_PATH;
     const std::string src = resource_root + "/fr3/urdf/fr3.urdf";
     std::ifstream in(src);
+    if (!in.is_open()) {
+        ADD_FAILURE() << "portableFr3Urdf: cannot open " << src;
+        return {};
+    }
     std::string text((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
     const std::string old_prefix = "/workspace/resources";
+    size_t replacements = 0;
     size_t pos = 0;
     while ((pos = text.find(old_prefix, pos)) != std::string::npos) {
         text.replace(pos, old_prefix.size(), resource_root);
         pos += resource_root.size();
+        ++replacements;
     }
-    fs::path out = fs::temp_directory_path() / "fr3_portable_capsule_test.urdf";
+    EXPECT_GT(replacements, 0u) << "no /workspace/resources mesh paths found in " << src;
+    // gtest_discover_tests runs each TEST as its own process; a per-process
+    // filename keeps concurrent ctest -j runs from truncating each other's file.
+    fs::path out = fs::temp_directory_path() /
+                   ("fr3_portable_capsule_test_" +
+                    std::to_string(static_cast<long>(::getpid())) + ".urdf");
     std::ofstream f(out);
     f << text;
+    if (!f.good()) {
+        ADD_FAILURE() << "portableFr3Urdf: cannot write " << out;
+        return {};
+    }
     return out.string();
 }
 
