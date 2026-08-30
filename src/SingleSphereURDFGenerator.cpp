@@ -110,10 +110,17 @@ irmv_core::bot_common::ErrorInfo SingleSphereURDFGenerator::run(
     }
     spheres_json_ = std::move(json);
 
-    std::string json_path = output_path;
-    replaceWith(json_path, ".urdf", ".json");
+    // Derive the sidecar from the path's real extension: replaceWith(".urdf")
+    // silently no-ops for uppercase/extensionless output paths and would then
+    // overwrite the URDF itself.
+    std::filesystem::path json_path =
+        std::filesystem::path(output_path).replace_extension(".json");
     std::ofstream json_file(json_path);
     json_file << spheres_json_.dump(4);
+    if (!json_file.good()) {
+        return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                "failed to write JSON sidecar " + json_path.string()};
+    }
     json_file.close();
 
     return writeURDF(output_path, m_model);
