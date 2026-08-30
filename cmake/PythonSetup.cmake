@@ -2,13 +2,15 @@ set(SETUP_PY_TEMPLATE
     "
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
-from wheel.bdist_wheel import bdist_wheel
-from setuptools.command.sdist import sdist
 import sys
 import os
 import subprocess
-import multiprocessing
 import shutil
+
+try:
+    from wheel.bdist_wheel import bdist_wheel
+except ImportError:
+    bdist_wheel = None  # optional at runtime; cmdclass guarded below
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
@@ -40,14 +42,14 @@ class CMakeBuild(build_ext):
         cmake_args = [
             '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
             '-DPYTHON_EXECUTABLE=' + self.get_python_executable(),
-            '-DENABLE_PYBINDING=ON'
+            '-DCOMPILE_@PROJECT_NAME@_PYBINDING=ON'
         ]
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
 
-        num_cores = str(multiprocessing.cpu_count())
-        build_args += ['--', '-j' + num_cores]
+        num_cores = min(os.cpu_count() or 1, 8)
+        build_args += ['--parallel', str(num_cores)]
 
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
@@ -65,7 +67,7 @@ class CMakeBuild(build_ext):
             # Add the extension directory to Python path so pybind11-stubgen can find the module
             env = os.environ.copy()
             if 'PYTHONPATH' in env:
-                env['PYTHONPATH'] = f\"{ext_dir}:{env['PYTHONPATH']}\"
+                env['PYTHONPATH'] = f\"{ext_dir}{os.pathsep}{env['PYTHONPATH']}\"
             else:
                 env['PYTHONPATH'] = ext_dir
 
@@ -108,11 +110,9 @@ class CMakeBuild(build_ext):
     def get_python_executable(self):
         return os.path.abspath(sys.executable)
 
-class WheelOnly(bdist_wheel):
-    def run(self):
-        # Disable sdist generation by overriding the sdist command
-        self.distribution.cmdclass['sdist'] = lambda: None
-        super().run()
+cmdclass = {'build_ext': CMakeBuild}
+if bdist_wheel is not None:
+    cmdclass['bdist_wheel'] = bdist_wheel
 
 setup(
     name='@PROJECT_NAME@_interface_py',
@@ -125,12 +125,9 @@ setup(
     url='https://irmv.sjtu.edu.cn/',
     packages=[],  # No Python packages, only C extension module with stubs
     ext_modules=[CMakeExtension('@PROJECT_NAME@_interface_py', sourcedir='.')],
-    cmdclass={
-        'build_ext': CMakeBuild,
-        'bdist_wheel': WheelOnly,
-    },
+    cmdclass=cmdclass,
     zip_safe=False,
-    install_requires=['pybind11-stubgen>=0.12.0', 'wheel>=0.36.0'],
+    install_requires=[],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: Other/Proprietary License',
