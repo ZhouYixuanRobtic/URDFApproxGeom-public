@@ -64,17 +64,24 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
     nlohmann::json json;
     for (auto& link_pair : m_model->links_) {
         json[link_pair.first] = nlohmann::json();
-        auto& link_json = json[link_pair.first];
+        // Capture by value/pointer: the loop variables are re-bound each
+        // iteration and go out of scope when the loop ends, so referencing
+        // them from workers would dangle. std::map nodes are stable, so a
+        // pointer into json stays valid.
+        auto link_ptr = link_pair.second;  // shared_ptr copy, not reference
+        const std::string link_name = link_pair.first;
+        nlohmann::json* link_json = &json[link_pair.first];
+        const int index = link_count++;
         futures.emplace_back(std::async(
             std::launch::async,
-            [this, &link_pair, &replace_pairs, &link_count,
-             &link_json]() -> irmv_core::bot_common::ErrorInfo {
-                if (link_pair.second->collision_array.size() > 1) {
+            [this, link_ptr, link_name, link_json, index,
+             &replace_pairs]() -> irmv_core::bot_common::ErrorInfo {
+                if (link_ptr->collision_array.size() > 1) {
                     return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
                             "We only accept one collision mesh"};
                 }
                 MeshSource src;
-                if (!resolveMeshSource(link_pair.second, use_visual_, replace_pairs, src)) {
+                if (!resolveMeshSource(link_ptr, use_visual_, replace_pairs, src)) {
                     return {irmv_core::bot_common::ErrorCode::OK,
                             ""};  // no usable mesh on this link
                 }
@@ -92,7 +99,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                     }
                     // Multi-sphere mode requires a closed, consistently oriented mesh.
                     auto vret = validateMeshForMode(V, F, MeshMode::SphereTree, OUT_V, OUT_F,
-                                                    link_pair.first, src.filename.string());
+                                                    link_name, src.filename.string());
                     if (!vret.isOk()) {
                         IRMV_ERROR("{}", vret.message());
                         return vret;
@@ -109,7 +116,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                         IRMV_INFO("-------------------Start Simplify----------------");
                         Eigen::VectorXi J;
                         igl::decimate(OUT_V, OUT_F,
-                                      static_cast<size_t>(simplify_ratio * (double)OUT_F.rows()), V,
+                                      static_cast<size_t>(simplify_ratio * static_cast<double>(OUT_F.rows())), V,
                                       F, J);
                         IRMV_INFO("Simplify from {} to {}", OUT_F.rows(), F.rows());
                         IRMV_INFO("-------------------End Simplify----------------");
@@ -125,7 +132,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                     SphereTreeMethod::MySphereTree tree;
                     IRMV_INFO("-------------------Start Sphere Tree Approximation for {}-th link "
                               "----------------",
-                              link_count++);
+                              index);
                     SphereTreeMethod::SphereTreeUniquePtr m_method;
                     switch (static_cast<SphereTreeMethod::STMethodType>(type_)) {
                     case SphereTreeMethod::Grid:
@@ -164,7 +171,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                         }
                         return link->collision;
                     };
-                    auto biggest_collision = ensure_slot(m_biggest_model->links_[link_pair.first]);
+                    auto biggest_collision = ensure_slot(m_biggest_model->links_[link_name]);
                     auto sphere = std::make_shared<urdf::Sphere>();
                     sphere->radius = tree.biggest_sphere.R();
                     Eigen::Vector3d rotated_vec =
@@ -174,16 +181,16 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                     biggest_collision->origin.position.z = origin_trans.z() + rotated_vec.z();
                     biggest_collision->origin.rotation.clear();
                     biggest_collision->geometry = sphere;
-                    link_json["BiggestSphere"] = std::vector<double>{
+                    (*link_json)["BiggestSphere"] = std::vector<double>{
                         biggest_collision->origin.position.x, biggest_collision->origin.position.y,
                         biggest_collision->origin.position.z, tree.biggest_sphere.R()};
 
                     // multi-sphere approximation into m_model.
-                    link_pair.second->collision_array.clear();
-                    link_json["SubSpheres"] = nlohmann::json();
-                    link_json["spheres"] = nlohmann::json::array();
-                    auto& legacy_spheres_json = link_json["SubSpheres"];
-                    auto& canonical_spheres_json = link_json["spheres"];
+                    link_ptr->collision_array.clear();
+                    (*link_json)["SubSpheres"] = nlohmann::json();
+                    (*link_json)["spheres"] = nlohmann::json::array();
+                    auto& legacy_spheres_json = (*link_json)["SubSpheres"];
+                    auto& canonical_spheres_json = (*link_json)["spheres"];
                     long i = 0;
                     for (const SphereTreeMethod::Sphere& sub_sphere : tree.sub_spheres) {
                         auto sphere_collision = std::make_shared<urdf::Collision>();
@@ -209,11 +216,11 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                             canonical_entry["radius"] = sphere->radius;
                             canonical_spheres_json.push_back(canonical_entry);
 
-                            link_pair.second->collision_array.emplace_back(sphere_collision);
+                            link_ptr->collision_array.emplace_back(sphere_collision);
                         }
                     }
-                    if (!link_pair.second->collision_array.empty()) {
-                        link_pair.second->collision = link_pair.second->collision_array[0];
+                    if (!link_ptr->collision_array.empty()) {
+                        link_ptr->collision = link_ptr->collision_array[0];
                     }
                     IRMV_INFO("-------------------End Sphere Tree Approximation----------------");
                 }
@@ -221,11 +228,17 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
             }));
     }
 
+    // Join every worker before any return: returning early would destroy the
+    // captured json/link state while the remaining workers are still running.
+    auto first_error = irmv_core::bot_common::ErrorInfo{irmv_core::bot_common::ErrorCode::OK, ""};
     for (auto&& future : futures) {
         auto fut_ret = future.get();
-        if (!fut_ret.isOk()) {
-            return fut_ret;
+        if (!fut_ret.isOk() && first_error.isOk()) {
+            first_error = fut_ret;
         }
+    }
+    if (!first_error.isOk()) {
+        return first_error;
     }
     spheres_json_ = std::move(json);
     return {irmv_core::bot_common::ErrorCode::OK, ""};
@@ -282,7 +295,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSingleSphereModel
                 IRMV_INFO("-------------------Start Simplify----------------");
                 Eigen::VectorXi J;
                 igl::decimate(OUT_V, OUT_F,
-                              static_cast<size_t>(simplify_ratio * (double)OUT_F.rows()), V, F, J);
+                              static_cast<size_t>(simplify_ratio * static_cast<double>(OUT_F.rows())), V, F, J);
                 IRMV_INFO("Simplify from {} to {}", OUT_F.rows(), F.rows());
                 IRMV_INFO("-------------------End Simplify----------------");
             } else {
@@ -376,6 +389,10 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::run(
     replaceWith(json_output_path, ".urdf", ".json");
     std::ofstream json_file(json_output_path);
     json_file << spheres_json_.dump(4);
+    if (!json_file.good()) {
+        return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                "failed to write JSON sidecar " + json_output_path};
+    }
     json_file.close();
     // change xxx.urdf to xxx_spherized.urdf
     std::string biggest_output_path = output_path;
@@ -405,6 +422,10 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::runPair(
     {
         std::ofstream f(json_output_path);
         f << spheres_json_.dump(4);
+        if (!f.good()) {
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                    "failed to write JSON sidecar " + json_output_path};
+        }
     }
     std::string biggest_output_path = output_path;
     replaceWith(biggest_output_path, ".urdf", "_1.urdf");
@@ -429,6 +450,10 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::runPair(
     {
         std::ofstream f(single_json_path);
         f << single_json.dump(4);
+        if (!f.good()) {
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                    "failed to write JSON sidecar " + single_json_path};
+        }
     }
     return writeURDF(single_output_path, m_biggest_model);
 }
