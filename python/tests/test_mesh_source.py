@@ -12,26 +12,29 @@ import pathlib
 import pytest
 
 from urdf_approx_geom import generate, generate_capsule_multi, generate_sphere_pair
+from urdf_approx_geom._extension import load_extension
 from urdf_approx_geom.api import _prepare_visual_meshes
 from urdf_approx_geom.presets import resolve_preset
 
 
 FR3_URDF = "/workspace/resources/fr3/urdf/fr3.urdf"
+HAS_SPHERE_TREE = hasattr(load_extension(), "spherized")
 
 
 def test_resolve_preset_no_double_config_prefix():
     """config_root() already returns the config dir; _PRESETS must not re-add
     a `config/` prefix (would yield /workspace/config/config/...)."""
-    path = resolve_preset("sphere", "default")
+    path = resolve_preset("sphere", "single")
     assert path.exists(), f"preset path missing (doubled config/?): {path}"
     assert "config/config" not in str(path), f"doubled config/ in {path}"
 
 
 def test_prepare_visual_meshes_finds_and_converts_dae():
     """FR3 visuals are .dae; the helper must convert each to a loadable .obj."""
-    pairs, tmp = _prepare_visual_meshes(FR3_URDF, None)
+    pairs, prepared, allow_open = _prepare_visual_meshes(FR3_URDF, None)
     assert pairs, "expected .dae visual meshes to be converted"
-    assert tmp is not None and tmp.is_dir()
+    assert prepared == pathlib.Path(FR3_URDF)
+    assert allow_open is False
     # at least the link0 .dae -> .obj pair, and the .obj exists.
     assert any(p[0].endswith(".dae") and p[1].endswith(".obj") for p in pairs)
     for orig, conv in pairs:
@@ -47,8 +50,19 @@ def test_prepare_visual_meshes_noop_when_already_obj(tmp_path):
         '<collision><geometry><mesh filename="m.stl"/></geometry></collision></link>'
         "</robot>"
     )
-    pairs, tmp = _prepare_visual_meshes(urdf, None)
-    assert pairs == [] and tmp is None
+    pairs, prepared, allow_open = _prepare_visual_meshes(urdf, None)
+    assert pairs == [] and prepared == urdf and allow_open is False
+
+
+def test_prepare_visual_meshes_keeps_open_visuals_when_watertight_required():
+    """FR3 visual DAEs are open/non-manifold render meshes.  They must still be
+    converted and used as the fit source; only the allow_open flag is set."""
+    pairs, prepared, allow_open = _prepare_visual_meshes(
+        FR3_URDF, None, require_watertight=True
+    )
+    assert prepared == pathlib.Path(FR3_URDF)
+    assert allow_open is True
+    assert any(p[0].endswith("link0.dae") and p[1].endswith(".obj") for p in pairs)
 
 
 def test_generate_rejects_invalid_mesh_source(tmp_path):
@@ -81,6 +95,7 @@ def test_mesh_source_visual_diverges_from_collision(tmp_path):
     assert vj != cj, "visual and collision fits must differ"
 
 
+@pytest.mark.skipif(not HAS_SPHERE_TREE, reason="sphere-tree is research-edition only")
 def test_spherized_pair_single_matches_default_biggest(tmp_path):
     """generate_sphere_pair runs the tree once; the single output's per-link
     sphere must equal the default output's BiggestSphere entry."""

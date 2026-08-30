@@ -20,11 +20,13 @@
 
 #include "irmv/bot_common/log/singleton_logger.h"
 
-CapsuleURDFGenerator::CapsuleURDFGenerator(const std::string& capsule_config_path, bool use_visual)
+CapsuleURDFGenerator::CapsuleURDFGenerator(const std::string& capsule_config_path, bool use_visual,
+                                           bool allow_open_mesh)
     : URDFGenerator() {
     m_model = std::make_shared<urdf::ModelInterface>();
     config_path_ = capsule_config_path;
     use_visual_ = use_visual;
+    allow_open_mesh_ = allow_open_mesh;
     loadConfigFrom(capsule_config_path);
 }
 
@@ -173,7 +175,7 @@ irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::run(
 
         // Cross-section slicing needs a closed, consistently oriented surface.
         auto vret = validateMeshForMode(V, F, MeshMode::Capsule, OUT_V, OUT_F, link_name,
-                                        src.filename.string());
+                                        src.filename.string(), allow_open_mesh_);
         if (!vret.isOk()) {
             IRMV_ERROR("{}", vret.message());
             return vret;
@@ -260,7 +262,8 @@ irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::runMulti(
                     return lret;
                 }
                 auto vret = validateMeshForMode(V, F, MeshMode::Capsule, OUT_V, OUT_F,
-                                                link->name, src.filename.string());
+                                                link->name, src.filename.string(),
+                                                allow_open_mesh_);
                 if (!vret.isOk()) {
                     IRMV_ERROR("link '{}': {}", link->name, vret.message());
                     return vret;

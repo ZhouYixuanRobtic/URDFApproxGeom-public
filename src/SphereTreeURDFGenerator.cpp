@@ -24,11 +24,12 @@
 #include "yaml-cpp/yaml.h"
 
 SphereTreeURDFGenerator::SphereTreeURDFGenerator(const std::string& st_config_path, bool simplify,
-                                                 bool use_visual) {
+                                                 bool use_visual, bool allow_open_mesh) {
     YAML::Node doc = YAML::LoadFile(st_config_path);
     config_path_ = st_config_path;
     doSimplify = simplify;
     use_visual_ = use_visual;
+    allow_open_mesh_ = allow_open_mesh;
     if (doc["Method"]) {
         type_ = static_cast<SphereTreeMethod::STMethodType>(doc["Method"].as<int>());
     } else {
@@ -102,9 +103,10 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                         return ret;
                     }
                     applyMeshScale(V, src);
-                    // Multi-sphere mode requires a closed, consistently oriented mesh.
+                    // Multi-sphere mode prefers a closed, consistently oriented mesh.
                     auto vret = validateMeshForMode(V, F, MeshMode::SphereTree, OUT_V, OUT_F,
-                                                    link_name, src.filename.string());
+                                                    link_name, src.filename.string(),
+                                                    allow_open_mesh_);
                     if (!vret.isOk()) {
                         IRMV_ERROR("{}", vret.message());
                         return vret;

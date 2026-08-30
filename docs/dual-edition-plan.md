@@ -134,8 +134,10 @@ URDF 输入
        4. fix_normals()
        5. fill_holes()（仅存在边界边时）
        6. 再次检查 is_watertight / is_winding_consistent
-       7. 通过：导出临时 .obj
-       8. 失败：报错，指明 link、文件、失败原因和建议
+       7. 无论是否通过：导出修复后的临时 .obj（DAE 渲染网格本身就是开放面片，
+          不是闭合 2-manifold，不能因此丢弃真实视觉几何）
+       8. 非水密时：warning 指明 link、文件、boundary/non-manifold 数量，
+          并向 C++ 扩展传 allow_open_mesh=True
 ```
 
 建议新增独立模块：
@@ -148,7 +150,8 @@ python/urdf_approx_geom/mesh_prep.py
 
 ```python
 PreparedMesh = ...
-prepare_visual_meshes(input_urdf, replace_pairs) -> (pairs, temp_dir, warnings)
+prepare_visual_meshes(input_urdf, replace_pairs, require_watertight=False) ->\
+    (pairs, temp_dir, warnings, prepared_urdf, allow_open)
 validate_watertight(path) -> bool
 ```
 
@@ -177,10 +180,10 @@ C++ app 直接接收 OBJ/STL：
 | 模式 | 水密要求 |
 |---|---|
 | `convex` | 不要求，只需顶点集合 |
-| `capsule` | 建议要求；不满足时 C++ 返回错误，Python 路径先尝试修复 |
+| `capsule` | C++ 直接入口严格拒绝非水密；Python 路径修复后以 allow_open_mesh=True 使用视觉几何 |
 | `sphere/single` | 不要求，只需顶点集合 |
-| `sphere/default`（多球） | 要求；仅 Research 版存在 |
-| `generate_all` | 按各模式要求分别校验 |
+| `sphere/default`（多球） | C++ 直接入口严格拒绝非水密；Python 路径同上；仅 Research 版存在 |
+| `generate_all` | Python 路径按上表处理，C++ 直接入口严格 |
 
 ---
 
@@ -323,13 +326,11 @@ dependencies = [
 
 - 所有模式统一通过 Python API/CLI 进入；
 - DAE/非 OBJ/STL 输入在 Python 层完成转换和修复；
-- 修复失败返回非零退出码，并打印：
-  - link 名；
-  - 文件路径；
-  - 水密检查结果；
-  - 建议命令，例如：
-    `try --mesh-source collision, or repair the mesh and rerun`。
-- C++ app 仍保留给高级用户，但错误路径与 Python 层一致。
+- 修复后仍非水密时打印 warning（link、文件、boundary/non-manifold 数量、
+  建议 `--mesh-source collision`），但继续使用修复后的视觉网格拟合，
+  因为 FR3 DAE 视觉网格是真实几何而 collision STL 是人工凸包；
+- C++ app 仍保留给高级用户：直接接收 OBJ/STL，非水密 capsule/multi-sphere
+  输入返回明确错误，不静默降级。
 
 ### 9.3 版本能力检测
 
@@ -468,7 +469,7 @@ NOTICE                               # Franka / Panda 模型声明
 1. Commercial 构建中不存在 ManifoldPlus、CGAL、sphere_tree、gdiam 的任何源码头文件、库和符号。
 2. Research 构建保留完整 sphere-tree，全部现有研究功能通过。
 3. Python CLI/API 在两个版本中行为一致，仅 sphere-tree 相关能力不同。
-4. DAE visual 输入经 trimesh 修复后可运行 capsule/single-sphere；无法修复时错误信息包含 link、文件、原因、建议。
+4. DAE visual 输入经 trimesh 修复后可用于 capsule/single-sphere/multi-sphere；修复后仍非水密时 warning 包含 link、文件、boundary/non-manifold 数量与建议。
 5. C++ app 对非水密 capsule/multi-sphere 输入返回明确错误，不崩溃、不静默输出。
 6. Convex 输出与 CGAL 版本在体积/覆盖上满足回归阈值。
 7. 两个 release 均附带 THIRD_PARTY_NOTICES、NOTICE、SBOM。

@@ -61,19 +61,22 @@ def _sidecar_json(output_urdf: pathlib.Path) -> pathlib.Path:
 def _prepare_visual_meshes(
     input_urdf: str | pathlib.Path,
     replace_pairs: Iterable[tuple[str, str]] | None,
-) -> tuple[list[tuple[str, str]], pathlib.Path | None]:
-    """Convert any non-OBJ/STL visual meshes (FR3 ships .dae) to .obj so the
-    C++ loader (OBJ/STL only) can fit the true visual geometry. Returns merged
-    replace_pairs plus the temp dir holding the converted .obj (caller keeps it
-    alive for the C++ run). No-op when every visual mesh is already OBJ/STL."""
+    *,
+    require_watertight: bool = False,
+) -> tuple[list[tuple[str, str]], pathlib.Path, bool]:
+    """Convert non-OBJ/STL visual meshes (FR3 ships .dae) to .obj and return
+    the replace pairs, the URDF path for the C++ extension, and whether the
+    extension must be told to accept an open visual mesh."""
     import logging
 
     from .mesh_prep import prepare_visual_meshes
 
-    pairs, tmp, warnings = prepare_visual_meshes(input_urdf, replace_pairs)
+    pairs, _, warnings, prepared_urdf, allow_open = prepare_visual_meshes(
+        input_urdf, replace_pairs, require_watertight=require_watertight
+    )
     for w in warnings:
         logging.warning("mesh preparation: %s", w)
-    return pairs, tmp
+    return pairs, prepared_urdf, allow_open
 
 
 def _count_json_primitives(json_path: pathlib.Path | None, key: str) -> int:
@@ -112,6 +115,9 @@ def generate(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pairs = [(str(a), str(b)) for a, b in (replace_pairs or [])]
 
+    if mesh_source not in {"visual", "collision"}:
+        raise ValueError(f"mesh_source must be 'visual' or 'collision', got {mesh_source!r}")
+
     sphere_ext = None
     if normal == "sphere":
         sphere_ext = _extension()
@@ -124,14 +130,23 @@ def generate(
 
     config_path = pathlib.Path(config) if config else resolve_preset(normal, preset)
 
-    if mesh_source not in {"visual", "collision"}:
-        raise ValueError(f"mesh_source must be 'visual' or 'collision', got {mesh_source!r}")
+    run_urdf = input_path
+    allow_open_mesh = False
     if mesh_source == "visual":
-        pairs, _ = _prepare_visual_meshes(input_path, pairs)
+        # Capsule and multi-sphere fits prefer a closed 2-manifold; single-sphere
+        # and convex only need vertices.  A repaired-but-open DAE is still the
+        # true visual geometry, so it is used with allow_open_mesh=True.
+        require_watertight = normal == "capsule" or (
+            normal == "sphere" and preset != "single"
+        )
+        pairs, run_urdf, allow_open_mesh = _prepare_visual_meshes(
+            input_path, pairs, require_watertight=require_watertight
+        )
 
     if normal == "capsule":
         message = _extension().capsuleized(
-            str(input_path), str(output_path), str(config_path), pairs, mesh_source
+            str(run_urdf), str(output_path), str(config_path), pairs, mesh_source,
+            allow_open_mesh
         )
         json_path = _sidecar_json(output_path)
         primitive_count = _count_json_primitives(json_path, "capsules")
@@ -139,12 +154,12 @@ def generate(
         ext = sphere_ext if sphere_ext is not None else _extension()
         if hasattr(ext, "spherized"):
             message = ext.spherized(
-                str(input_path), str(output_path), str(config_path), pairs, bool(simplify),
-                mesh_source
+                str(run_urdf), str(output_path), str(config_path), pairs, bool(simplify),
+                mesh_source, allow_open_mesh
             )
         elif preset == "single" and hasattr(ext, "single_spherized"):
             message = ext.single_spherized(
-                str(input_path), str(output_path), pairs, bool(simplify), mesh_source
+                str(run_urdf), str(output_path), pairs, bool(simplify), mesh_source
             )
         else:
             raise RuntimeError(
@@ -153,7 +168,7 @@ def generate(
         json_path = _sidecar_json(output_path)
         primitive_count = _count_json_primitives(json_path, "spheres")
     else:
-        message = _extension().convex(str(input_path), str(output_path), pairs)
+        message = _extension().convex(str(run_urdf), str(output_path), pairs)
         json_path = None
         primitive_count = 0
 
@@ -193,17 +208,22 @@ def generate_sphere_pair(
         raise RuntimeError(
             "sphere-tree backend is only available in the research edition; use sphere/single"
         )
+    run_urdf = input_path
+    allow_open_mesh = False
     if mesh_source == "visual":
-        pairs, _ = _prepare_visual_meshes(input_path, pairs)
+        pairs, run_urdf, allow_open_mesh = _prepare_visual_meshes(
+            input_path, pairs, require_watertight=True
+        )
     config_path = pathlib.Path(config) if config else resolve_preset("sphere", preset)
     message = _extension().spherized_pair(
-        str(input_path),
+        str(run_urdf),
         str(default_path),
         str(single_path),
         str(config_path),
         pairs,
         bool(simplify),
         mesh_source,
+        allow_open_mesh,
     )
     default_json = _sidecar_json(default_path)
     single_json = _sidecar_json(single_path)
@@ -240,8 +260,12 @@ def generate_capsule_multi(
     link. `outputs` is an iterable of (output_urdf, preset_name) pairs."""
     input_path = pathlib.Path(input_urdf)
     pairs = [(str(a), str(b)) for a, b in (replace_pairs or [])]
+    run_urdf = input_path
+    allow_open_mesh = False
     if mesh_source == "visual":
-        pairs, _ = _prepare_visual_meshes(input_path, pairs)
+        pairs, run_urdf, allow_open_mesh = _prepare_visual_meshes(
+            input_path, pairs, require_watertight=True
+        )
     resolved: list[tuple[str, pathlib.Path]] = []
     for out, preset in outputs:
         out_path = pathlib.Path(out)
@@ -249,10 +273,11 @@ def generate_capsule_multi(
         cfg = resolve_preset("capsule", preset)
         resolved.append((str(out_path), cfg))
     message = _extension().capsuleized_multi(
-        str(input_path),
+        str(run_urdf),
         [(out, str(cfg)) for out, cfg in resolved],
         pairs,
         mesh_source,
+        allow_open_mesh,
     )
     results: list[GenerateResult] = []
     for out, cfg in resolved:

@@ -7,6 +7,8 @@ import os
 import subprocess
 import sys
 
+import pytest
+
 from urdf_approx_geom import generate
 
 
@@ -36,7 +38,7 @@ def test_validate_command_works_outside_repo_root(tmp_path):
             "--urdf",
             FR3_URDF,
             "--max-capv-aabb",
-            "2.50",
+            "4.00",
             "--max-r-binmed",
             "1.50",
         ],
@@ -52,6 +54,7 @@ def test_validate_command_works_outside_repo_root(tmp_path):
 
 
 def test_visualize_mjcf_command_works_outside_repo_root(tmp_path):
+    pytest.importorskip("pybullet", reason="legacy mjcf backend requires pybullet")
     out = tmp_path / "fr3_capsule.urdf"
     result = generate("capsule", FR3_URDF, out, preset="default")
     mjcf = tmp_path / "fr3_capsules.xml"

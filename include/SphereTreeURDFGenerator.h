@@ -20,7 +20,7 @@ class SphereTreeURDFGenerator : public URDFGenerator {
     ///                   the collision mesh (false). Falls back to collision
     ///                   when the requested source has no mesh on a link.
     SphereTreeURDFGenerator(const std::string& st_config_path, bool simplify = true,
-                            bool use_visual = true);
+                            bool use_visual = true, bool allow_open_mesh = false);
 
     ~SphereTreeURDFGenerator() override;
 
@@ -28,6 +28,7 @@ class SphereTreeURDFGenerator : public URDFGenerator {
     bool doSimplify = false;
     double simplify_ratio = 0.01;
     bool use_visual_ = true;
+    bool allow_open_mesh_ = false;
     int type_ = 0;  // SphereTreeMethod::STMethodType, kept opaque in the public header
     std::string config_path_;
     nlohmann::json spheres_json_;  // per-link data, filled by buildSphereModel

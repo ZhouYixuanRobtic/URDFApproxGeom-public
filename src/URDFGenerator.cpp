@@ -417,7 +417,7 @@ irmv_core::bot_common::ErrorInfo URDFGenerator::loadedIntoIGL(const std::filesys
 irmv_core::bot_common::ErrorInfo URDFGenerator::validateMeshForMode(
     const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, MeshMode mode,
     Eigen::MatrixXd& outV, Eigen::MatrixXi& outF, const std::string& link_name,
-    const std::string& file_path) const {
+    const std::string& file_path, bool allow_open_mesh) const {
     outV.resize(0, 3);
     outF.resize(0, 3);
 
@@ -468,7 +468,7 @@ irmv_core::bot_common::ErrorInfo URDFGenerator::validateMeshForMode(
         return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, oss.str()};
     }
 
-    if (mode == MeshMode::Capsule || mode == MeshMode::SphereTree) {
+    if ((mode == MeshMode::Capsule || mode == MeshMode::SphereTree) && !allow_open_mesh) {
         std::map<std::pair<int, int>, int> edge_count;
         for (const auto& tri : cleanedF) {
             for (int e = 0; e < 3; ++e) {

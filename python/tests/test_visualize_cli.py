@@ -6,12 +6,15 @@
 import subprocess
 import sys
 
+import pytest
+
 from urdf_approx_geom import generate
 
 FR3_URDF = "/workspace/resources/fr3/urdf/fr3.urdf"
 
 
 def test_visualize_capsule_mjcf_cli(tmp_path):
+    pytest.importorskip("pybullet", reason="legacy mjcf backend requires pybullet")
     out = tmp_path / "fr3_capsule.urdf"
     result = generate("capsule", FR3_URDF, out, preset="default")
     mjcf = tmp_path / "fr3_capsules.xml"
