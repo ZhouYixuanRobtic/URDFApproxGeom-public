@@ -1,0 +1,6 @@
+NOTICE
+
+The FR3 robot meshes and URDF assets under resources/fr3 are derived from
+public Franka Robotics materials for research/educational use. Redistribution
+terms are governed by the original Franka Robotics license; verify those terms
+before including these assets in a commercial distribution.

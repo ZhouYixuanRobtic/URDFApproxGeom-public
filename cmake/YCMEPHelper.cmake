@@ -387,7 +387,9 @@ function(_YCM_SETUP_HG)
   if(DEFINED __YCM_HG_SETUP_CALLED)
     return()
   endif()
-  set(__YCM_GIT_SETUP_CALLED
+  # Must be the HG sentinel: setting the GIT one here makes a later
+  # _YCM_SETUP_GIT return early and skip the git config step.
+  set(__YCM_HG_SETUP_CALLED
       1
       CACHE INTERNAL "")
 

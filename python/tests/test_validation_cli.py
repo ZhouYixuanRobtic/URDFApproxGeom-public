@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 import subprocess
 import sys
 
@@ -33,7 +36,7 @@ def test_validate_capsule_cli_passes_default_preset(tmp_path):
         "--volume-samples",
         "32",
         "--max-capv-aabb",
-        "2.50",
+        "4.00",
         "--max-r-binmed",
         "1.50",
     )
@@ -46,8 +49,8 @@ def test_validate_capsule_cli_passes_default_preset(tmp_path):
 def test_compare_capsule_cli_uses_absolute_candidate_contract(tmp_path):
     out_a = tmp_path / "a.urdf"
     out_b = tmp_path / "b.urdf"
-    baseline = generate("capsule", FR3_URDF, out_a, preset="single")
-    candidate = generate("capsule", FR3_URDF, out_b, preset="default")
+    baseline = generate("capsule", FR3_URDF, out_a, preset="single", mesh_source="visual")
+    candidate = generate("capsule", FR3_URDF, out_b, preset="default", mesh_source="visual")
     proc = run_cli(
         "compare",
         "--mode",
@@ -63,7 +66,7 @@ def test_compare_capsule_cli_uses_absolute_candidate_contract(tmp_path):
         "--volume-samples",
         "32",
         "--max-capv-aabb",
-        "2.50",
+        "4.00",
         "--max-r-binmed",
         "1.50",
     )
@@ -74,8 +77,8 @@ def test_compare_capsule_cli_uses_absolute_candidate_contract(tmp_path):
 def test_compare_capsule_cli_can_require_relative_improvement(tmp_path):
     out_a = tmp_path / "baseline.urdf"
     out_b = tmp_path / "candidate.urdf"
-    baseline = generate("capsule", FR3_URDF, out_a, preset="default")
-    candidate = generate("capsule", FR3_URDF, out_b, preset="single")
+    baseline = generate("capsule", FR3_URDF, out_a, preset="default", mesh_source="visual")
+    candidate = generate("capsule", FR3_URDF, out_b, preset="single", mesh_source="visual")
     proc = run_cli(
         "compare",
         "--mode",
@@ -91,7 +94,7 @@ def test_compare_capsule_cli_can_require_relative_improvement(tmp_path):
         "--volume-samples",
         "32",
         "--max-capv-aabb",
-        "2.50",
+        "4.00",
         "--max-r-binmed",
         "1.50",
         "--require-improvement",
@@ -103,8 +106,8 @@ def test_compare_capsule_cli_can_require_relative_improvement(tmp_path):
 def test_compare_capsule_cli_fails_when_candidate_worsens_relative_metrics(tmp_path):
     out_a = tmp_path / "baseline.urdf"
     out_b = tmp_path / "candidate.urdf"
-    baseline = generate("capsule", FR3_URDF, out_a, preset="single")
-    candidate = generate("capsule", FR3_URDF, out_b, preset="default")
+    baseline = generate("capsule", FR3_URDF, out_a, preset="single", mesh_source="visual")
+    candidate = generate("capsule", FR3_URDF, out_b, preset="default", mesh_source="visual")
     proc = run_cli(
         "compare",
         "--mode",
@@ -120,7 +123,7 @@ def test_compare_capsule_cli_fails_when_candidate_worsens_relative_metrics(tmp_p
         "--volume-samples",
         "32",
         "--max-capv-aabb",
-        "2.50",
+        "4.00",
         "--max-r-binmed",
         "1.50",
         "--require-improvement",

@@ -93,9 +93,9 @@ bool SFWhite::makeSphere(Sphere *s, const Array<Point3D> &pts) {
   s->c.z = out_center[2];
   s->r = radius;
 
-  delete centers;
-  delete centersInternal;
-  delete work;
+  delete[] centers;
+  delete[] centersInternal;
+  delete[] static_cast<unsigned char *>(work);  // work was allocated as unsigned char[]
 
   if (!finite(s->r)) {
     //  this can happen when you get bad convergence in the SVD etc.

@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Pytest bootstrap for source-tree package plus CMake-built extension."""
 
 from __future__ import annotations

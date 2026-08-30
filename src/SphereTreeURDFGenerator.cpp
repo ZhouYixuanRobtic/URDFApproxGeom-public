@@ -1,57 +1,19 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-   You are free to use, copy, modify, and distribute this software and its
-   documentation for educational, research, and other non-commercial purposes,
-   provided that appropriate credit is given to the original author(s) and
-   copyright holder(s).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
-                              D I S C L A I M E R
-
-   IN NO EVENT SHALL TRINITY COLLEGE DUBLIN BE LIABLE TO ANY PARTY FOR
-   DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING,
-   BUT NOT LIMITED TO, LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE
-   AND ITS DOCUMENTATION, EVEN IF TRINITY COLLEGE DUBLIN HAS BEEN ADVISED OF
-   THE POSSIBILITY OF SUCH DAMAGES.
-
-   TRINITY COLLEGE DUBLIN DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED
-   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-   PURPOSE. THE SOFTWARE PROVIDED HEREIN IS ON AN "AS IS" BASIS, AND TRINITY
-   COLLEGE DUBLIN HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
-   ENHANCEMENTS, OR MODIFICATIONS.
-
-   The authors may be contacted at the following e-mail addresses:
-
-           YX.E.Z yixuanzhou@sjtu.edu.cn
-
-   Further information about the IRMV and its projects can be found at the ISG web site :
-
-          https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #include "SphereTreeURDFGenerator.h"
 #include <igl/decimate.h>
 #include <igl/volume.h>
+#include <algorithm>
 #include <urdf_model/model.h>
 #include <filesystem>
 #include <fstream>
 #include <future>
 #include <string>
 #include <vector>
-#include "ManifoldPlus/Manifold.h"
 #include "irmv/bot_common/log/singleton_logger.h"
 #include "irmv/third_party/json.hpp"
 #include "sphereTreeWrapper/sphereTreeGrid.h"
@@ -62,11 +24,12 @@
 #include "yaml-cpp/yaml.h"
 
 SphereTreeURDFGenerator::SphereTreeURDFGenerator(const std::string& st_config_path, bool simplify,
-                                                 bool use_visual) {
+                                                 bool use_visual, bool allow_open_mesh) {
     YAML::Node doc = YAML::LoadFile(st_config_path);
     config_path_ = st_config_path;
     doSimplify = simplify;
     use_visual_ = use_visual;
+    allow_open_mesh_ = allow_open_mesh;
     if (doc["Method"]) {
         type_ = static_cast<SphereTreeMethod::STMethodType>(doc["Method"].as<int>());
     } else {
@@ -92,8 +55,12 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
         return ret;
     }
     IRMV_INFO("Got {} links to process", m_model->links_.size());
-    // do deep copy
-    loadURDF(urdf_path, m_biggest_model);
+    // do deep copy; workers write the biggest-sphere sidecar into it.
+    auto biggest_ret = loadURDF(urdf_path, m_biggest_model);
+    if (!biggest_ret.isOk()) {
+        IRMV_ERROR("{}", biggest_ret.message());
+        return biggest_ret;
+    }
 
     // Inside SphereTreeURDFGenerator::run
     std::vector<std::future<irmv_core::bot_common::ErrorInfo>> futures;
@@ -102,43 +69,52 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
     nlohmann::json json;
     for (auto& link_pair : m_model->links_) {
         json[link_pair.first] = nlohmann::json();
-        auto& link_json = json[link_pair.first];
+        // Capture by value/pointer: the loop variables are re-bound each
+        // iteration and go out of scope when the loop ends, so referencing
+        // them from workers would dangle. std::map nodes are stable, so a
+        // pointer into json stays valid.
+        auto link_ptr = link_pair.second;  // shared_ptr copy, not reference
+        const std::string link_name = link_pair.first;
+        nlohmann::json* link_json = &json[link_pair.first];
+        const int index = link_count++;
         futures.emplace_back(std::async(
             std::launch::async,
-            [this, &link_pair, &replace_pairs, &link_count,
-             &link_json]() -> irmv_core::bot_common::ErrorInfo {
-                if (link_pair.second->collision_array.size() > 1) {
+            [this, link_ptr, link_name, link_json, index,
+             &replace_pairs]() -> irmv_core::bot_common::ErrorInfo {
+                if (link_ptr->collision_array.size() > 1) {
                     return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
                             "We only accept one collision mesh"};
                 }
                 MeshSource src;
-                if (!resolveMeshSource(link_pair.second, use_visual_, replace_pairs, src)) {
+                if (!resolveMeshSource(link_ptr, use_visual_, replace_pairs, src)) {
                     return {irmv_core::bot_common::ErrorCode::OK,
                             ""};  // no usable mesh on this link
                 }
                 {
                     std::filesystem::path filename = src.filename;
                     Eigen::MatrixXd V;
-                    MatrixD OUT_V;
+                    Eigen::MatrixXd OUT_V;
                     Eigen::MatrixXi F, N;
-                    MatrixI OUT_F;
+                    Eigen::MatrixXi OUT_F;
                     bool alreadyOBJ = false;
                     auto ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
                     if (!ret.isOk()) {
                         IRMV_ERROR("{}", ret.message());
                         return ret;
                     }
-                    // do manifold watertight process
-                    IRMV_INFO(
-                        "-------------------Start Processing Watertight Manifold----------------");
-                    auto m_manifold = std::make_unique<Manifold>();
-                    m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
-                    IRMV_INFO("Got {} faces after watertight manifold processing", OUT_F.rows());
-                    IRMV_INFO(
-                        "-------------------End Processing Watertight Manifold----------------");
+                    applyMeshScale(V, src);
+                    // Multi-sphere mode prefers a closed, consistently oriented mesh.
+                    auto vret = validateMeshForMode(V, F, MeshMode::SphereTree, OUT_V, OUT_F,
+                                                    link_name, src.filename.string(),
+                                                    allow_open_mesh_);
+                    if (!vret.isOk()) {
+                        IRMV_ERROR("{}", vret.message());
+                        return vret;
+                    }
+                    IRMV_INFO("Got {} faces after mesh validation", OUT_F.rows());
                     // compute volume;
                     Eigen::VectorXd vol;
-                    Eigen::MatrixXi T(F.rows(), 4);
+                    Eigen::MatrixXi T(OUT_F.rows(), 4);
                     T.leftCols(3) = OUT_F;
                     T.col(3).setZero();
                     igl::volume(OUT_V, T, vol);
@@ -147,7 +123,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                         IRMV_INFO("-------------------Start Simplify----------------");
                         Eigen::VectorXi J;
                         igl::decimate(OUT_V, OUT_F,
-                                      static_cast<size_t>(simplify_ratio * (double)OUT_F.rows()), V,
+                                      static_cast<size_t>(simplify_ratio * static_cast<double>(OUT_F.rows())), V,
                                       F, J);
                         IRMV_INFO("Simplify from {} to {}", OUT_F.rows(), F.rows());
                         IRMV_INFO("-------------------End Simplify----------------");
@@ -163,9 +139,9 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                     SphereTreeMethod::MySphereTree tree;
                     IRMV_INFO("-------------------Start Sphere Tree Approximation for {}-th link "
                               "----------------",
-                              link_count++);
+                              index);
                     SphereTreeMethod::SphereTreeUniquePtr m_method;
-                    switch (type_) {
+                    switch (static_cast<SphereTreeMethod::STMethodType>(type_)) {
                     case SphereTreeMethod::Grid:
                         m_method = SphereTreeMethod::SphereTreeMethodGrid::create(config_path_);
                         break;
@@ -202,7 +178,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                         }
                         return link->collision;
                     };
-                    auto biggest_collision = ensure_slot(m_biggest_model->links_[link_pair.first]);
+                    auto biggest_collision = ensure_slot(m_biggest_model->links_[link_name]);
                     auto sphere = std::make_shared<urdf::Sphere>();
                     sphere->radius = tree.biggest_sphere.R();
                     Eigen::Vector3d rotated_vec =
@@ -212,16 +188,16 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                     biggest_collision->origin.position.z = origin_trans.z() + rotated_vec.z();
                     biggest_collision->origin.rotation.clear();
                     biggest_collision->geometry = sphere;
-                    link_json["BiggestSphere"] = std::vector<double>{
+                    (*link_json)["BiggestSphere"] = std::vector<double>{
                         biggest_collision->origin.position.x, biggest_collision->origin.position.y,
                         biggest_collision->origin.position.z, tree.biggest_sphere.R()};
 
                     // multi-sphere approximation into m_model.
-                    link_pair.second->collision_array.clear();
-                    link_json["SubSpheres"] = nlohmann::json();
-                    link_json["spheres"] = nlohmann::json::array();
-                    auto& legacy_spheres_json = link_json["SubSpheres"];
-                    auto& canonical_spheres_json = link_json["spheres"];
+                    link_ptr->collision_array.clear();
+                    (*link_json)["SubSpheres"] = nlohmann::json();
+                    (*link_json)["spheres"] = nlohmann::json::array();
+                    auto& legacy_spheres_json = (*link_json)["SubSpheres"];
+                    auto& canonical_spheres_json = (*link_json)["spheres"];
                     long i = 0;
                     for (const SphereTreeMethod::Sphere& sub_sphere : tree.sub_spheres) {
                         auto sphere_collision = std::make_shared<urdf::Collision>();
@@ -247,11 +223,11 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                             canonical_entry["radius"] = sphere->radius;
                             canonical_spheres_json.push_back(canonical_entry);
 
-                            link_pair.second->collision_array.emplace_back(sphere_collision);
+                            link_ptr->collision_array.emplace_back(sphere_collision);
                         }
                     }
-                    if (!link_pair.second->collision_array.empty()) {
-                        link_pair.second->collision = link_pair.second->collision_array[0];
+                    if (!link_ptr->collision_array.empty()) {
+                        link_ptr->collision = link_ptr->collision_array[0];
                     }
                     IRMV_INFO("-------------------End Sphere Tree Approximation----------------");
                 }
@@ -259,11 +235,17 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
             }));
     }
 
+    // Join every worker before any return: returning early would destroy the
+    // captured json/link state while the remaining workers are still running.
+    auto first_error = irmv_core::bot_common::ErrorInfo{irmv_core::bot_common::ErrorCode::OK, ""};
     for (auto&& future : futures) {
         auto fut_ret = future.get();
-        if (!fut_ret.isOk()) {
-            return fut_ret;
+        if (!fut_ret.isOk() && first_error.isOk()) {
+            first_error = fut_ret;
         }
+    }
+    if (!first_error.isOk()) {
+        return first_error;
     }
     spheres_json_ = std::move(json);
     return {irmv_core::bot_common::ErrorCode::OK, ""};
@@ -297,28 +279,31 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSingleSphereModel
         {
             std::filesystem::path filename = src.filename;
             Eigen::MatrixXd V;
-            MatrixD OUT_V;
+            Eigen::MatrixXd OUT_V;
             Eigen::MatrixXi F, N;
-            MatrixI OUT_F;
+            Eigen::MatrixXi OUT_F;
             bool alreadyOBJ = false;
             ret = loadedIntoIGL(filename, V, F, N, alreadyOBJ);
             if (!ret.isOk()) {
                 IRMV_ERROR("{}", ret.message());
                 return ret;
             }
+            applyMeshScale(V, src);
 
-            // watertight manifold processing
-            IRMV_INFO("-------------------Start Processing Watertight Manifold----------------");
-            auto m_manifold = std::make_unique<Manifold>();
-            m_manifold->ProcessManifold(V, F, 8, &OUT_V, &OUT_F);
-            IRMV_INFO("Got {} faces after watertight manifold processing", OUT_F.rows());
-            IRMV_INFO("-------------------End Processing Watertight Manifold----------------");
+            // Single-sphere mode only needs the vertex set; still clean the mesh
+            // so duplicate vertices and degenerate faces do not distort the bound.
+            auto vret = validateMeshForMode(V, F, MeshMode::SphereSingle, OUT_V, OUT_F,
+                                            link_pair.first, src.filename.string());
+            if (!vret.isOk()) {
+                IRMV_ERROR("{}", vret.message());
+                return vret;
+            }
 
             if (doSimplify) {
                 IRMV_INFO("-------------------Start Simplify----------------");
                 Eigen::VectorXi J;
                 igl::decimate(OUT_V, OUT_F,
-                              static_cast<size_t>(simplify_ratio * (double)OUT_F.rows()), V, F, J);
+                              static_cast<size_t>(simplify_ratio * static_cast<double>(OUT_F.rows())), V, F, J);
                 IRMV_INFO("Simplify from {} to {}", OUT_F.rows(), F.rows());
                 IRMV_INFO("-------------------End Simplify----------------");
             } else {
@@ -412,6 +397,10 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::run(
     replaceWith(json_output_path, ".urdf", ".json");
     std::ofstream json_file(json_output_path);
     json_file << spheres_json_.dump(4);
+    if (!json_file.good()) {
+        return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                "failed to write JSON sidecar " + json_output_path};
+    }
     json_file.close();
     // change xxx.urdf to xxx_spherized.urdf
     std::string biggest_output_path = output_path;
@@ -441,6 +430,10 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::runPair(
     {
         std::ofstream f(json_output_path);
         f << spheres_json_.dump(4);
+        if (!f.good()) {
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                    "failed to write JSON sidecar " + json_output_path};
+        }
     }
     std::string biggest_output_path = output_path;
     replaceWith(biggest_output_path, ".urdf", "_1.urdf");
@@ -465,6 +458,10 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::runPair(
     {
         std::ofstream f(single_json_path);
         f << single_json.dump(4);
+        if (!f.good()) {
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                    "failed to write JSON sidecar " + single_json_path};
+        }
     }
     return writeURDF(single_output_path, m_biggest_model);
 }

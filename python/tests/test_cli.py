@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Tests for the unified CLI with subcommands."""
 
 from __future__ import annotations
@@ -5,8 +8,11 @@ from __future__ import annotations
 import subprocess
 import sys
 
+from urdf_approx_geom._extension import load_extension
+
 
 FR3_URDF = "/workspace/resources/fr3/urdf/fr3.urdf"
+HAS_SPHERE_TREE = hasattr(load_extension(), "spherized")
 
 
 def run_cli(*args):
@@ -31,6 +37,8 @@ def test_generate_capsule_cli(tmp_path):
 
 
 def test_generate_all_cli(tmp_path):
+    # Commercial edition has no sphere/default; single is the shared preset.
+    preset = "default" if HAS_SPHERE_TREE else "single"
     proc = run_cli(
         "generate",
         "--mode",
@@ -40,7 +48,7 @@ def test_generate_all_cli(tmp_path):
         "--output-dir",
         str(tmp_path),
         "--preset",
-        "default",
+        preset,
     )
     assert proc.returncode == 0, proc.stdout
     assert (tmp_path / "fr3_convex.urdf").exists()

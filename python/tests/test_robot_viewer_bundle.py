@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Bundle + CLI smoke for the robot_viewer visualizer."""
 
 from __future__ import annotations

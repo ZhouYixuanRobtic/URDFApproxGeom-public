@@ -7,7 +7,7 @@ name: CI
 triggers:
   push:
     branches: [main, master]
-  pull_request:
+  merge_request:
     branches: [main, master]
 
 stages:
@@ -22,13 +22,15 @@ stages:
           - name: Checkout
             uses: checkout
             with:
-              submodules: false
+              submodules: recursive
 
           - name: Install deps
             run: |
               apt-get update
               apt-get install -y --no-install-recommends \
-                python3 python3-pip git clang-format clang-tidy cppcheck
+                python3 python3-pip git cmake clang-format clang-tidy cppcheck \
+                libeigen3-dev libyaml-cpp-dev liburdfdom-dev libtinyxml2-dev \
+                libfmt-dev
               pip3 install pre-commit
 
           - name: Run pre-commit
@@ -38,15 +40,15 @@ stages:
           - name: Run clang-tidy
             run: |
               cmake -B build-tidy . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-              find src interface/src -name "*.cpp" -exec clang-tidy -p build-tidy {} + 2>&1 || true
+              find src interface -name "*.cpp" -exec clang-tidy -p build-tidy {} + 2>&1 || true
 
   # ===== Build + Test =====
   - name: build
     displayName: Build & Test
-    needs: [pre-commit]
     strategy:
       matrix:
         BUILD_TYPE: [Debug, Release]
+        EDITION: [research, commercial]
     jobs:
       build:
         runs-on: linux
@@ -63,19 +65,30 @@ stages:
               apt-get install -y --no-install-recommends \
                 build-essential cmake libeigen3-dev libgtest-dev \
                 libyaml-cpp-dev liburdfdom-dev libtinyxml2-dev \
-                pybind11-dev python3-dev python3-pip
-              cd /usr/src/gtest && cmake . && make -j$(nproc)
-              cp lib/libgtest*.a /usr/lib/
+                pybind11-dev python3-dev python3-pip libfmt-dev
+              # jammy's libgtest-dev ships prebuilt libs + CMake config;
+              # find_package(GTest) works without a manual build.
+              pip3 install trimesh
 
           - name: cmake configure
             run: |
+              if [ "${{ matrix.EDITION }}" = "research" ]; then
+                ENABLE=ON
+              else
+                ENABLE=OFF
+              fi
               cmake -B build . \
-                -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+                -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_TYPE }} \
                 -DENABLE_TEST=ON \
-                -DCOMPILE_URDFApproxGeom_PYBINDING=ON
+                -DCOMPILE_URDFApproxGeom_PYBINDING=ON \
+                -DURDFApproxGeom_EDITION=${{ matrix.EDITION }} \
+                -DURDFApproxGeom_ENABLE_SPHERE_TREE=${ENABLE}
 
           - name: cmake build
             run: cmake --build build --parallel $(nproc)
+
+          - name: prepare test assets
+            run: python3 scripts/prepare_test_assets.py
 
           - name: ctest
             run: cd build && ctest --output-on-failure

@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Smoke test for the urdf_approx_geom pybind11 extension (capsule path)."""
 
 import json
@@ -10,7 +13,10 @@ FR3_URDF = "/workspace/resources/fr3/urdf/fr3.urdf"
 
 def test_capsuleized_emits_json_sidecar(tmp_path):
     out = tmp_path / "fr3_capsuleized.urdf"
-    msg = uag.capsuleized(FR3_URDF, str(out))
+    # The raw extension entry point only accepts OBJ/STL.  FR3 ships DAE
+    # visual meshes, so use the collision source; DAE preparation/fallback is
+    # owned by the structured Python API path (see test_mesh_source.py).
+    msg = uag.capsuleized(FR3_URDF, str(out), mesh_source="collision")
     assert "successful" in msg.lower(), msg
 
     jpath = pathlib.Path(str(out).replace(".urdf", ".json"))

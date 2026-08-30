@@ -143,3 +143,7 @@ docs/latex/
 *.log
 *.bak
 *.backup
+
+# Local vendored binary packages
+*.whl
+third_party/vendor/
