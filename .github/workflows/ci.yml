@@ -75,7 +75,9 @@ jobs:
 
       - name: Build and test
         run: |
-          docker run --rm -v $PWD:/workspace spherized-dev bash -lc '
+          # Image ENTRYPOINT is the CLI binary; override it so the build
+          # commands below actually run.
+          docker run --rm --entrypoint bash -v $PWD:/workspace spherized-dev -lc '
             set -e
             cmake -B build -DCMAKE_BUILD_TYPE=Release -DCOMPILE_URDFApproxGeom_PYBINDING=ON
             cmake --build build -j$(nproc)
@@ -154,7 +156,8 @@ jobs:
           else
             ENABLE=OFF
           fi
-          docker run --rm -v $PWD:/workspace urdfapprox-${{ matrix.edition }} bash -lc "
+          docker run --rm --entrypoint bash -e ENABLE=$ENABLE -v $PWD:/workspace \
+            urdfapprox-${{ matrix.edition }} -lc "
             set -e
             cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
               -DCOMPILE_URDFApproxGeom_PYBINDING=ON \
@@ -165,7 +168,7 @@ jobs:
       - name: Commercial binary scan
         if: matrix.edition == 'commercial'
         run: |
-          docker run --rm -v $PWD:/workspace urdfapprox-commercial bash -lc '
+          docker run --rm --entrypoint bash -v $PWD:/workspace urdfapprox-commercial -lc '
             set -e
             if find /usr/local -iname "*ManifoldPlus*" -o -iname "*sphere_tree*" -o -iname "*gdiam*" | grep .; then
               echo "Forbidden commercial artifacts found"
