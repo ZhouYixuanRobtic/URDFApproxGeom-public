@@ -527,6 +527,11 @@ irmv_core::bot_common::ErrorInfo URDFGenerator::saveCollisionGeometry(
             std::string{"cannot save "} + filename.string()};
 }
 
+void URDFGenerator::applyMeshScale(Eigen::MatrixXd& V, const MeshSource& src) const {
+    if (src.scale != Eigen::Vector3d::Ones())
+        V = V * src.scale.asDiagonal();
+}
+
 bool URDFGenerator::replaceWith(std::string& src, const std::string& original,
                                 const std::string& now) {
     size_t pos = src.find(original);
@@ -550,6 +555,7 @@ bool URDFGenerator::resolveMeshSource(
         for (const auto& rp : replace_pairs)
             replaceWith(fn, rp.first, rp.second);
         out.filename = fn;
+        out.scale = Eigen::Vector3d(mesh->scale.x, mesh->scale.y, mesh->scale.z);
         out.translation = Eigen::Vector3d(origin.position.x, origin.position.y, origin.position.z);
         out.rotation = Eigen::Quaterniond(origin.rotation.w, origin.rotation.x, origin.rotation.y,
                                           origin.rotation.z);

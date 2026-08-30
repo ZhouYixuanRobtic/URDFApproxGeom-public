@@ -54,6 +54,10 @@ irmv_core::bot_common::ErrorInfo ConvexHullCollisionURDFGenerator::run(
                         IRMV_ERROR("{}", ret.message());
                         return ret;
                     } else {
+                        // Loaders ignore the URDF <scale>; apply it so the
+                        // convex hull matches the rendered mesh.
+                        V = V * Eigen::Vector3d(mesh->scale.x, mesh->scale.y, mesh->scale.z)
+                                     .asDiagonal();
                         Eigen::MatrixXd CH_V;
                         Eigen::MatrixXi CH_F;
 

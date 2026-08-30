@@ -368,6 +368,10 @@ std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
     std::vector<Capsule> out;
     if (V.rows() == 0)
         return out;
+    // clusterSpheres indexes radii[] by center index; a mismatched radii list
+    // would read out of bounds.
+    if (radii.size() != centers.size())
+        return out;
 
     // No spheres -> single tight capsule over all vertices.
     if (centers.empty()) {
