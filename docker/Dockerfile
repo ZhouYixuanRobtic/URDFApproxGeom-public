@@ -51,6 +51,10 @@ RUN if [ "$ENABLE_SPHERE_TREE" = "OFF" ]; then \
 # ──────────────────────────────── runtime ────────────────────────────────
 FROM ${BASE} AS runtime
 
+# The base image defaults to a non-root user; ldconfig, the cp into /src/python
+# and the pip install below all need root.
+USER root
+
 ARG ENABLE_SPHERE_TREE=ON
 
 # Installed C++ artifacts: libURDFApproxGeom + third-party targets, headers,
@@ -67,8 +71,9 @@ COPY python/ /src/python/
 COPY config/ /src/python/urdf_approx_geom/config/
 
 # The commercial image does not ship the multi-sphere default preset.
-RUN if [ "$ENABLE_SPHERE_TREE" = "OFF" ]; then \
-      rm -f /src/python/urdf_approx_geom/config/sphereTree/default.yml; \
+RUN if [ "$(echo "$ENABLE_SPHERE_TREE" | tr '[:lower:]' '[:upper:]')" = "OFF" ]; then \
+      rm -f /src/python/urdf_approx_geom/config/sphereTree/default.yml \
+            /usr/local/share/URDFApproxGeom/config/sphereTree/default.yml; \
     fi \
     && cp /tmp/ext/_urdf_approx_geom*.so /src/python/urdf_approx_geom/ \
     && pip3 install --no-cache-dir --retries 5 --timeout 120 --upgrade pip setuptools \
