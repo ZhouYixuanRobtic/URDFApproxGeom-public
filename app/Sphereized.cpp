@@ -41,7 +41,15 @@ int main(int argc, char* argv[]) {
             std::string value = argv[++i];
             replacements.emplace_back(key, value);
         } else if (arg == "--simplify" && i + 1 < argc) {
-            simplify = std::stoi(argv[++i]);
+            const std::string val = argv[++i];
+            if (val == "1") {
+                simplify = true;
+            } else if (val == "0") {
+                simplify = false;
+            } else {
+                IRMV_ERROR("Invalid value for --simplify: {} (expected 0 or 1)", val);
+                return 1;
+            }
         } else if ((arg == "-c" || arg == "--config") && i + 1 < argc) {
             sphereConfig = argv[++i];
         } else {
@@ -65,6 +73,10 @@ int main(int argc, char* argv[]) {
 
     // Run the generator with the input, output, and replacement pairs
     auto ret = spherized_generator->run(inputPath, outputPath, replacements);
+    if (!ret.isOk()) {
+        IRMV_ERROR("Processing {} -> {} failed: {}", inputPath, outputPath, ret.message());
+        return 1;
+    }
     IRMV_INFO("Processing {} -> {}: {}", inputPath, outputPath, ret.message());
 
     return 0;

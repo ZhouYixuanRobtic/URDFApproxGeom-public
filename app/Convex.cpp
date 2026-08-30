@@ -52,6 +52,10 @@ int main(int argc, char* argv[]) {
 
     // Run the generator with the input, output, and replacement pairs
     auto ret = convex_generator->run(inputPath, outputPath, replacements);
+    if (!ret.isOk()) {
+        IRMV_ERROR("Processing {} -> {} failed: {}", inputPath, outputPath, ret.message());
+        return 1;
+    }
     IRMV_INFO("Processing {} -> {}: {}", inputPath, outputPath, ret.message());
 
     return 0;

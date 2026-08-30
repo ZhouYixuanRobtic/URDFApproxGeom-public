@@ -22,6 +22,19 @@ static inline bool parse_use_visual(const std::string& mesh_source) {
     return mesh_source != "collision";
 }
 
+// Run a generator with the GIL released (mesh loading + tree building can take
+// seconds to minutes on large URDFs and must not block the interpreter), and
+// surface failures as Python exceptions instead of a bare message string.
+template <typename Fn>
+static std::string runAndReturnMessage(Fn&& fn) {
+    py::gil_scoped_release release;
+    auto ret = fn();
+    if (!ret.isOk()) {
+        throw std::runtime_error(ret.message());
+    }
+    return ret.message();
+}
+
 PYBIND11_MODULE(_urdf_approx_geom, m) {
     m.doc() = "URDF collision-geometry approximator (sphere / convex / capsule)";
 
@@ -36,7 +49,7 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
                                                    "/capsule/capsuleConfig.yml"
                                              : config;
             CapsuleURDFGenerator g(cfg, parse_use_visual(mesh_source));
-            return g.run(input, output, replace_pairs).message();
+            return runAndReturnMessage([&] { return g.run(input, output, replace_pairs); });
         },
         py::arg("input"), py::arg("output"), py::arg("config") = std::string(""),
         py::arg("replace_pairs") = replace_pairs_t{},
@@ -47,7 +60,7 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
         "convex",
         [](const std::string& input, const std::string& output, replace_pairs_t replace_pairs) {
             ConvexHullCollisionURDFGenerator g;
-            return g.run(input, output, replace_pairs).message();
+            return runAndReturnMessage([&] { return g.run(input, output, replace_pairs); });
         },
         py::arg("input"), py::arg("output"), py::arg("replace_pairs") = replace_pairs_t{});
 
@@ -57,7 +70,7 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
         [](const std::string& input, const std::string& output, replace_pairs_t replace_pairs,
            bool simplify, const std::string& mesh_source) {
             SingleSphereURDFGenerator g(simplify, parse_use_visual(mesh_source));
-            return g.run(input, output, replace_pairs).message();
+            return runAndReturnMessage([&] { return g.run(input, output, replace_pairs); });
         },
         py::arg("input"), py::arg("output"), py::arg("replace_pairs") = replace_pairs_t{},
         py::arg("simplify") = true, py::arg("mesh_source") = std::string("visual"));
@@ -72,7 +85,7 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
                                                    "/sphereTree/sphereTreeConfig.yml"
                                              : config;
             SphereTreeURDFGenerator g(cfg, simplify, parse_use_visual(mesh_source));
-            return g.run(input, output, replace_pairs).message();
+            return runAndReturnMessage([&] { return g.run(input, output, replace_pairs); });
         },
         py::arg("input"), py::arg("output"), py::arg("config") = std::string(""),
         py::arg("replace_pairs") = replace_pairs_t{}, py::arg("simplify") = true,
@@ -90,7 +103,8 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
                                                    "/sphereTree/sphereTreeConfig.yml"
                                              : config;
             SphereTreeURDFGenerator g(cfg, simplify, parse_use_visual(mesh_source));
-            return g.runPair(input, default_output, single_output, replace_pairs).message();
+            return runAndReturnMessage(
+                [&] { return g.runPair(input, default_output, single_output, replace_pairs); });
         },
         py::arg("input"), py::arg("default_output"), py::arg("single_output"),
         py::arg("config") = std::string(""), py::arg("replace_pairs") = replace_pairs_t{},
@@ -107,7 +121,7 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
             std::string default_cfg =
                 std::string(URDFApproxGeom_CONFIG_PATH) + "/capsule/capsuleConfig.yml";
             CapsuleURDFGenerator g(default_cfg, parse_use_visual(mesh_source));
-            return g.runMulti(input, presets, replace_pairs).message();
+            return runAndReturnMessage([&] { return g.runMulti(input, presets, replace_pairs); });
         },
         py::arg("input"), py::arg("presets") = std::vector<std::pair<std::string, std::string>>{},
         py::arg("replace_pairs") = replace_pairs_t{},
