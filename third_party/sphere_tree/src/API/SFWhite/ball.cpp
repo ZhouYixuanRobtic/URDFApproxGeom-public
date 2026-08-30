@@ -227,8 +227,29 @@ void BallFromBoundaryPoints(ulong num_dim, ulong num_points,
       u_mat[kk][jj] = total;
     }
 
-  // OK, we now have a system of linear equations, so solve it
-  svdcmp(u_mat, red_dim, red_dim, ww, v_mat); // Augmented u_mat...
+  // OK, we now have a system of linear equations, so solve it.
+  // NR svdcmp fails to converge when the matrix's singular values span a
+  // huge dynamic range (medial centers at scale ~1e3 give ~1e47). Scaling the
+  // whole system uniformly leaves the solution unchanged and restores
+  // convergence (singular vectors are scale-invariant; wmin is relative).
+  float u_scale = 0.0;
+  for (jj = 1; jj <= red_dim; jj++)
+    for (kk = 1; kk <= red_dim; kk++)
+      if (fabsf(u_mat[jj][kk]) > u_scale)
+        u_scale = fabsf(u_mat[jj][kk]);
+  if (u_scale > 0.0) {
+    for (jj = 1; jj <= red_dim; jj++) {
+      b_vec[jj] /= u_scale;
+      for (kk = 1; kk <= red_dim; kk++)
+        u_mat[jj][kk] /= u_scale;
+    }
+  }
+  // Signal failure with a NaN radius so SFWhite::makeSphere's existing
+  // !finite(s->r) fallback (SFRitter) kicks in instead of nrerror exit().
+  if (svdcmp(u_mat, red_dim, red_dim, ww, v_mat)) { // Augmented u_mat...
+    radius_sqrd = NAN;
+    return;
+  }
   float wmax = 0.0;
   for (jj = 1; jj <= red_dim; jj++)
     if (ww[jj] > wmax)
@@ -445,8 +466,22 @@ void BallFromBoundaryBalls(ulong num_dim, ulong num_points,
   }
 
   // OK, we now have a system of linear equations, so find the
-  // solution space (which is one dimensional in this case)
-  svdcmp(u_mat, red_dim + 1, red_dim + 1, ww, v_mat); // Augmented u_mat...
+  // solution space (which is one dimensional in this case).
+  // Scale before SVD for the same conditioning reason as the solve above;
+  // only the singular vectors matter here, and they are scale-invariant.
+  float u_scale = 0.0;
+  for (ii = 1; ii <= red_dim + 1; ii++)
+    for (jj = 1; jj <= red_dim + 1; jj++)
+      if (fabsf(u_mat[ii][jj]) > u_scale)
+        u_scale = fabsf(u_mat[ii][jj]);
+  if (u_scale > 0.0)
+    for (ii = 1; ii <= red_dim + 1; ii++)
+      for (jj = 1; jj <= red_dim + 1; jj++)
+        u_mat[ii][jj] /= u_scale;
+  if (svdcmp(u_mat, red_dim + 1, red_dim + 1, ww, v_mat)) { // Augmented u_mat...
+    radius = NAN;
+    return;
+  }
   float wmax = 0.0;
   for (jj = 1; jj <= red_dim + 1; jj++)
     if (ww[jj] > wmax)

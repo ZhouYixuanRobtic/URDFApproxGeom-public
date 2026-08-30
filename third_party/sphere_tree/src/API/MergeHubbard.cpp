@@ -141,6 +141,11 @@ void MergeHubbard::constructSphereSet(Array<MedialSphere> *medialSpheres,
       //  add to neighbours list
       for (int j = 0; j < 4; j++) {
         int neighVert = vert->n[j];
+        // Guard like SRVoronoi.cpp: the Voronoi pass can leave invalid
+        // neighbour indices; indexing the map with them would crash.
+        if (neighVert < 0 || neighVert >= vertexToSphereMap.getSize()) {
+          continue;
+        }
         int neighMapsTo = vertexToSphereMap.index(neighVert);
         if (neighMapsTo > mapsTo) {
           medialSpheres->index(mapsTo).neighbours.addItem() = neighMapsTo;
