@@ -61,7 +61,7 @@ irmv_core::bot_common::ErrorInfo ConvexHullCollisionURDFGenerator::run(
                         if (CH_V.rows() < 4 || CH_F.rows() == 0) {
                             return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
                                     "convex hull failed: input mesh is degenerate or coplanar (" +
-                                        filename.string() + ")"};
+                                        filename.filename().string() + ")"};
                         }
 
                         ret = saveCollisionGeometry(filename, CH_V, CH_F);
@@ -79,6 +79,14 @@ irmv_core::bot_common::ErrorInfo ConvexHullCollisionURDFGenerator::run(
                             Eigen::Vector3d centroid;
                             Eigen::Matrix3d inertia;
                             igl::moments(CH_V, CH_F, volume, centroid, inertia);
+                            // igl::moments divides by the signed volume; a
+                            // degenerate-but-nonempty hull yields volume <= 0
+                            // or NaN and would corrupt the URDF inertial block.
+                            if (!(volume > 0.0) || !inertia.allFinite()) {
+                                return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                                        "convex hull produced invalid volume for " +
+                                            filename.filename().string()};
+                            }
                             if (link_pair.second->inertial)
                                 inertia *= link_pair.second->inertial->mass;
                             else

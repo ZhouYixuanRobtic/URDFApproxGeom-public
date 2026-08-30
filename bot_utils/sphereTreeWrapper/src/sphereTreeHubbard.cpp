@@ -103,7 +103,8 @@ irmv_core::bot_common::ErrorInfo SphereTreeMethodHubbard::constructTree(Surface&
     m_tree.setupTree(branch, depth + 1);
 
     hubbard.constructTree(&m_tree);
-    m_tree.setupTree(branch, depth + 1);
+    // No second setupTree here: it re-sizes the node pool and resets every
+    // node (center 0, radius -1), discarding the spheres Hubbard just built.
     tree.setBySphereTree(m_tree, 1.0 / boxScale);
 
     return irmv_core::bot_common::ErrorInfo::ok();
