@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mesh validation helper `URDFGenerator::validateMeshForMode`
 - `test/test_mesh_validation.cpp`
 - Python `mesh_prep.py` for trimesh-based DAE repair/conversion
+- `allow_open_mesh` plumbing so the Python path can fit repaired open DAE render meshes
+- `[project.optional-dependencies] visualization` for the pybullet legacy backend
 - `THIRD_PARTY_NOTICES.md`, `NOTICE`, `LICENSES/`, root `LICENSE` dual-edition notice, and `LICENSE.commercial` for the commercial edition
 - SBOM generator script `scripts/generate_sbom.py`
 - Edition wheel packaging helper `scripts/build_wheel.sh`
@@ -31,7 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Trimmed libigl `copyleft/` tree
 - Python package version synced to 2.0.1 and declares `numpy`/`trimesh`
 - Dockerfile uses `ARG ENABLE_SPHERE_TREE` for edition-specific images
+- Python visual pre-pass now keeps repaired open DAE geometry (warns) instead of silently falling back to collision convex hulls
+- `scripts/build_wheel.sh` now emits platform wheels (`cpXY-cpXY-<platform>`) via a binary-distribution marker
 - CI now builds both editions and runs a commercial license/binary scan
+
+### Fixed
+- Visual DAE meshes were rejected for capsule/multi-sphere even though they are the true link geometry
+- Edition wheels were tagged `py3-none-any` despite shipping a compiled extension
 
 ## [2.0.1] - 2026-07-07
 
