@@ -84,9 +84,12 @@ def prepare_visual_meshes(
             if mesh is None:
                 warnings.append(f"failed to load {fn}")
                 continue
-            # Best-effort repair before exporting.
+            # Best-effort repair before exporting. trimesh >= 5 removed
+            # remove_degenerate_faces; skip it there (merge_vertices above
+            # already deduplicates, and validation rejects broken meshes).
             mesh.merge_vertices()
-            mesh.remove_degenerate_faces()
+            if hasattr(mesh, "remove_degenerate_faces"):
+                mesh.remove_degenerate_faces()
             mesh.fix_normals()
             if hasattr(mesh, "fill_holes") and not mesh.is_watertight:
                 mesh.fill_holes()
