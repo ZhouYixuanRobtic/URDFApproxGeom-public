@@ -5,9 +5,13 @@
 
 
 #include <gtest/gtest.h>
+#include <igl/readSTL.h>
+#include <igl/writeOBJ.h>
 #include <cstdio>
 #include <ctime>  // clock_t, clock, CLOCKS_PER_SEC
 #include <filesystem>
+#include <fstream>
+#include <unistd.h>  // getpid
 #include "irmv/bot_common/log/singleton_logger.h"
 #include "sphereTreeWrapper/sphereTreeBase.h"
 #include "sphereTreeWrapper/sphereTreeGrid.h"
@@ -23,17 +27,32 @@ class SphereTreeTest : public testing::Test {
     void TearDown() override {}
 
   public:
-    // ponytail: returns the first existing public FR3 OBJ; empty string if none found.
-    std::string publicFr3Obj(const std::string& name = "finger.obj") const {
+    // ponytail: returns the first existing public FR3 mesh, converted to a
+    // temp .obj (the sphere-tree wrapper's file loader accepts .obj only; the
+    // tracked assets are .stl). Empty string if none found.
+    std::string publicFr3Obj(const std::string& name = "finger.stl") const {
         namespace fs = std::filesystem;
         const std::vector<std::string> candidates = {
-            resourcePath + "/fr3/meshes/franka_hand/collision/collision/" + name,
-            resourcePath + "/fr3/meshes/fr3/collision/collision/link7.obj",
-            resourcePath + "/fr3/meshes/plate/collision/collision/flex_griper_connect.obj",
+            resourcePath + "/fr3/meshes/franka_hand/collision/" + name,
+            resourcePath + "/fr3/meshes/fr3/collision/link7.stl",
+            resourcePath + "/fr3/meshes/plate/collision/flex_griper_connect.stl",
         };
         for (const auto& candidate : candidates) {
-            if (fs::exists(candidate) && fs::is_regular_file(candidate)) {
-                return fs::absolute(candidate).string();
+            if (!fs::exists(candidate) || !fs::is_regular_file(candidate)) {
+                continue;
+            }
+            Eigen::MatrixXd V;
+            Eigen::MatrixXi F, N;
+            std::ifstream in(candidate, std::ios::binary);
+            if (!in || !igl::readSTL(in, V, F, N)) {
+                continue;
+            }
+            std::string out =
+                (fs::temp_directory_path() /
+                 ("fr3_test_" + std::to_string(::getpid()) + ".obj"))
+                    .string();
+            if (igl::writeOBJ(out, V, F)) {
+                return out;
             }
         }
         return "";
