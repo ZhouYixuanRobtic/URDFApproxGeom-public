@@ -57,9 +57,7 @@ def test_prepare_visual_meshes_noop_when_already_obj(tmp_path):
 def test_prepare_visual_meshes_keeps_open_visuals_when_watertight_required():
     """FR3 visual DAEs are open/non-manifold render meshes.  They must still be
     converted and used as the fit source; only the allow_open flag is set."""
-    pairs, prepared, allow_open = _prepare_visual_meshes(
-        FR3_URDF, None, require_watertight=True
-    )
+    pairs, prepared, allow_open = _prepare_visual_meshes(FR3_URDF, None, require_watertight=True)
     assert prepared == pathlib.Path(FR3_URDF)
     assert allow_open is True
     assert any(p[0].endswith("link0.dae") and p[1].endswith(".obj") for p in pairs)

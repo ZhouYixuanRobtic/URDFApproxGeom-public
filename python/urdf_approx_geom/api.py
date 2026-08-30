@@ -136,17 +136,14 @@ def generate(
         # Capsule and multi-sphere fits prefer a closed 2-manifold; single-sphere
         # and convex only need vertices.  A repaired-but-open DAE is still the
         # true visual geometry, so it is used with allow_open_mesh=True.
-        require_watertight = normal == "capsule" or (
-            normal == "sphere" and preset != "single"
-        )
+        require_watertight = normal == "capsule" or (normal == "sphere" and preset != "single")
         pairs, run_urdf, allow_open_mesh = _prepare_visual_meshes(
             input_path, pairs, require_watertight=require_watertight
         )
 
     if normal == "capsule":
         message = _extension().capsuleized(
-            str(run_urdf), str(output_path), str(config_path), pairs, mesh_source,
-            allow_open_mesh
+            str(run_urdf), str(output_path), str(config_path), pairs, mesh_source, allow_open_mesh
         )
         json_path = _sidecar_json(output_path)
         primitive_count = _count_json_primitives(json_path, "capsules")
@@ -154,8 +151,13 @@ def generate(
         ext = sphere_ext if sphere_ext is not None else _extension()
         if hasattr(ext, "spherized"):
             message = ext.spherized(
-                str(run_urdf), str(output_path), str(config_path), pairs, bool(simplify),
-                mesh_source, allow_open_mesh
+                str(run_urdf),
+                str(output_path),
+                str(config_path),
+                pairs,
+                bool(simplify),
+                mesh_source,
+                allow_open_mesh,
             )
         elif preset == "single" and hasattr(ext, "single_spherized"):
             message = ext.single_spherized(

@@ -44,9 +44,7 @@ def _edge_valence_stats(mesh) -> tuple[int, int]:
     faces = np.asarray(mesh.faces, dtype=np.int64)
     if faces.ndim != 2 or faces.shape[1] != 3 or len(faces) == 0:
         return 0, 0
-    edges = np.sort(
-        np.vstack([faces[:, [0, 1]], faces[:, [1, 2]], faces[:, [2, 0]]]), axis=1
-    )
+    edges = np.sort(np.vstack([faces[:, [0, 1]], faces[:, [1, 2]], faces[:, [2, 0]]]), axis=1)
     _, counts = np.unique(edges, axis=0, return_counts=True)
     return int((counts == 1).sum()), int((counts > 2).sum())
 
@@ -155,9 +153,7 @@ def prepare_visual_meshes(
                 )
             # Distinct source paths with the same stem (link1/mesh.dae vs
             # link2/mesh.dae) must not collide on the same output file.
-            out = tmp / (
-                f"{pathlib.Path(fn).stem}_{hashlib.sha1(fn.encode()).hexdigest()[:8]}.obj"
-            )
+            out = tmp / (f"{pathlib.Path(fn).stem}_{hashlib.sha1(fn.encode()).hexdigest()[:8]}.obj")
             mesh.export(out)
             pairs.append((fn, str(out)))
         except Exception as exc:
