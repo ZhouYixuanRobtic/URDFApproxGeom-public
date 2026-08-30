@@ -168,10 +168,12 @@ if(COMPILE_${PROJECT_NAME}_PYBINDING)
   add_subdirectory(interface)
 endif()
 
-# debug for address and undefined behavior sanitizer
+# debug for address and undefined behavior sanitizer.
+# Sanitize the core library: ${PROJECT_NAME}_interface does not exist unless
+# pybindings are enabled (the asan preset builds without them).
 if(ENABLE_SANITIZER AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
   include(Sanitizers)
-  myproject_enable_sanitizers(${PROJECT_NAME}_interface ON ON ON OFF ON)
+  myproject_enable_sanitizers(${PROJECT_NAME} ON ON ON OFF ON)
 endif()
 
 # Code coverage instrumentation (gcov/lcov)
