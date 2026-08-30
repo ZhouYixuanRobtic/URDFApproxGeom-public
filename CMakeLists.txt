@@ -54,12 +54,14 @@ endif()
 # find package area
 include(Utilities)
 
-# find IRMV packages (NO IRMV DEPENDS)
-set(THIS_PACKAGE_IRMV_DEPENDS "irmv_core 1.0")
-prepare_irmv_dependencies("${THIS_PACKAGE_IRMV_DEPENDS}" IRMV_PACKAGE_DEPENDS)
+# No external IRMV packages: the minimal irmv_core surface used by this
+# project (ErrorInfo, IRMV_* logging, AlgorithmFactory) is vendored under
+# third_party/irmv so the build works without the lab's private packages.
+set(IRMV_PACKAGE_DEPENDS "")
 
 # find other packages
 find_package(Eigen3 3.1 REQUIRED)
+find_package(fmt REQUIRED)
 find_package(yaml-cpp 0.6 REQUIRED)
 find_package(urdfdom REQUIRED)
 # Define dependencies with versions
@@ -88,7 +90,8 @@ add_definitions(
   -D${PROJECT_NAME}_CONFIG_PATH="${URDFApproxGeom_CONFIG_PATH}")
 
 # include area (should be installed into the system)
-set(THIS_PACKAGE_INCLUDE_DIRS include third_party/header_only third_party/quickhull)
+set(THIS_PACKAGE_INCLUDE_DIRS include third_party/header_only third_party/quickhull
+                              third_party/irmv)
 if(URDFApproxGeom_ENABLE_SPHERE_TREE)
   list(APPEND THIS_PACKAGE_INCLUDE_DIRS third_party/sphere_tree/src
        bot_utils/sphereTreeWrapper/include)
@@ -115,9 +118,8 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
   # include directories that should be installed
   ${THIS_PACKAGE_INCLUDE_DIRS}
-  # irmv package include directories
-  ${irmv_core_INCLUDE_DIRS}
-  /usr/include/irmv/third_party/)
+  # vendored irmv_core shim (third_party/irmv) provides irmv/... includes
+  )
 
 if(URDFApproxGeom_ENABLE_SPHERE_TREE)
   add_subdirectory(third_party/sphere_tree)
@@ -145,7 +147,7 @@ add_library(${PROJECT_NAME} ${COMPILE_TYPE} ${URDFAPPROXGEOM_SOURCES})
 target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC ${THIS_PACKAGE_TARGETS}
-         ${irmv_core_LIBRARIES}
+         fmt
          yaml-cpp
          tinyxml2
          urdfdom_model
@@ -200,7 +202,6 @@ myproject_package_project(
   PUBLIC_INCLUDES
   ${THIS_PACKAGE_INCLUDE_DIRS}
   PUBLIC_DEPENDENCIES
-  ${THIS_PACKAGE_IRMV_DEPENDS}
   ${THIS_PACKAGE_DEPENDS})
 
 # Install the preset config/ tree so packaged binaries can resolve the baked
