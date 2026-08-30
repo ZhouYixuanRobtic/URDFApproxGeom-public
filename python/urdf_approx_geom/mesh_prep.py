@@ -10,6 +10,7 @@ performs light watertight validation before handing meshes to the extension.
 
 from __future__ import annotations
 
+import hashlib
 import pathlib
 import tempfile
 import xml.etree.ElementTree as ET
@@ -20,7 +21,10 @@ def validate_watertight(path: str | pathlib.Path) -> bool:
     """Return True when trimesh considers the mesh watertight."""
     import trimesh
 
-    mesh = trimesh.load(str(path), force="mesh")
+    try:
+        mesh = trimesh.load(str(path), force="mesh")
+    except Exception:
+        return False
     if mesh is None:
         return False
     if not hasattr(mesh, "is_watertight"):
@@ -64,11 +68,17 @@ def prepare_visual_meshes(
     import trimesh  # lazy: only required when non-OBJ/STL visuals exist
 
     _repo_root = pathlib.Path(__file__).resolve().parents[2]
+    base = pathlib.Path(input_urdf).resolve().parent
     tmp = pathlib.Path(tempfile.mkdtemp(prefix="urdf_approx_visual_"))
     for fn in unique:
-        local_fn = (
-            str(_repo_root / fn.removeprefix("/workspace/")) if fn.startswith("/workspace/") else fn
-        )
+        # Relative URDF mesh paths resolve against the URDF's directory, not
+        # the process CWD; /workspace/-prefixed paths are the docker layout.
+        if fn.startswith("/workspace/"):
+            local_fn = str(_repo_root / fn.removeprefix("/workspace/"))
+        elif pathlib.Path(fn).is_absolute():
+            local_fn = fn
+        else:
+            local_fn = str(base / fn)
         try:
             mesh = trimesh.load(local_fn, force="mesh")
             if mesh is None:
@@ -80,7 +90,11 @@ def prepare_visual_meshes(
             mesh.fix_normals()
             if hasattr(mesh, "fill_holes") and not mesh.is_watertight:
                 mesh.fill_holes()
-            out = tmp / (pathlib.Path(fn).stem + ".obj")
+            # Distinct source paths with the same stem (link1/mesh.dae vs
+            # link2/mesh.dae) must not collide on the same output file.
+            out = tmp / (
+                f"{pathlib.Path(fn).stem}_{hashlib.sha1(fn.encode()).hexdigest()[:8]}.obj"
+            )
             mesh.export(out)
             pairs.append((fn, str(out)))
         except Exception as exc:

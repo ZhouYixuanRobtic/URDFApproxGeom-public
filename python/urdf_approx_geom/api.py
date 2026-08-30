@@ -66,9 +66,13 @@ def _prepare_visual_meshes(
     C++ loader (OBJ/STL only) can fit the true visual geometry. Returns merged
     replace_pairs plus the temp dir holding the converted .obj (caller keeps it
     alive for the C++ run). No-op when every visual mesh is already OBJ/STL."""
+    import logging
+
     from .mesh_prep import prepare_visual_meshes
 
-    pairs, tmp, _warnings = prepare_visual_meshes(input_urdf, replace_pairs)
+    pairs, tmp, warnings = prepare_visual_meshes(input_urdf, replace_pairs)
+    for w in warnings:
+        logging.warning("mesh preparation: %s", w)
     return pairs, tmp
 
 
