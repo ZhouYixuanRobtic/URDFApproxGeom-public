@@ -44,16 +44,16 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
     m.def(
         "capsuleized",
         [](const std::string& input, const std::string& output, const std::string& config,
-           replace_pairs_t replace_pairs, const std::string& mesh_source) {
+           replace_pairs_t replace_pairs, const std::string& mesh_source, bool allow_open_mesh) {
             std::string cfg = config.empty() ? std::string(URDFApproxGeom_CONFIG_PATH) +
                                                    "/capsule/capsuleConfig.yml"
                                              : config;
-            CapsuleURDFGenerator g(cfg, parse_use_visual(mesh_source));
+            CapsuleURDFGenerator g(cfg, parse_use_visual(mesh_source), allow_open_mesh);
             return runAndReturnMessage([&] { return g.run(input, output, replace_pairs); });
         },
         py::arg("input"), py::arg("output"), py::arg("config") = std::string(""),
         py::arg("replace_pairs") = replace_pairs_t{},
-        py::arg("mesh_source") = std::string("visual"));
+        py::arg("mesh_source") = std::string("visual"), py::arg("allow_open_mesh") = false);
 
     // Convex hull -> convex-hull collision mesh URDF.
     m.def(
@@ -80,16 +80,18 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
     m.def(
         "spherized",
         [](const std::string& input, const std::string& output, const std::string& config,
-           replace_pairs_t replace_pairs, bool simplify, const std::string& mesh_source) {
+           replace_pairs_t replace_pairs, bool simplify, const std::string& mesh_source,
+           bool allow_open_mesh) {
             std::string cfg = config.empty() ? std::string(URDFApproxGeom_CONFIG_PATH) +
                                                    "/sphereTree/sphereTreeConfig.yml"
                                              : config;
-            SphereTreeURDFGenerator g(cfg, simplify, parse_use_visual(mesh_source));
+            SphereTreeURDFGenerator g(cfg, simplify, parse_use_visual(mesh_source),
+                                      allow_open_mesh);
             return runAndReturnMessage([&] { return g.run(input, output, replace_pairs); });
         },
         py::arg("input"), py::arg("output"), py::arg("config") = std::string(""),
         py::arg("replace_pairs") = replace_pairs_t{}, py::arg("simplify") = true,
-        py::arg("mesh_source") = std::string("visual"));
+        py::arg("mesh_source") = std::string("visual"), py::arg("allow_open_mesh") = false);
 
     // Sphere tree, one mesh load + one tree build, two outputs: the multi-sphere
     // URDF at `default_output` and a single-sphere URDF (tree.biggest_sphere) at
@@ -98,17 +100,20 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
         "spherized_pair",
         [](const std::string& input, const std::string& default_output,
            const std::string& single_output, const std::string& config,
-           replace_pairs_t replace_pairs, bool simplify, const std::string& mesh_source) {
+           replace_pairs_t replace_pairs, bool simplify, const std::string& mesh_source,
+           bool allow_open_mesh) {
             std::string cfg = config.empty() ? std::string(URDFApproxGeom_CONFIG_PATH) +
                                                    "/sphereTree/sphereTreeConfig.yml"
                                              : config;
-            SphereTreeURDFGenerator g(cfg, simplify, parse_use_visual(mesh_source));
+            SphereTreeURDFGenerator g(cfg, simplify, parse_use_visual(mesh_source),
+                                      allow_open_mesh);
             return runAndReturnMessage(
                 [&] { return g.runPair(input, default_output, single_output, replace_pairs); });
         },
         py::arg("input"), py::arg("default_output"), py::arg("single_output"),
         py::arg("config") = std::string(""), py::arg("replace_pairs") = replace_pairs_t{},
-        py::arg("simplify") = true, py::arg("mesh_source") = std::string("visual"));
+        py::arg("simplify") = true, py::arg("mesh_source") = std::string("visual"),
+        py::arg("allow_open_mesh") = false);
 #endif
     // Capsule, multi-preset: one mesh load + one validation pass per link, then
     // every (output, config) preset is fit on the cached link meshes. presets is
@@ -117,13 +122,13 @@ PYBIND11_MODULE(_urdf_approx_geom, m) {
         "capsuleized_multi",
         [](const std::string& input,
            const std::vector<std::pair<std::string, std::string>>& presets,
-           replace_pairs_t replace_pairs, const std::string& mesh_source) {
+           replace_pairs_t replace_pairs, const std::string& mesh_source, bool allow_open_mesh) {
             std::string default_cfg =
                 std::string(URDFApproxGeom_CONFIG_PATH) + "/capsule/capsuleConfig.yml";
-            CapsuleURDFGenerator g(default_cfg, parse_use_visual(mesh_source));
+            CapsuleURDFGenerator g(default_cfg, parse_use_visual(mesh_source), allow_open_mesh);
             return runAndReturnMessage([&] { return g.runMulti(input, presets, replace_pairs); });
         },
         py::arg("input"), py::arg("presets") = std::vector<std::pair<std::string, std::string>>{},
         py::arg("replace_pairs") = replace_pairs_t{},
-        py::arg("mesh_source") = std::string("visual"));
+        py::arg("mesh_source") = std::string("visual"), py::arg("allow_open_mesh") = false);
 }

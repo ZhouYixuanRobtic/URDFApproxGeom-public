@@ -20,7 +20,10 @@
 class CapsuleURDFGenerator : public URDFGenerator {
   public:
     /// @param use_visual  fit the visual mesh (true) or collision mesh (false).
-    explicit CapsuleURDFGenerator(const std::string& capsule_config_path, bool use_visual = true);
+    /// @param allow_open_mesh  skip the watertight check. Set only by the
+    ///                         Python pre-pass for visual DAE render meshes.
+    explicit CapsuleURDFGenerator(const std::string& capsule_config_path, bool use_visual = true,
+                                  bool allow_open_mesh = false);
 
     ~CapsuleURDFGenerator() override;
 
@@ -51,6 +54,7 @@ class CapsuleURDFGenerator : public URDFGenerator {
 
     std::string config_path_;
     bool use_visual_ = true;
+    bool allow_open_mesh_ = false;
     int n_sections_ = 4;
     double coa_threshold_ = 0.005;
     int max_circles_per_section_ = 1;

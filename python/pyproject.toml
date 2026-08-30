@@ -13,6 +13,11 @@ dependencies = [
 ]
 authors = [{ name = "YX.E.Z", email = "yixuanzhou@sjtu.edu.cn" }]
 
+[project.optional-dependencies]
+visualization = [
+  "pybullet>=3.2",
+]
+
 [project.scripts]
 urdf-approx-geom = "urdf_approx_geom.cli:main"
 

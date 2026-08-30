@@ -53,11 +53,14 @@ class URDFGenerator {
 
     /// Clean a mesh (merge duplicate vertices, remove degenerate faces) and,
     /// for modes that require a closed surface, reject meshes with boundary or
-    /// non-manifold edges. Errors include actionable context for the caller.
+    /// non-manifold edges. @p allow_open_mesh skips the closed-surface check;
+    /// it is only set by the Python pre-pass for DAE render meshes (the true
+    /// visual geometry may be an open triangle soup). Direct C++ callers stay
+    /// strict. Errors include actionable context for the caller.
     irmv_core::bot_common::ErrorInfo validateMeshForMode(
         const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, MeshMode mode,
         Eigen::MatrixXd& outV, Eigen::MatrixXi& outF, const std::string& link_name,
-        const std::string& file_path) const;
+        const std::string& file_path, bool allow_open_mesh = false) const;
 
     irmv_core::bot_common::ErrorInfo saveCollisionGeometry(std::filesystem::path& filename,
                                                            const Eigen::MatrixXd& V,
