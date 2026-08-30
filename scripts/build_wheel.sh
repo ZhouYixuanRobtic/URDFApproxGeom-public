@@ -91,12 +91,26 @@ fi
 
 mkdir -p "$ROOT/dist"
 cd "$TMP"
-# Force a platform/ABI-specific wheel tag: the .so is CPython/OS-specific, and a
-# py3-none-any wheel would install (then crash) anywhere pip accepts it.
-PY_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
-PLAT="$(python3 -c 'import sysconfig; print(sysconfig.get_platform())')"
-python3 -m build --wheel --outdir "$ROOT/dist" \
-  --config-setting=--python-tag="$PY_TAG" --config-setting=--plat-name="$PLAT" >/dev/null
+
+# The compiled _urdf_approx_geom*.so is staged as package data, so setuptools
+# otherwise classifies the wheel as pure (py3-none-any).  Force a platform
+# wheel by declaring the distribution binary; bdist_wheel then emits
+# cpXY-cpXY-<platform> and Root-Is-Purelib: false.  pyproject.toml still
+# supplies all metadata, so setup.py only has to override distclass.
+cat > setup.py <<'PY'
+from setuptools import setup
+from setuptools.dist import Distribution
+
+
+class BinaryDistribution(Distribution):
+    def has_ext_modules(self):
+        return True
+
+
+setup(distclass=BinaryDistribution)
+PY
+
+python3 -m build --wheel --outdir "$ROOT/dist" >/dev/null
 
 echo "Built $EDITION wheel:"
 ls -1t "$ROOT"/dist/*.whl | head -1
