@@ -59,6 +59,7 @@ irmv_core::bot_common::ErrorInfo SingleSphereURDFGenerator::run(
             IRMV_ERROR("{}", ret.message());
             return ret;
         }
+        applyMeshScale(V, src);
 
         auto vret = validateMeshForMode(V, F, MeshMode::SphereSingle, OUT_V, OUT_F, link_name,
                                         src.filename.string());

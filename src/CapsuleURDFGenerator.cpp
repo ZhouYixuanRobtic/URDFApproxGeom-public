@@ -169,6 +169,7 @@ irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::run(
             IRMV_ERROR("{}", lret.message());
             return lret;
         }
+        applyMeshScale(V, src);
 
         // Cross-section slicing needs a closed, consistently oriented surface.
         auto vret = validateMeshForMode(V, F, MeshMode::Capsule, OUT_V, OUT_F, link_name,
@@ -296,7 +297,11 @@ irmv_core::bot_common::ErrorInfo CapsuleURDFGenerator::runMulti(
         loadConfigFrom(config_path);
 
         urdf::ModelInterfaceSharedPtr model;
-        loadURDF(urdf_path, model);
+        auto load_ret = loadURDF(urdf_path, model);
+        if (!load_ret.isOk()) {
+            IRMV_ERROR("{}", load_ret.message());
+            return load_ret;
+        }
         nlohmann::json json;
         for (auto& link_pair : model->links_) {
             const auto& link_name = link_pair.first;

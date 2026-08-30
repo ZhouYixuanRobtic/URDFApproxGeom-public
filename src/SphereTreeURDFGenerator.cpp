@@ -54,8 +54,12 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
         return ret;
     }
     IRMV_INFO("Got {} links to process", m_model->links_.size());
-    // do deep copy
-    loadURDF(urdf_path, m_biggest_model);
+    // do deep copy; workers write the biggest-sphere sidecar into it.
+    auto biggest_ret = loadURDF(urdf_path, m_biggest_model);
+    if (!biggest_ret.isOk()) {
+        IRMV_ERROR("{}", biggest_ret.message());
+        return biggest_ret;
+    }
 
     // Inside SphereTreeURDFGenerator::run
     std::vector<std::future<irmv_core::bot_common::ErrorInfo>> futures;
@@ -97,6 +101,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSphereModel(
                         IRMV_ERROR("{}", ret.message());
                         return ret;
                     }
+                    applyMeshScale(V, src);
                     // Multi-sphere mode requires a closed, consistently oriented mesh.
                     auto vret = validateMeshForMode(V, F, MeshMode::SphereTree, OUT_V, OUT_F,
                                                     link_name, src.filename.string());
@@ -281,6 +286,7 @@ irmv_core::bot_common::ErrorInfo SphereTreeURDFGenerator::buildSingleSphereModel
                 IRMV_ERROR("{}", ret.message());
                 return ret;
             }
+            applyMeshScale(V, src);
 
             // Single-sphere mode only needs the vertex set; still clean the mesh
             // so duplicate vertices and degenerate faces do not distort the bound.

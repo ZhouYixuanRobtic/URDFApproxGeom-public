@@ -50,8 +50,14 @@ bool clipSegToCircle(const Eigen::Vector2d& p0, const Eigen::Vector2d& p1, const
     double B = 2.0 * e.dot(dir);
     double C = e.dot(e) - r * r;
     double disc = B * B - 4.0 * A * C;
-    if (disc <= 0.0)
-        return C <= 0.0;  // no crossing: all-in or all-out
+    if (disc <= 0.0) {  // no crossing: all-in or all-out
+        if (C <= 0.0) {  // all-in: the whole segment is inside the disk
+            q0 = p0;
+            q1 = p1;
+            return true;
+        }
+        return false;
+    }
     double sd = std::sqrt(disc);
     double t0 = (-B - sd) / (2.0 * A);
     double t1 = (-B + sd) / (2.0 * A);

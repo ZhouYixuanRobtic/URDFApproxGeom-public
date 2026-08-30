@@ -73,8 +73,14 @@ class URDFGenerator {
         std::filesystem::path filename;
         Eigen::Vector3d translation{Eigen::Vector3d::Zero()};
         Eigen::Quaterniond rotation{Eigen::Quaterniond::Identity()};
+        // URDF <mesh scale="x y z">: loaders ignore it, so callers must scale
+        // the loaded vertices for the collision geometry to match the mesh.
+        Eigen::Vector3d scale{Eigen::Vector3d::Ones()};
         bool found = false;
     };
+
+    /// Apply a mesh source's URDF scale to loaded vertices (in place).
+    void applyMeshScale(Eigen::MatrixXd& V, const MeshSource& src) const;
     bool resolveMeshSource(const urdf::LinkSharedPtr& link, bool use_visual,
                            const std::vector<std::pair<std::string, std::string>>& replace_pairs,
                            MeshSource& out);
