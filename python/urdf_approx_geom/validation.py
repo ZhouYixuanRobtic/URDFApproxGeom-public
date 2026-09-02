@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Validation helpers used by the public CLI and legacy scripts."""
 
 from __future__ import annotations

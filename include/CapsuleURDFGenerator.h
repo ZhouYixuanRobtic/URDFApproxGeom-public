@@ -1,20 +1,8 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #ifndef URDFAPPROXGEOM_CAPSULEURDFGENERATOR_H
 #define URDFAPPROXGEOM_CAPSULEURDFGENERATOR_H
@@ -32,7 +20,10 @@
 class CapsuleURDFGenerator : public URDFGenerator {
   public:
     /// @param use_visual  fit the visual mesh (true) or collision mesh (false).
-    explicit CapsuleURDFGenerator(const std::string& capsule_config_path, bool use_visual = true);
+    /// @param allow_open_mesh  skip the watertight check. Set only by the
+    ///                         Python pre-pass for visual DAE render meshes.
+    explicit CapsuleURDFGenerator(const std::string& capsule_config_path, bool use_visual = true,
+                                  bool allow_open_mesh = false);
 
     ~CapsuleURDFGenerator() override;
 
@@ -40,7 +31,7 @@ class CapsuleURDFGenerator : public URDFGenerator {
         const std::string& urdf_path, const std::string& output_path,
         const std::vector<std::pair<std::string, std::string>>& replace_pairs) override;
 
-    /// One URDF load + one mesh load + one Manifold watertight pass per link,
+    /// One URDF load + one mesh load + one validation pass per link,
     /// then fits every preset on the cached link meshes and writes one
     /// (URDF, JSON) pair per preset. @p presets is (output_path, config_path).
     /// Parallelizes the per-link mesh load across links (std::async, like the
@@ -63,6 +54,7 @@ class CapsuleURDFGenerator : public URDFGenerator {
 
     std::string config_path_;
     bool use_visual_ = true;
+    bool allow_open_mesh_ = false;
     int n_sections_ = 4;
     double coa_threshold_ = 0.005;
     int max_circles_per_section_ = 1;

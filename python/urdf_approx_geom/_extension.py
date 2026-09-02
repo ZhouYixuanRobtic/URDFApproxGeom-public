@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Load the private CMake-built pybind11 extension."""
 
 from __future__ import annotations

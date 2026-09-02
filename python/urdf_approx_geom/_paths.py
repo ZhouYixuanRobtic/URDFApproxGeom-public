@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Path resolution shared across the package.
 
 Centralizes locating the source-tree root and the bundled config tree so the

@@ -1,49 +1,11 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-   You are free to use, copy, modify, and distribute this software and its
-   documentation for educational, research, and other non-commercial purposes,
-   provided that appropriate credit is given to the original author(s) and
-   copyright holder(s).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
-                              D I S C L A I M E R
-
-   IN NO EVENT SHALL TRINITY COLLEGE DUBLIN BE LIABLE TO ANY PARTY FOR
-   DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING,
-   BUT NOT LIMITED TO, LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE
-   AND ITS DOCUMENTATION, EVEN IF TRINITY COLLEGE DUBLIN HAS BEEN ADVISED OF
-   THE POSSIBILITY OF SUCH DAMAGES.
-
-   TRINITY COLLEGE DUBLIN DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED
-   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-   PURPOSE. THE SOFTWARE PROVIDED HEREIN IS ON AN "AS IS" BASIS, AND TRINITY
-   COLLEGE DUBLIN HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
-   ENHANCEMENTS, OR MODIFICATIONS.
-
-   The authors may be contacted at the following e-mail addresses:
-
-           YX.E.Z yixuanzhou@sjtu.edu.cn
-
-   Further information about the IRMV and its projects can be found at the ISG web site :
-
-          https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
 
+
 #include "ConvexHullCollisionURDFGenerator.h"
-#include <igl/copyleft/cgal/convex_hull.h>
+#include "ConvexHullBackend.h"
 #include <igl/moments.h>
 #include <urdf_model/model.h>
 #include <filesystem>
@@ -92,10 +54,19 @@ irmv_core::bot_common::ErrorInfo ConvexHullCollisionURDFGenerator::run(
                         IRMV_ERROR("{}", ret.message());
                         return ret;
                     } else {
+                        // Loaders ignore the URDF <scale>; apply it so the
+                        // convex hull matches the rendered mesh.
+                        V = V * Eigen::Vector3d(mesh->scale.x, mesh->scale.y, mesh->scale.z)
+                                     .asDiagonal();
                         Eigen::MatrixXd CH_V;
                         Eigen::MatrixXi CH_F;
 
-                        igl::copyleft::cgal::convex_hull(V, CH_V, CH_F);
+                        urdf_approx_geom::computeConvexHull3D(V, CH_V, CH_F);
+                        if (CH_V.rows() < 4 || CH_F.rows() == 0) {
+                            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                                    "convex hull failed: input mesh is degenerate or coplanar (" +
+                                        filename.filename().string() + ")"};
+                        }
 
                         ret = saveCollisionGeometry(filename, CH_V, CH_F);
                         if (!ret.isOk()) {
@@ -112,6 +83,14 @@ irmv_core::bot_common::ErrorInfo ConvexHullCollisionURDFGenerator::run(
                             Eigen::Vector3d centroid;
                             Eigen::Matrix3d inertia;
                             igl::moments(CH_V, CH_F, volume, centroid, inertia);
+                            // igl::moments divides by the signed volume; a
+                            // degenerate-but-nonempty hull yields volume <= 0
+                            // or NaN and would corrupt the URDF inertial block.
+                            if (!(volume > 0.0) || !inertia.allFinite()) {
+                                return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
+                                        "convex hull produced invalid volume for " +
+                                            filename.filename().string()};
+                            }
                             if (link_pair.second->inertial)
                                 inertia *= link_pair.second->inertial->mass;
                             else

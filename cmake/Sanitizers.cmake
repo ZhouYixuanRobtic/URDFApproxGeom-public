@@ -79,13 +79,15 @@ function(
               "Using MSVC sanitizers requires setting the MSVC environment before building the project. Please manually open the MSVC command prompt and rebuild the project."
           )
         endif()
+        # PUBLIC, matching the GCC/Clang branch above: INTERFACE only
+        # propagates to consumers and never instruments the target itself.
         target_compile_options(
-          ${project_name} INTERFACE /fsanitize=${LIST_OF_SANITIZERS} /Zi
-                                    /INCREMENTAL:NO)
+          ${project_name} PUBLIC /fsanitize=${LIST_OF_SANITIZERS} /Zi
+                                 /INCREMENTAL:NO)
         target_compile_definitions(
-          ${project_name} INTERFACE _DISABLE_VECTOR_ANNOTATION
-                                    _DISABLE_STRING_ANNOTATION)
-        target_link_options(${project_name} INTERFACE /INCREMENTAL:NO)
+          ${project_name} PUBLIC _DISABLE_VECTOR_ANNOTATION
+                                 _DISABLE_STRING_ANNOTATION)
+        target_link_options(${project_name} PUBLIC /INCREMENTAL:NO)
       endif()
     endif()
   endif()

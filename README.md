@@ -15,6 +15,22 @@ URDFApproxGeom converts mesh-based URDF collision geometry into lighter collisio
 - **Three modes, one tool.** Convex / sphere / capsule from a single URDF input, with named presets per mode and a `compare-all` bundle that exports every variant for side-by-side viewing.
 - **Inspectable results.** Built-in `validate` and `compare` report tightness metrics (`capV/aabb`, `r/binMed`, `vol/dae`) so you can iterate toward a defensible approximation instead of guessing.
 
+## Editions
+
+The project builds in two editions:
+
+- **Research** (`URDFApproxGeom_ENABLE_SPHERE_TREE=ON`, default): full sphere-tree backend, including multi-sphere `sphere/default`.
+- **Commercial** (`URDFApproxGeom_ENABLE_SPHERE_TREE=OFF`): convex, capsule, and `sphere/single` only; no sphere_tree/gdiam/qHull code is compiled or packaged.
+
+Use the CMake presets:
+
+```bash
+cmake --preset research
+cmake --preset commercial
+```
+
+The commercial preset also sets `URDFApproxGeom_EDITION=commercial`; configuring that edition with `URDFApproxGeom_ENABLE_SPHERE_TREE=ON` is rejected at configure time.
+
 ## Visual: ground-truth mesh vs approximations
 
 Each screenshot shows the FR3 `link0` `.dae` visual mesh (wireframe) with the generated collision primitives overlaid. Collision geometry is in solid colour.

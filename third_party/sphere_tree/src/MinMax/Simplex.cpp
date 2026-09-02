@@ -231,11 +231,11 @@ int simplexMin(int numDim, double init[], double size[], double ftol,
   //  store result ( result was put into p[0] )
   memcpy(init, p[0], numDim * sizeof(double));
 
-  //  tidy up
+  //  tidy up (all were allocated with new[])
   for (int i = 0; i <= numDim; i++)
-    delete p[i];
-  delete p;
-  delete y;
+    delete[] p[i];
+  delete[] p;
+  delete[] y;
 
   return canFinish;
 }

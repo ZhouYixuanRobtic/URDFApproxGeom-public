@@ -1,46 +1,8 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-   You are free to use, copy, modify, and distribute this software and its
-   documentation for educational, research, and other non-commercial purposes,
-   provided that appropriate credit is given to the original author(s) and
-   copyright holder(s).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
-                              D I S C L A I M E R
-
-   IN NO EVENT SHALL TRINITY COLLEGE DUBLIN BE LIABLE TO ANY PARTY FOR
-   DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING,
-   BUT NOT LIMITED TO, LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE
-   AND ITS DOCUMENTATION, EVEN IF TRINITY COLLEGE DUBLIN HAS BEEN ADVISED OF
-   THE POSSIBILITY OF SUCH DAMAGES.
-
-   TRINITY COLLEGE DUBLIN DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED
-   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-   PURPOSE. THE SOFTWARE PROVIDED HEREIN IS ON AN "AS IS" BASIS, AND TRINITY
-   COLLEGE DUBLIN HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
-   ENHANCEMENTS, OR MODIFICATIONS.
-
-   The authors may be contacted at the following e-mail addresses:
-
-           YX.E.Z yixuanzhou@sjtu.edu.cn
-
-   Further information about the IRMV and its projects can be found at the ISG web site :
-
-          https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #include "URDFGenerator.h"
 #include <igl/readOBJ.h>
@@ -49,8 +11,16 @@
 #include <tinyxml2.h>
 #include <urdf_model/model.h>
 #include <urdf_parser/urdf_parser.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
 #include <fstream>
+#include <map>
 #include <set>
+#include <sstream>
+#include <tuple>
+#include <utility>
+#include <vector>
 #include "irmv/bot_common/log/singleton_logger.h"
 
 irmv_core::bot_common::ErrorInfo URDFGenerator::loadURDF(
@@ -444,6 +414,95 @@ irmv_core::bot_common::ErrorInfo URDFGenerator::loadedIntoIGL(const std::filesys
                 filename.string()};
 }
 
+irmv_core::bot_common::ErrorInfo URDFGenerator::validateMeshForMode(
+    const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, MeshMode mode,
+    Eigen::MatrixXd& outV, Eigen::MatrixXi& outF, const std::string& link_name,
+    const std::string& file_path, bool allow_open_mesh) const {
+    outV.resize(0, 3);
+    outF.resize(0, 3);
+
+    // Merge duplicate vertices and drop degenerate faces.
+    const double coord_scale = 1e9;
+    auto rounded = [coord_scale](double x) -> long long {
+        return static_cast<long long>(std::llround(x * coord_scale));
+    };
+    using VKey = std::tuple<long long, long long, long long>;
+    std::map<VKey, int> vertex_map;
+    std::vector<Eigen::Vector3d> cleanedV;
+    std::vector<std::array<int, 3>> cleanedF;
+
+    auto indexOf = [&](const Eigen::Vector3d& p) -> int {
+        VKey key{rounded(p.x()), rounded(p.y()), rounded(p.z())};
+        auto it = vertex_map.find(key);
+        if (it != vertex_map.end()) return it->second;
+        int id = static_cast<int>(cleanedV.size());
+        cleanedV.push_back(p);
+        vertex_map.emplace(key, id);
+        return id;
+    };
+
+    const double mesh_scale = V.rows() > 0 ? V.cwiseAbs().maxCoeff() : 1.0;
+    const double area_eps = 1e-14 * std::max(1.0, mesh_scale);
+    for (int i = 0; i < F.rows(); ++i) {
+        Eigen::Vector3d a = V.row(F(i, 0));
+        Eigen::Vector3d b = V.row(F(i, 1));
+        Eigen::Vector3d c = V.row(F(i, 2));
+        if ((b - a).cross(c - a).norm() <= area_eps) continue;
+        int ia = indexOf(a);
+        int ib = indexOf(b);
+        int ic = indexOf(c);
+        if (ia == ib || ib == ic || ia == ic) continue;
+        cleanedF.push_back({ia, ib, ic});
+    }
+
+    if (cleanedV.empty()) {
+        std::ostringstream oss;
+        oss << "link '" << link_name << "': mesh has no usable vertices (" << file_path
+            << "). Repair the mesh or use the Python CLI/API.";
+        return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, oss.str()};
+    }
+    if (cleanedF.empty() && (mode == MeshMode::Capsule || mode == MeshMode::SphereTree)) {
+        std::ostringstream oss;
+        oss << "link '" << link_name << "': mesh has no usable triangles (" << file_path
+            << "). Repair the mesh or use the Python CLI/API.";
+        return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, oss.str()};
+    }
+
+    if ((mode == MeshMode::Capsule || mode == MeshMode::SphereTree) && !allow_open_mesh) {
+        std::map<std::pair<int, int>, int> edge_count;
+        for (const auto& tri : cleanedF) {
+            for (int e = 0; e < 3; ++e) {
+                int u = tri[e];
+                int v = tri[(e + 1) % 3];
+                if (u > v) std::swap(u, v);
+                ++edge_count[{u, v}];
+            }
+        }
+        int boundary_edges = 0;
+        int nonmanifold_edges = 0;
+        for (const auto& kv : edge_count) {
+            if (kv.second == 1) ++boundary_edges;
+            else if (kv.second > 2) ++nonmanifold_edges;
+        }
+        if (boundary_edges > 0 || nonmanifold_edges > 0) {
+            std::ostringstream oss;
+            oss << "link '" << link_name << "': mesh is not watertight (" << file_path
+                << "): found " << boundary_edges << " boundary edges and " << nonmanifold_edges
+                << " non-manifold edges. Use the Python CLI/API to repair the mesh, use "
+                   "--mesh-source collision, or fix the model and rerun.";
+            return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR, oss.str()};
+        }
+    }
+
+    outV.resize(static_cast<int>(cleanedV.size()), 3);
+    for (int i = 0; i < static_cast<int>(cleanedV.size()); ++i)
+        outV.row(i) = cleanedV[i];
+    outF.resize(static_cast<int>(cleanedF.size()), 3);
+    for (int i = 0; i < static_cast<int>(cleanedF.size()); ++i)
+        for (int e = 0; e < 3; ++e) outF(i, e) = cleanedF[i][e];
+    return irmv_core::bot_common::ErrorInfo::ok();
+}
+
 irmv_core::bot_common::ErrorInfo URDFGenerator::saveCollisionGeometry(
     std::filesystem::path& filename, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F) {
     std::filesystem::path dir = filename.parent_path();
@@ -466,6 +525,11 @@ irmv_core::bot_common::ErrorInfo URDFGenerator::saveCollisionGeometry(
     }
     return {irmv_core::bot_common::ErrorCode::GENERAL_ERROR,
             std::string{"cannot save "} + filename.string()};
+}
+
+void URDFGenerator::applyMeshScale(Eigen::MatrixXd& V, const MeshSource& src) const {
+    if (src.scale != Eigen::Vector3d::Ones())
+        V = V * src.scale.asDiagonal();
 }
 
 bool URDFGenerator::replaceWith(std::string& src, const std::string& original,
@@ -491,6 +555,7 @@ bool URDFGenerator::resolveMeshSource(
         for (const auto& rp : replace_pairs)
             replaceWith(fn, rp.first, rp.second);
         out.filename = fn;
+        out.scale = Eigen::Vector3d(mesh->scale.x, mesh->scale.y, mesh->scale.z);
         out.translation = Eigen::Vector3d(origin.position.x, origin.position.y, origin.position.z);
         out.rotation = Eigen::Quaterniond(origin.rotation.w, origin.rotation.x, origin.rotation.y,
                                           origin.rotation.z);

@@ -4,10 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "urdf-approx-geom"
-version = "2.0.0"
+version = "2.0.1"
 description = "URDF collision-geometry approximator for convex mesh, sphere, and capsule outputs"
 requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.23",
+  "trimesh>=4.0",
+]
 authors = [{ name = "YX.E.Z", email = "yixuanzhou@sjtu.edu.cn" }]
+
+[project.optional-dependencies]
+visualization = [
+  "pybullet>=3.2",
+]
 
 [project.scripts]
 urdf-approx-geom = "urdf_approx_geom.cli:main"

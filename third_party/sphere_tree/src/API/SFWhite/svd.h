@@ -18,7 +18,7 @@ dimensions of a, and will be equal for square matrices. b[1..m] is the input
 right-hand side. x[1..n] is the output solution vector. No input quantities are
 destroyed, so the routine may be called sequentially with dierent b's.*/
 
-void svdcmp(float **a, int m, int n, float w[], float **v);
+int svdcmp(float **a, int m, int n, float w[], float **v);
 /*Given a matrix a[1..m][1..n], this routine computes its singular value
 decomposition, A = U . W . V T . ThematrixUreplaces a on output. The diagonal
 matrix of singular values W is out- put as a vector w[1..n]. ThematrixV(not the

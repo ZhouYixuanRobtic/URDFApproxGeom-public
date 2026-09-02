@@ -1,20 +1,8 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #include "CapsuleFitter.h"
 
@@ -379,6 +367,10 @@ std::vector<Capsule> fitCapsulesFromMesh(const Eigen::MatrixXd& V,
                                          int max_capsules) {
     std::vector<Capsule> out;
     if (V.rows() == 0)
+        return out;
+    // clusterSpheres indexes radii[] by center index; a mismatched radii list
+    // would read out of bounds.
+    if (radii.size() != centers.size())
         return out;
 
     // No spheres -> single tight capsule over all vertices.

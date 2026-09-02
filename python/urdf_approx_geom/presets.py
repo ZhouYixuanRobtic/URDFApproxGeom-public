@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Named configuration presets for public generation modes."""
 
 from __future__ import annotations
@@ -38,7 +41,20 @@ def _normal_mode(mode: str) -> str:
 def available_presets(mode: str) -> dict[str, pathlib.Path]:
     normal = _normal_mode(mode)
     root = config_root()
-    return {name: root / rel for name, rel in _PRESETS[normal].items()}
+    presets = {name: root / rel for name, rel in _PRESETS[normal].items()}
+    if normal == "sphere":
+        try:
+            from ._extension import load_extension
+
+            ext = load_extension()
+            if not hasattr(ext, "spherized"):
+                # Commercial edition: only the single-sphere preset is available.
+                presets = {name: presets[name] for name in ("single",) if name in presets}
+        except ImportError:
+            # Without a built extension (e.g. pure-Python smoke tests) keep the
+            # full preset list; the C++ capability decides at generation time.
+            pass
+    return presets
 
 
 def resolve_preset(mode: str, preset: str = "default") -> pathlib.Path:

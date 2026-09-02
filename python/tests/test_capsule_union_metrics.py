@@ -1,3 +1,6 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 import importlib.util
 import pathlib
 
@@ -59,8 +62,7 @@ def test_cpp_endpoint_span_shrink_uses_configured_union_sampling():
     source = (ROOT / "src" / "CapsuleCrossSection.cpp").read_text()
 
     assert (
-        "static bool shrinkCapsuleEndpointSpans(std::vector<Capsule>& caps,\n"
-        "                                       const Eigen::MatrixXd& V,\n"
+        "static bool shrinkCapsuleEndpointSpans(std::vector<Capsule>& caps, const Eigen::MatrixXd& V,\n"
         "                                       int union_volume_samples_per_axis)"
     ) in source
     assert "evaluateCapsuleTightness(V, caps, union_volume_samples_per_axis)" in source

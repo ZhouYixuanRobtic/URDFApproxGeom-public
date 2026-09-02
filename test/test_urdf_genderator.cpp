@@ -1,46 +1,8 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-   You are free to use, copy, modify, and distribute this software and its
-   documentation for educational, research, and other non-commercial purposes,
-   provided that appropriate credit is given to the original author(s) and
-   copyright holder(s).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
-                              D I S C L A I M E R
-
-   IN NO EVENT SHALL TRINITY COLLEGE DUBLIN BE LIABLE TO ANY PARTY FOR
-   DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING,
-   BUT NOT LIMITED TO, LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE
-   AND ITS DOCUMENTATION, EVEN IF TRINITY COLLEGE DUBLIN HAS BEEN ADVISED OF
-   THE POSSIBILITY OF SUCH DAMAGES.
-
-   TRINITY COLLEGE DUBLIN DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED
-   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-   PURPOSE. THE SOFTWARE PROVIDED HEREIN IS ON AN "AS IS" BASIS, AND TRINITY
-   COLLEGE DUBLIN HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
-   ENHANCEMENTS, OR MODIFICATIONS.
-
-   The authors may be contacted at the following e-mail addresses:
-
-           YX.E.Z yixuanzhou@sjtu.edu.cn
-
-   Further information about the IRMV and its projects can be found at the ISG web site :
-
-          https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #include <gtest/gtest.h>
 #include <cstdio>
@@ -53,13 +15,15 @@ class URDFGeneratorTest : public testing::Test {
   protected:
     void SetUp() override {
         convex_generator = std::make_shared<ConvexHullCollisionURDFGenerator>();
+        // use_visual=false: the FR3 visuals are .dae, which the C++ loader
+        // rejects (the Python CLI converts them via mesh_prep); the collision
+        // meshes are OBJ/STL.
         spherized_generator = std::make_shared<SphereTreeURDFGenerator>(
-            configPath + "/sphereTree/sphereTreeConfig.yml", true);
+            configPath + "/sphereTree/sphereTreeConfig.yml", true, false);
     }
 
     void TearDown() override {}
 
-  public:
   protected:
     std::string resourcePath = URDFApproxGeom_RESOURCE_PATH;
     std::string configPath = URDFApproxGeom_CONFIG_PATH;
@@ -68,17 +32,19 @@ class URDFGeneratorTest : public testing::Test {
 };
 
 TEST_F(URDFGeneratorTest, CVXTest) {
-    auto ret = convex_generator->run("/workspace/resources/fr3/urdf/fr3.urdf",
-                                     "/workspace/resources/fr3/urdf/fr3_convex.urdf", {});
+    // Outputs go to the temp dir: writing into resources/ would overwrite
+    // tracked files and fail on read-only checkouts.
+    auto out = ::testing::TempDir() + "fr3_convex_test.urdf";
+    auto ret = convex_generator->run(resourcePath + "/fr3/urdf/fr3.urdf", out, {});
 
-    IRMV_INFO("{}", ret.message());
+    ASSERT_TRUE(ret.isOk()) << ret.message();
 }
 
 TEST_F(URDFGeneratorTest, STTest) {
-    auto ret = spherized_generator->run("/workspace/resources/fr3/urdf/fr3_convex.urdf",
-                                        "/workspace/resources/fr3/urdf/fr3_spherized.urdf", {});
+    auto out = ::testing::TempDir() + "fr3_spherized_test.urdf";
+    auto ret = spherized_generator->run(resourcePath + "/fr3/urdf/fr3.urdf", out, {});
 
-    IRMV_INFO("{}", ret.message());
+    ASSERT_TRUE(ret.isOk()) << ret.message();
 }
 
 int main(int argc, char** argv) {

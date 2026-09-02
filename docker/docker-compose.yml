@@ -12,6 +12,9 @@ services:
       dockerfile: docker/Dockerfile
     container_name: spherized-dev
     image: urdfapprox-dev:latest
+    # Image ENTRYPOINT is the CLI binary (exits immediately); override so the
+    # dev container stays alive for `docker exec`.
+    entrypoint: ["/bin/bash"]
     volumes:
       - ..:/workspace:cached
     working_dir: /workspace

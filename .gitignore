@@ -135,6 +135,7 @@ coverage/
 # Documentation build artifacts
 docs/html/
 docs/latex/
+doc/paper/
 
 # Temporary / cache / log / backup
 *.tmp
@@ -143,3 +144,7 @@ docs/latex/
 *.log
 *.bak
 *.backup
+
+# Local vendored binary packages
+*.whl
+third_party/vendor/

@@ -1,8 +1,15 @@
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 import pathlib
 
 import pytest
 
+from urdf_approx_geom._extension import load_extension
 from urdf_approx_geom.presets import available_presets, resolve_preset
+
+
+HAS_SPHERE_TREE = hasattr(load_extension(), "spherized")
 
 
 def test_resolve_capsule_presets():
@@ -13,7 +20,13 @@ def test_resolve_capsule_presets():
 
 def test_resolve_sphere_presets():
     assert resolve_preset("sphere", "single").name == "single.yml"
-    assert resolve_preset("sphere", "default").name == "default.yml"
+    if HAS_SPHERE_TREE:
+        assert resolve_preset("sphere", "default").name == "default.yml"
+    else:
+        # Commercial edition exposes only the single-sphere preset.
+        with pytest.raises(ValueError, match="available presets"):
+            resolve_preset("sphere", "default")
+        assert list(available_presets("sphere")) == ["single"]
 
 
 def test_convex_default_preset_exists_for_uniform_cli():

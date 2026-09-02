@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+# All Rights Reserved.
+
 """Convert fr3_capsuleized.json (+ fr3.urdf) into an MJCF (MuJoCo XML) for
 visualization in robot-viewer / MuJoCo viewer.
 

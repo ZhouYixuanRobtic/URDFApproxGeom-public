@@ -1,20 +1,8 @@
 /*
- ************************************************************************\
-
-                              C O P Y R I G H T
-
-   Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
-                         All Rights Reserved.
-
-   Licensed under the Creative Commons Attribution-NonCommercial 4.0
-   International License (CC BY-NC 4.0).
-
-   For commercial use or licensing inquiries, please contact:
-   IRMV lab, Shanghai Jiao Tong University at: https://irmv.sjtu.edu.cn/
-
- \*************************************************************************
-
+ * Copyright © 2024 IRMV lab, Shanghai Jiao Tong University, China.
+ * All Rights Reserved.
  */
+
 
 #include <iostream>
 #include <memory>
@@ -72,6 +60,10 @@ int main(int argc, char* argv[]) {
 
     // Run the generator with the input, output, and replacement pairs
     auto ret = capsule_generator->run(inputPath, outputPath, replacements);
+    if (!ret.isOk()) {
+        IRMV_ERROR("Processing {} -> {} failed: {}", inputPath, outputPath, ret.message());
+        return 1;
+    }
     IRMV_INFO("Processing {} -> {}: {}", inputPath, outputPath, ret.message());
 
     return 0;
