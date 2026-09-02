@@ -135,6 +135,7 @@ coverage/
 # Documentation build artifacts
 docs/html/
 docs/latex/
+doc/paper/
 
 # Temporary / cache / log / backup
 *.tmp
